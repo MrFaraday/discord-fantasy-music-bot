@@ -1,0 +1,22 @@
+{
+  "name": "discord-fantasy-musicbot",
+  "version": "1.0.0",
+  "description": "Music bot fo fantasy board gaming",
+  "main": "./app/index.js",
+  "scripts": {
+    "start": "node ./app/index.js"
+  },
+  "keywords": [
+    "bot",
+    "discord",
+    "music",
+    "fantasy"
+  ],
+  "author": "MrFaraday",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "opusscript": "0.0.7",
+    "ytdl-core": "^1.0.6"
+  }
+}

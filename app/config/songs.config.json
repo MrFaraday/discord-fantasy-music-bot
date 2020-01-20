@@ -1,0 +1,25 @@
+{
+  "type": "youtue",
+  "combat": [
+    "https://www.youtube.com/watch?v=LDnENTDuAiI",
+    "https://www.youtube.com/watch?v=u-Bg2ok9Rp8",
+    "https://www.youtube.com/watch?v=mVKPvspyyyQ"
+  ],
+  "peacefull": [
+    "https://www.youtube.com/watch?v=sKv0rtgI7mw",
+    "https://www.youtube.com/watch?v=TJuPBBw-l-M",
+    "https://www.youtube.com/watch?v=zEHhJfccFm8"
+  ],
+  "names": {
+    "combat": [
+      "The Witcher 3: Wild Hunt OST Silver For Monsters HQ Extended",
+      "The Witcher 3: Wild Hunt - The Song of the Sword-Dancer Extended",
+      "The Witcher 3 OST - You're... Immortal? (Long Version)"
+    ],
+    "peacefull": [
+      "The Witcher - River of Life",
+      "The Witcher 3: Wild Hunt - Kaer Morhen Extended",
+      "08 Mikolai Stroinski - The Witcher 3: Wild Hunt - Spikeroog"
+    ]
+  }
+}
