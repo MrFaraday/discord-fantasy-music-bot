@@ -2,9 +2,9 @@
   "name": "discord-fantasy-musicbot",
   "version": "1.0.0",
   "description": "Music bot fo fantasy board gaming",
-  "main": "./app/index.js",
+  "main": "./index.js",
   "scripts": {
-    "start": "node ./app/index.js"
+    "start": "node ./index.js"
   },
   "keywords": [
     "bot",
