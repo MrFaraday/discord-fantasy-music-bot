@@ -16,27 +16,6 @@ const TOKEN = cfg.token;
 var guilds = {};
 const bot = new Discord.Client();
 
-function pullThemeFunc(key) {
-  switch (key) {
-    case "1":
-      return tracks.getPeaceful;
-    case "2":
-      return tracks.getCombat;
-    case "3":
-      return tracks.getDungeon;
-    case "4":
-      return tracks.getCity;
-    case "5":
-      return tracks.getBoss;
-    case "6":
-      return tracks.getMystery;
-    case "7":
-      return tracks.getTavern;
-    default:
-      throw "Wrong theme key.";
-  }
-}
-
 // Обработчик сообщений
 bot.on('message', message => {
   let args = message.content.substring(PREFIX.length).split(' ');
@@ -48,18 +27,29 @@ bot.on('message', message => {
       break;
     }
     // Страндартная команда проигрывания или добавления в очередь
-    case "p": {
+    case "p":
+    // Force play by url
+    case "fp": {
       if (!message.member.voiceChannel) {
         message.channel.send('Ты не на канале...');
         break;
       }
+      if (!args[1]) {
+        message.channel.send('А что играть?');
+      }
+
       if (!guilds[message.guild.id]) guilds[message.guild.id] = new Guild(message.guild);
       var guild = guilds[message.guild.id];
-      guild.play(message.member.voiceChannel, args[1]);
+
+      if (args[0] == "p") guild.play(message.member.voiceChannel, args[1]);
+      else guild.forcePlay(message.member.voiceChannel, [{
+        name: "Какое-то видео...",
+        url: args[1]
+      }]);
 
       break;
     }
-    // Peaceful music
+    // Play themes
     case "1":
     case "2":
     case "3":
@@ -77,7 +67,7 @@ bot.on('message', message => {
       var guild = guilds[message.guild.id];
       guild.forcePlay(
         message.member.voiceChannel,
-        (pullThemeFunc(args[0]))()
+        tracks.getTheme(args[0])
       );
 
       break;

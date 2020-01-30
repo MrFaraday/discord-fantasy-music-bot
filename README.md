@@ -1,8 +1,8 @@
 # Discord Fantasy Music Bot
 
-That music bot is designed to quick switching music while playing fantasy board game (such as DnD or Pathfinder). I make it especially for using by GM(DM) to quick switching playlists between exploring, combat, city etc. themes.
+That music bot is designed to quick switching music while playing fantasy board game (such as DnD or Pathfinder). I make it especially for using by GM(DM) to quick switching playlists between themes: exploring, combat, city etc.
 
-I still develop it to greater stability and functionality. I'm plannig in future this bot will play music mainly from The Wither games. Of course you can change that lists as you wish.
+Now we're playing with it and it play music mainly from Witcher games. Of course you can change that lists as you wish.
 
 Sorry for comments and bot messages are mainly in russian, but if need help to translate it just text me.
 
@@ -24,6 +24,7 @@ $ node index.js
 
 Then copy invite link to browser and choose the guild. When bot get command to play it automatically join to your voice channel. Commands:
 * `p [url]` play(or add to queue) video from YouTube;
+* `fp [url]` play video from YouTube immediately;
 * `n` skip curent track;
 * `s` stop playing;
 * `v [int]` change volume in range *0 - inf*, 5 - normal level.
