@@ -7,12 +7,12 @@ let cfg = require("./config/bot.config.json");
 const PREFIX = process.env.PREFIX || cfg.prefix;
 const TOKEN = process.env.TOKEN || cfg.token;
 
-if (!TOKEN) throw 'No token. Check your bot.config.json or .env file';
+if (!TOKEN) throw 'No token. Check your bot.config.json, .env file or environment variables on server';
 
 // Основные модули
 const Discord = require('discord.js');
 
-const Guild = require("./src/Guild.js");  // Класс данных сервера
+const Guild = require("./src/Guild.js").default;  // Класс данных сервера
 const tracks = require("./src/Tracks.js");  // Выдача списков треков
 
 var guilds = {};
@@ -116,14 +116,14 @@ bot.on('message', message => {
 
       break;
     }
-    case 'reset': {
-      message.channel.send('Resetting...')
+    case 'restart': {
+      message.channel.send('Restarting...')
         .then(msg => bot.destroy())
         .then(() => bot.login(TOKEN));
       break;
     }
     case 'off': {
-      message.channel.send('Shuttingdown...')
+      message.channel.send('Shutting down...')
         .then(msg => bot.destroy());
       break;
     }

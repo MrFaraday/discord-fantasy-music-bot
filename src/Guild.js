@@ -5,11 +5,12 @@ const ytdl = require("ytdl-core");  // Загрузчик с youtube
 const ShuffleableArray = require("./ShuffleableArray.js");  // Расширенный класс массива
 const Effects = require("./Effects.js");  // Эффекты
 
-const BASE_VOLUME = 0.1;  // Базовая громкость
+const BASE_VOLUME = 0.15;  // Базовая громкость
 
 // Класс данных сервера
 module.exports = class Guild {
   constructor(guild) {
+    console.log(`Connected to guild: ${guild.name}`)
     this.newQueue();  // Создание чистой очереди
     this.guild = guild;  // Объект сервера Discord
     this.volume = BASE_VOLUME;
@@ -44,6 +45,7 @@ module.exports = class Guild {
   }
   // Создание диспетчера и обработчиков
   newDispatcher() {
+    console.log(`New dispatcher: ${this.guild.name}`);
     this.dispatcher = this.connection.playStream(
       ytdl(this.queue[0], {filter: "audioonly"}),
       {volume: this.volume}
@@ -53,6 +55,7 @@ module.exports = class Guild {
     // Конец трека
     this.dispatcher.on("end", () => {
       if (this.queue[0]) this.newDispatcher();
+      else this.dispatcher = null;
     });
   }
   // Подключение к голосовому каналу
@@ -83,8 +86,8 @@ module.exports = class Guild {
   }
   // Изменение громкости
   volumeChange(volume) {
-    volume = (BASE_VOLUME / 5) * volume;
-    this.dispatcher.setVolume(volume);
+    this.volume = (BASE_VOLUME / 5) * volume;
+    this.dispatcher.setVolume(this.volume);
   }
   // Пропуск трека
   skip() {
