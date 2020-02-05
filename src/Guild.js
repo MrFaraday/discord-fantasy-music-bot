@@ -10,7 +10,7 @@ const BASE_VOLUME = 0.15;  // Базовая громкость
 // Класс данных сервера
 module.exports = class Guild {
   constructor(guild) {
-    console.log(`Connected to guild: ${guild.name}`)
+    console.log(`Connected to guild   -   ${guild.name}`)
     this.newQueue();  // Создание чистой очереди
     this.guild = guild;  // Объект сервера Discord
     this.volume = BASE_VOLUME;
@@ -45,7 +45,7 @@ module.exports = class Guild {
   }
   // Создание диспетчера и обработчиков
   newDispatcher() {
-    console.log(`New dispatcher: ${this.guild.name}`);
+    console.log(`New dispatcher   -   ${this.guild.name}`);
     this.dispatcher = this.connection.playStream(
       ytdl(this.queue[0], {filter: "audioonly"}),
       {volume: this.volume}
@@ -65,8 +65,7 @@ module.exports = class Guild {
       this.newDispatcher();
 
       this.connection.on("disconnect", () => {
-        console.log("guild.connection: disconnect event")
-        this.dispatcher.end();
+        console.log(`${this.guild.name}: disconnected out of voice channel`);
         this.newQueue();
         this.connection = null;
       });

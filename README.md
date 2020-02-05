@@ -23,11 +23,13 @@ $ node index.js
 ```
 
 Then copy invite link to browser and choose the guild. When bot get command to play it automatically join to your voice channel. Commands:
+* `hello` greetings
 * `p [url]` play(or add to queue) video from YouTube;
 * `fp [url]` play video from YouTube immediately;
 * `n` skip curent track;
 * `s` stop playing;
-* `v [int]` change volume in range *0 - inf*, 5 - normal level.
+* `v [int]` change volume in range *0 - inf*, 5 - normal level;
+* `reset` to disconnect bot out of voice channel, I use it mainly to reset statement after kicking.
 
 To paly themes I've binded it to `1`,`2`, ... , `7` commands. It's easy to switch on numpad, Peace - first column, Combat - second and Tension - third., where:
 

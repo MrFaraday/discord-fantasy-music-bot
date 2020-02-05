@@ -116,15 +116,17 @@ bot.on('message', message => {
 
       break;
     }
-    case 'restart': {
-      message.channel.send('Restarting...')
-        .then(msg => bot.destroy())
-        .then(() => bot.login(TOKEN));
-      break;
-    }
-    case 'off': {
-      message.channel.send('Shutting down...')
-        .then(msg => bot.destroy());
+    // omg i dont give a fuck how to install fix to heroku
+    // just use this if you kicked bot out of voice channel
+    // because he thinking he still on it
+    case 'reset': {
+      message.channel.send('Reseting...')
+        .then(msg => {
+          if (guilds[message.guild.id]) {
+            guilds[message.guild.id].connection.disconnect();
+          }
+        });
+      
       break;
     }
     default:
@@ -133,10 +135,10 @@ bot.on('message', message => {
 });
 
 bot.on("ready", () => {
-  console.log(`Запустился бот ${bot.user.username}!`);
+  console.log(`\nЗапустился бот ${bot.user.username}!`);
   bot.generateInvite([3147776]).then(link => {
     console.log("Link to invite bot to server:");
-    console.log(link);
+    console.log(link + '\n');
   });
 });
 
