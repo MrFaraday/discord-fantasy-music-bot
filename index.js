@@ -12,7 +12,7 @@ if (!TOKEN) throw 'No token. Check your bot.config.json, .env file or environmen
 // Основные модули
 const Discord = require('discord.js');
 
-const Guild = require("./src/Guild.js").default;  // Класс данных сервера
+const Guild = require("./src/Guild.js");  // Класс данных сервера
 const tracks = require("./src/Tracks.js");  // Выдача списков треков
 
 var guilds = {};
