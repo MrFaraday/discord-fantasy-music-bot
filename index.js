@@ -116,6 +116,12 @@ bot.on('message', message => {
 
       break;
     }
+    case 'reset': {
+      message.channel.send('Resetting...')
+        .then(msg => bot.destroy())
+        .then(() => bot.login(TOKEN));
+      break;
+    }
     default:
       break;
   }
