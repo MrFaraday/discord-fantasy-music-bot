@@ -4,14 +4,16 @@
  */
 let cfg = require("./config/bot.config.json");
 
+const PREFIX = process.env.PREFIX || cfg.prefix;
+const TOKEN = process.env.TOKEN || cfg.token;
+
+if (!TOKEN) throw 'No token. Check your bot.config.json or .env file.';
+
 // Основные модули
 const Discord = require('discord.js');
 
 const Guild = require("./src/Guild.js");  // Класс данных сервера
 const tracks = require("./src/Tracks.js");  // Выдача списков треков
-
-const PREFIX = cfg.prefix;
-const TOKEN = cfg.token;
 
 var guilds = {};
 const bot = new Discord.Client();
