@@ -122,6 +122,11 @@ bot.on('message', message => {
         .then(() => bot.login(TOKEN));
       break;
     }
+    case 'off': {
+      message.channel.send('Shuttingdown...')
+        .then(msg => bot.destroy());
+      break;
+    }
     default:
       break;
   }
