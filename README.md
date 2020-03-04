@@ -1,16 +1,18 @@
-# Discord Fantasy Music Bot
+# Discord Fantasy Musicbot
 
 That music bot is designed to quick switching music while playing fantasy board game (such as DnD or Pathfinder). I make it especially for using by GM(DM) to quick switching playlists between themes: exploring, combat, city etc.
 
 Now we're playing with it and it play music mainly from Witcher games. Of course you can change that lists as you wish.
 
-Sorry for comments and bot messages are mainly in russian, but if need help to translate it just text me.
+If you interested to use it but need more tracks or function to use custom lists, you can text me.
 
 ## Requirements
 
-If you want to use it make sure you have FFMPEG on your machine.
+If you want to use it make sure you have FFMPEG on your machine or add it to remote server.
 
 ## Usage
+
+You can invate my bot to test it and may be use it ;) [Draggy - Fantasy Musicbot](https://discordapp.com/oauth2/authorize?client_id=667765780863254558&permissions=3147776&scope=bot)
 
 Clone repository, next create application and bot on discord developer site. Copy bot token and insert it to `token` field of `config/bot.config.json` file, also there you can set the prefix for bot commands. In `config/tracks.config.json` contain list of tracks splited by categories. Futher start application by command:
 
@@ -28,10 +30,10 @@ Then copy invite link to browser and choose the guild. When bot get command to p
 * `fp [url]` play video from YouTube immediately;
 * `n` skip curent track;
 * `s` stop playing;
-* `v [int]` change volume in range *0 - inf*, 5 - normal level;
-* `reset` to disconnect bot out of voice channel, I use it mainly to reset statement after kicking.
+* `v [value]` change volume, 5 - default, after 50 may have distortion
+* `reset` to disconnect bot out of voice channel, I use it mainly to reset state after kicking.
 
-To paly themes I've binded it to `1`,`2`, ... , `7` commands. It's easy to switch on numpad, Peace - first column, Combat - second and Tension - third., where:
+To paly themes immediately I've binded it to `1`,`2`, ... , `7` commands. It's easy to switch on numpad, Peace - first column, Combat - second and Tension - third, where:
 
 * `1` - peaceful music for exploering;
 * `4` - city theme;
