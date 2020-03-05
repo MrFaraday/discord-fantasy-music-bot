@@ -26,19 +26,18 @@ $ node index.js
 
 Then copy invite link to browser and choose the guild. When bot get command to play it automatically join to your voice channel. Commands:
 * `hello` greetings
-* `p [url]` play(or add to queue) video from YouTube;
-* `fp [url]` play video from YouTube immediately;
-* `n` skip curent track;
-* `s` stop playing;
+* `p [url]` play(or add to queue) video from YouTube
+* `fp [url]` play video from YouTube immediately
+* `n` skip curent track
+* `s` stop playing
 * `v [value]` change volume, 5 - default, after 50 may have distortion
-* `reset` to disconnect bot out of voice channel, I use it mainly to reset state after kicking.
 
 To paly themes immediately I've binded it to `1`,`2`, ... , `7` commands. It's easy to switch on numpad, Peace - first column, Combat - second and Tension - third, where:
 
-* `1` - peaceful music for exploering;
-* `4` - city theme;
-* `7` - tavern theme;
-* `2` - common combat music;
-* `5` - boss fight theme;
-* `3` - dungeon exploering music;
-* `6` - mysterious music.
+* `1` - peaceful music for exploering
+* `4` - city theme
+* `7` - tavern theme
+* `2` - common combat music
+* `5` - boss fight theme
+* `3` - dungeon exploering music
+* `6` - mysterious music

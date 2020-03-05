@@ -6,3 +6,6 @@ node_modules
 
 # cfg
 .env
+
+# build
+build
