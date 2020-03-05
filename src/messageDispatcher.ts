@@ -103,7 +103,7 @@ export const messageDispatcher = async (message: Message) => {
         break
       }
 
-      if (parseInt(args[1]) === NaN) {
+      if (isNaN(parseInt(args[1], 10))) {
         message.reply('It\'s not a number, it must be integer')
         break
       }
@@ -111,7 +111,7 @@ export const messageDispatcher = async (message: Message) => {
       if (!guilds[message.guild.id]) break
 
       const guild = guilds[message.guild.id]
-      guild.volumeChange(parseInt(args[1]))
+      guild.volumeChange(parseInt(args[1], 10))
 
       break
     }

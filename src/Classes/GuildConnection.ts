@@ -14,7 +14,6 @@ export default class GuildConnection {
   connection: VoiceConnection
 
   constructor(guild: Guild) {
-    console.log(`Connected to guild   -   ${guild.name}`)
     this.newQueue()  // Creating new queue
     this.guild = guild  // Link to instance of Discord Guild
     this.volume = BASE_VOLUME
@@ -52,28 +51,14 @@ export default class GuildConnection {
     this.newDispatcher()
 
     this.connection.on('disconnect', async () => {
-      console.log(`${this.guild.name}: disconnected out of the voice channel`)
       this.newQueue()
       this.connection = null
       if (this.dispatcher) this.dispatcher.end()
-    })
-
-    this.connection.on('failed', async error => {
-      console.log(`Voice connection failed: ${error}`)
-    })
-
-    this.connection.on('error', async error => {
-      console.log(`Voice connection error: ${error}`)
-    })
-
-    this.connection.on('warn', async warn => {
-      console.log(`Voice connection warn: ${warn}`)
     })
   }
 
   // Creating dispatcher and event listeners
   async newDispatcher() {
-    console.log(`New dispatcher   -   ${this.guild.name}`)
     this.dispatcher = this.connection.play(
       ytdl(this.queue[0], { filter: 'audioonly' }),
       { volume: this.volume }
