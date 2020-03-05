@@ -1,6 +1,6 @@
 {
   "name": "discord-fantasy-musicbot",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Music bot fo fantasy board gaming",
   "main": "./index.js",
   "scripts": {
@@ -16,7 +16,8 @@
     "music",
     "fantasy"
   ],
-  "author": "MrFaraday",
+  "author": "MrFaraday <faradayby@gmail.com>",
+  "repository": "https://github.com/MrFaraday/discord-fantasy-musicbot",
   "license": "MIT",
   "dependencies": {
     "@discordjs/opus": "^0.1.0",

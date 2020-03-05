@@ -1,4 +1,4 @@
-import GuildConnection from "./Classes/GuildConnection"
+import GuildConnection from './Classes/GuildConnection'
 
 export interface Guilds {
   [key: string]: GuildConnection

@@ -14,17 +14,28 @@ If you want to use it make sure you have FFMPEG on your machine or add it to rem
 
 You can invate my bot to test it and may be use it ;) [Draggy - Fantasy Musicbot](https://discordapp.com/oauth2/authorize?client_id=667765780863254558&permissions=3147776&scope=bot)
 
-Clone repository, next create application and bot on discord developer site. Copy bot token and insert it to `token` field of `config/bot.config.json` file, also there you can set the prefix for bot commands. In `config/tracks.config.json` contain list of tracks splited by categories. Futher start application by command:
+Clone repository, next create application and bot on discord developer site. Create `.env` file in the root, copy bot API token and write the line in `.env` file like `TOKEN=<your token>`. Also there you can set the prefix for bot commands by line `PREFIX=<prefix>`. In `src/config/tracks.config.json` file contain list of tracks splited by categories.
+
+Next you need to build application by command:
 
 ```sh
-$ npm run start
+npm run build
 ```
-or
+
+Futher start application by command:
+
 ```sh
-$ node index.js
+npm run start
+```
+
+Or you can start dev server:
+
+```sh
+node run dev
 ```
 
 Then copy invite link to browser and choose the guild. When bot get command to play it automatically join to your voice channel. Commands:
+
 * `hello` greetings
 * `p [url]` play(or add to queue) video from YouTube
 * `fp [url]` play video from YouTube immediately

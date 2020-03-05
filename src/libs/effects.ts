@@ -1,4 +1,4 @@
-import { StreamDispatcher } from "discord.js"
+import { StreamDispatcher } from 'discord.js'
 
 // fadeOut
 export const fadeOut = (dispatcher: StreamDispatcher) => {
@@ -7,7 +7,7 @@ export const fadeOut = (dispatcher: StreamDispatcher) => {
     return
   }
 
-  dispatcher.setVolume(dispatcher.volume * 0.95)
+  dispatcher.setVolume(dispatcher.volume * 0.93)
   setTimeout(fadeOut, 40, dispatcher)
 }
 

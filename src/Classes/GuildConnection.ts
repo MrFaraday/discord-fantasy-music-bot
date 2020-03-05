@@ -1,8 +1,8 @@
-import { Guild, VoiceChannel, StreamDispatcher, VoiceConnection } from "discord.js"
-import ytdl from "ytdl-core"  // youtube downloader
-import ShuffleableArray from "./ShuffleableArray"  // Extended array class
-import { fadeOut } from "../libs/effects"  // Effects
-import { Track } from "../interfaces"
+import { Guild, VoiceChannel, StreamDispatcher, VoiceConnection } from 'discord.js'
+import ytdl from 'ytdl-core'  // youtube downloader
+import ShuffleableArray from './ShuffleableArray'  // Extended array class
+import { fadeOut } from '../libs/effects'  // Effects
+import { Track } from '../interfaces'
 
 const BASE_VOLUME = 0.15  // Default volume
 
@@ -51,22 +51,22 @@ export default class GuildConnection {
     this.connection = await channel.join()
     this.newDispatcher()
 
-    this.connection.on("disconnect", async () => {
+    this.connection.on('disconnect', async () => {
       console.log(`${this.guild.name}: disconnected out of the voice channel`)
       this.newQueue()
       this.connection = null
       if (this.dispatcher) this.dispatcher.end()
     })
 
-    this.connection.on("failed", async error => {
+    this.connection.on('failed', async error => {
       console.log(`Voice connection failed: ${error}`)
     })
 
-    this.connection.on("error", async error => {
+    this.connection.on('error', async error => {
       console.log(`Voice connection error: ${error}`)
     })
 
-    this.connection.on("warn", async warn => {
+    this.connection.on('warn', async warn => {
       console.log(`Voice connection warn: ${warn}`)
     })
   }
@@ -75,7 +75,7 @@ export default class GuildConnection {
   async newDispatcher() {
     console.log(`New dispatcher   -   ${this.guild.name}`)
     this.dispatcher = this.connection.play(
-      ytdl(this.queue[0], { filter: "audioonly" }),
+      ytdl(this.queue[0], { filter: 'audioonly' }),
       { volume: this.volume }
     )
 
