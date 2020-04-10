@@ -2,7 +2,9 @@
 
 export default class ShuffleableArray<T> extends Array {
   shuffle() {
-    let counter = this.length, temp, index
+    let counter = this.length
+    let temp
+    let index
 
     // While there are elements in the array
     while (counter > 0) {
