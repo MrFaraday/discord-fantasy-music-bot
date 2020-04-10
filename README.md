@@ -52,7 +52,3 @@ To paly themes immediately I've binded it to `1`,`2`, ... , `7` commands. It's e
 * `5` - boss fight theme
 * `3` - dungeon exploering music
 * `6` - mysterious music
-
-## Installing on Windows
-
-`npm install --global --production --vs2015 --add-python-to-path windows-build-tools`

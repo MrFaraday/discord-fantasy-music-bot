@@ -4,7 +4,7 @@ import ShuffleableArray from './ShuffleableArray'  // Extended array class
 import { fadeOut } from '../libs/effects'  // Effects
 import { Track } from '../interfaces'
 
-const BASE_VOLUME = 0.15  // Default volume
+const BASE_VOLUME = 0.12  // Default volume
 
 export default class GuildConnection {
   guild: Guild
@@ -67,14 +67,20 @@ export default class GuildConnection {
     this.queue.shift()
 
     // End of track
-    this.dispatcher.on('close', async () => {
-      if (this.queue[0]) this.newDispatcher()
-      else this.dispatcher = null
+    this.dispatcher.on('end', async () => {
+      if (this.queue[0]) {
+        this.newDispatcher()
+      } else {
+        this.dispatcher = null
+      }
     })
 
-    this.dispatcher.on('end', async () => {
-      if (this.queue[0]) this.newDispatcher()
-      else this.dispatcher = null
+    this.dispatcher.on('finish', async () => {
+      if (this.queue[0]) {
+        this.newDispatcher()
+      } else {
+        this.dispatcher = null
+      }
     })
   }
 
