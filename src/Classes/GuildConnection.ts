@@ -71,6 +71,11 @@ export default class GuildConnection {
       if (this.queue[0]) this.newDispatcher()
       else this.dispatcher = null
     })
+
+    this.dispatcher.on('end', async () => {
+      if (this.queue[0]) this.newDispatcher()
+      else this.dispatcher = null
+    })
   }
 
   // Изменение громкости
