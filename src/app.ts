@@ -1,9 +1,16 @@
 import Discord from 'discord.js'
 
 // loading environment variables for development
-if (process.env.NODE_ENV !== 'production')  require('dotenv').config()
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 const TOKEN = process.env.TOKEN
-if (!TOKEN) throw new Error('Token not found. Check your bot.config.json, .env file or environment variables on your server')
+if (!TOKEN) {
+  throw new Error(
+    'Token not found. Check your bot.config.json, \
+    .env file or environment variables on your server'
+  )
+}
 
 const bot = new Discord.Client()
 

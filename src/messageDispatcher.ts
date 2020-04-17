@@ -5,11 +5,12 @@ import { issuePlaylist } from './libs/issuePlaylist'  // Playlists issue service
 import { Guilds } from './interfaces'
 
 // loading environment variables for development
-if (process.env.NODE_ENV !== 'production')  require('dotenv').config()
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 const PREFIX = process.env.PREFIX || ''
 
 const guilds: Guilds = {}
-
 export const messageDispatcher = async (message: Message) => {
   const args = message.content.substring(PREFIX.length).split(' ')
 
@@ -32,16 +33,20 @@ export const messageDispatcher = async (message: Message) => {
         message.reply('What to play?')
       }
 
-      if (!guilds[message.guild.id]) guilds[message.guild.id] = new GuildConnection(message.guild)
-      const guild = guilds[message.guild.id]
+      if (!guilds[message.guild.id]) {
+        guilds[message.guild.id] = new GuildConnection(message.guild)
+      }
 
-      if (args[0] === 'p')
+      const guild = guilds[message.guild.id] 
+
+      if (args[0] === 'p') {
         guild.play(message.member.voice.channel, args[1])
-      else if (args[0] === 'fp')
+      } else if (args[0] === 'fp') {
         guild.forcePlay(message.member.voice.channel, [{
           name: 'Playing your video...',
           url: args[1]
         }])
+      }
 
       break
     }
@@ -60,7 +65,10 @@ export const messageDispatcher = async (message: Message) => {
         break
       }
 
-      if (!guilds[message.guild.id]) guilds[message.guild.id] = new GuildConnection(message.guild)
+      if (!guilds[message.guild.id]) {
+        guilds[message.guild.id] = new GuildConnection(message.guild)
+      }
+      
       const guild = guilds[message.guild.id]
       guild.forcePlay(
         message.member.voice.channel,
@@ -77,8 +85,8 @@ export const messageDispatcher = async (message: Message) => {
         break
       }
 
-      const guild = guilds[message.guild.id]
-      await guild.skip() || message.reply('Nothing to skip')
+      const guild = guilds[message.guild.id] || new GuildConnection(message.guild)
+      await guild.skip() || message.reply('Nothing to skip')  // if skip() returns 0 then reply
 
       break
     }
@@ -90,8 +98,8 @@ export const messageDispatcher = async (message: Message) => {
         break
       }
 
-      const guild = guilds[message.guild.id]
-      await guild.stop() || message.reply('Nothing to stop')
+      const guild = guilds[message.guild.id] || new GuildConnection(message.guild)
+      await guild.stop() || message.reply('Nothing to stop')  // if stop() returns 0 then reply
 
       break
     }
@@ -103,12 +111,15 @@ export const messageDispatcher = async (message: Message) => {
         break
       }
 
-      if (isNaN(parseInt(args[1], 10))) {
-        message.reply('It\'s not a number, it must be integer')
+      if (!guilds[message.guild.id]) {
+        message.reply('Halt! Who goes there!?')
         break
       }
 
-      if (!guilds[message.guild.id]) break
+      if (isNaN(Number(args[1]))) {
+        message.reply('It\'s not a number, it must be rational number')
+        break
+      }
 
       const guild = guilds[message.guild.id]
       guild.volumeChange(parseInt(args[1], 10))
