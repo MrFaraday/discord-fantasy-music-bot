@@ -16,6 +16,8 @@ module.exports = class GuildConnection {
      */
     constructor(guild) {
         this.newQueue() // Creating new queue
+
+        /** @private */
         this.guild = guild // Link to instance of Discord Guild
         this.volume = BASE_VOLUME
     }
@@ -107,7 +109,7 @@ module.exports = class GuildConnection {
     /**
      * Skipping
      */
-    async skip() {
+    skip() {
         if (!this.dispatcher) return 0
         fadeOut(this.dispatcher)
 
@@ -117,9 +119,9 @@ module.exports = class GuildConnection {
     /**
      * Stopping
      */
-    async stop() {
+    stop() {
         if (!this.dispatcher) return 0
-        await this.newQueue()
+        this.newQueue()
         fadeOut(this.dispatcher)
 
         return 1
@@ -128,7 +130,14 @@ module.exports = class GuildConnection {
     /**
      * Queue clearing
      */
-    async newQueue() {
+    newQueue() {
         this.queue = new ShuffleableArray()
+    }
+
+    /**
+     * @returns { boolean }
+     */
+    isPlaying() {
+        return !!this.dispatcher
     }
 }

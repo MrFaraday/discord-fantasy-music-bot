@@ -20,6 +20,7 @@ const guilds = {}
  */
 const messageDispatcher = async (message) => {
     const args = message.content.substring(PREFIX.length).split(' ')
+    const guild = guilds[message.guild.id] || new GuildConnection(message.guild)
 
     switch (args[0]) {
         case 'hello': {
@@ -31,7 +32,7 @@ const messageDispatcher = async (message) => {
         case 'p':
         // Force play by url
         case 'fp': {
-            const link = args[1]
+            const [mode, link] = args
 
             if (!message.member.voice.channel) {
                 message.reply('You are not connected to a voice channel...')
@@ -41,19 +42,13 @@ const messageDispatcher = async (message) => {
                 message.reply('What to play?')
             }
 
-            if (!guilds[message.guild.id]) {
-                guilds[message.guild.id] = new GuildConnection(message.guild)
-            }
-
-            const guild = guilds[message.guild.id]
-
-            if (args[0] === 'p') {
+            if (mode === 'p') {
                 guild.play(message.member.voice.channel, link)
-            } else if (args[0] === 'fp') {
+            } else if (mode === 'fp') {
                 guild.forcePlay(message.member.voice.channel, [
                     {
                         name: 'Playing your video...',
-                        url: args[1]
+                        url: link
                     }
                 ])
             }
@@ -75,25 +70,23 @@ const messageDispatcher = async (message) => {
                 break
             }
 
-            if (!guilds[message.guild.id]) {
-                guilds[message.guild.id] = new GuildConnection(message.guild)
-            }
-
-            const guild = guilds[message.guild.id]
             guild.forcePlay(message.member.voice.channel, await issuePlaylist(args[0]))
 
             break
         }
 
-        // Skip
+        // Next song
         case 'n': {
             if (!guilds[message.guild.id]) {
                 message.reply("I haven't played anything yet :(")
                 break
             }
 
-            const guild = guilds[message.guild.id] || new GuildConnection(message.guild)
-            ;(await guild.skip()) || message.reply('Nothing to skip') // if skip() returns 0 then reply
+            if (guild.isPlaying()) {
+                guild.skip()
+            } else {
+                message.reply('Nothing to skip')
+            }
 
             break
         }
@@ -105,31 +98,28 @@ const messageDispatcher = async (message) => {
                 break
             }
 
-            const guild = guilds[message.guild.id] || new GuildConnection(message.guild)
-            ;(await guild.stop()) || message.reply('Nothing to stop') // if stop() returns 0 then reply
+            if (guild.isPlaying()) {
+                guild.stop()
+            } else {
+                message.reply('Nothing to stop')
+            }
 
             break
         }
 
         // Volume
         case 'v': {
-            if (!args[1]) {
+            const [_, volume]
+            if (!volume) {
                 message.reply('Set volume, 5 - default')
                 break
             }
-
-            if (!guilds[message.guild.id]) {
-                message.reply('Halt! Who goes there!?')
-                break
-            }
-
-            if (isNaN(Number(args[1]))) {
+            if (isNaN(Number(volume))) {
                 message.reply("It's not a number, it must be rational number")
                 break
             }
 
-            const guild = guilds[message.guild.id]
-            guild.volumeChange(parseInt(args[1], 10))
+            guild.volumeChange(parseInt(volume, 10))
 
             break
         }
