@@ -10,7 +10,7 @@ if (process.env.NODE_ENV !== 'production') {
 const PREFIX = process.env.PREFIX || ''
 
 /**
- * @type { import('./type').Guilds }
+ * @type { Object.<string, GuildConnection> }
  */
 const guilds = {}
 
