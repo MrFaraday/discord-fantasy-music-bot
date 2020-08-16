@@ -19,8 +19,14 @@ const guilds = {}
  * @param { Message } message
  */
 const messageDispatcher = async (message) => {
+    const { id: guildId } = message.guild
     const args = message.content.substring(PREFIX.length).split(' ')
-    const guild = guilds[message.guild.id] || new GuildConnection(message.guild)
+
+    if (!guilds[guildId]) {
+        guilds[guildId] = new GuildConnection(message.guild)
+    }
+
+    const guild = guilds[guildId]
 
     switch (args[0]) {
         case 'hello': {
@@ -109,7 +115,7 @@ const messageDispatcher = async (message) => {
 
         // Volume
         case 'v': {
-            const [_, volume]
+            const [_mode, volume] = args
             if (!volume) {
                 message.reply('Set volume, 5 - default')
                 break
