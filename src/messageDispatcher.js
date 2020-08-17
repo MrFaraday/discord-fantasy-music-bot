@@ -1,4 +1,5 @@
 const { Message } = require('discord.js')
+const ytlist = require('youtube-playlist')
 
 const GuildConnection = require('./Classes/GuildConnection') // Guild class
 const issuePlaylist = require('./libs/issuePlaylist') // Playlists issue service
@@ -48,15 +49,33 @@ const messageDispatcher = async (message) => {
                 message.reply('What to play?')
             }
 
-            if (mode === 'p') {
-                guild.play(message.member.voice.channel, link)
-            } else if (mode === 'fp') {
-                guild.forcePlay(message.member.voice.channel, [
-                    {
-                        name: 'Playing your video...',
-                        url: link
-                    }
-                ])
+            // If link leads to playlist
+            let playList
+            try {
+                const { data } = await ytlist(link, 'url')
+                playList = data.playlist
+                if (playList.length === 0) {
+                    message.reply("It's empty... Or They're just hidden from me.")
+                    return
+                }
+            } catch (err) {}
+
+            try {
+                if (mode === 'p' && !playList) {
+                    await guild.play(message.member.voice.channel, link)
+                } else if (mode === 'fp' || playList) {
+                    await guild.forcePlay(
+                        message.member.voice.channel,
+                        playList
+                            ? playList.map((url) => ({
+                                  url
+                              }))
+                            : [{ url: link }]
+                    )
+                }
+            } catch (error) {
+                console.error(error)
+                message.reply("I can't resolve link or something worse...")
             }
 
             break

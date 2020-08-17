@@ -55,7 +55,7 @@ module.exports = class GuildConnection {
         this._queue.push(track) // Add to queue
 
         if (!this._connection) {
-            this._newVoiceConnection(channel)
+            await this._newVoiceConnection(channel)
         } else if (!this._dispatcher) {
             this._newDispatcher()
         }
@@ -68,13 +68,13 @@ module.exports = class GuildConnection {
      * @param { import('../types').Track[] } tracks
      */
     async forcePlay(channel, tracks) {
-        await this._newQueue() // Очистка очереди
+        this._newQueue() // Очистка очереди
         for (const track of tracks) this._queue.push(track.url) // Создание новой очереди
 
         this._queue.shuffle() // Shuffling
 
         if (!this._connection) {
-            this._newVoiceConnection(channel)
+            await this._newVoiceConnection(channel)
         } else if (this._dispatcher) {
             fadeOut(this._dispatcher)
         } else {
@@ -102,7 +102,7 @@ module.exports = class GuildConnection {
      * Creating dispatcher and event listeners
      * @private
      */
-    async _newDispatcher() {
+    _newDispatcher() {
         this._dispatcher = this._connection.play(ytdl(this._queue[0], { filter: 'audioonly' }), {
             volume: this._volume
         })
