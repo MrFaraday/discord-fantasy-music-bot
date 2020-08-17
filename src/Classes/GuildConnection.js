@@ -1,4 +1,4 @@
-const { Guild, VoiceChannel } = require('discord.js')
+const { Guild, VoiceChannel, VoiceConnection, StreamDispatcher } = require('discord.js')
 
 const ytdl = require('ytdl-core') // youtube downloader
 const ShuffleableArray = require('./ShuffleableArray')
@@ -8,136 +8,167 @@ const BASE_VOLUME = 0.12 // Default volume
 
 /**
  * Guild connection instance
- * @type { import('../type').GuildConnection }
  */
 module.exports = class GuildConnection {
     /**
      * @param { Guild } guild
      */
     constructor(guild) {
-        this.newQueue() // Creating new queue
+        /**
+         * @private
+         * @type { ShuffleableArray }
+         */
+        this._queue = new ShuffleableArray()
 
-        /** @private */
-        this.guild = guild // Link to instance of Discord Guild
-        this.volume = BASE_VOLUME
+        /**
+         * @private
+         * @type { Guild }
+         */
+        this._guild = guild // Link to instance of Discord Guild
+
+        /**
+         * @private
+         * @type { number }
+         */
+        this._volume = BASE_VOLUME
+
+        /**
+         * @private
+         * @type { VoiceConnection }
+         */
+        this._connection
+
+        /**
+         * @private
+         * @type { StreamDispatcher }
+         */
+        this._dispatcher
     }
 
     /**
      * Playing music
+     * @public
      * @param { VoiceChannel } channel
      * @param { string } track
      */
     async play(channel, track) {
-        this.queue.push(track) // Add to queue
+        this._queue.push(track) // Add to queue
 
-        if (!this.connection) {
-            this.newVoiceConnection(channel)
-        } else if (!this.dispatcher) {
-            this.newDispatcher()
+        if (!this._connection) {
+            await this._newVoiceConnection(channel)
+        } else if (!this._dispatcher) {
+            this._newDispatcher()
         }
     }
 
     /**
      * Force playing
+     * @public
      * @param { VoiceChannel } channel
-     * @param { Track[] } tracks
+     * @param { import('../types').Track[] } tracks
      */
     async forcePlay(channel, tracks) {
-        await this.newQueue() // Очистка очереди
-        for (const track of tracks) this.queue.push(track.url) // Создание новой очереди
-        this.queue.shuffle() // Shuffling
+        this._newQueue() // Очистка очереди
+        for (const track of tracks) this._queue.push(track.url) // Создание новой очереди
 
-        if (!this.connection) {
-            this.newVoiceConnection(channel)
-        } else if (this.dispatcher) {
-            fadeOut(this.dispatcher)
+        this._queue.shuffle() // Shuffling
+
+        if (!this._connection) {
+            await this._newVoiceConnection(channel)
+        } else if (this._dispatcher) {
+            fadeOut(this._dispatcher)
         } else {
-            this.newDispatcher()
+            this._newDispatcher()
         }
     }
 
     /**
      * Creating connection to voice channel
+     * @private
      * @param { VoiceChannel } channel
      */
-    async newVoiceConnection(channel) {
-        this.connection = await channel.join()
-        this.newDispatcher()
+    async _newVoiceConnection(channel) {
+        this._connection = await channel.join()
+        this._newDispatcher()
 
-        this.connection.on('disconnect', async () => {
-            this.newQueue()
-            this.connection = null
-            if (this.dispatcher) this.dispatcher.end()
+        this._connection.on('disconnect', async () => {
+            this._newQueue()
+            this._connection = null
+            if (this._dispatcher) this._dispatcher.end()
         })
     }
 
     /**
      * Creating dispatcher and event listeners
+     * @private
      */
-    async newDispatcher() {
-        this.dispatcher = this.connection.play(ytdl(this.queue[0], { filter: 'audioonly' }), { volume: this.volume })
+    _newDispatcher() {
+        this._dispatcher = this._connection.play(ytdl(this._queue[0], { filter: 'audioonly' }), {
+            volume: this._volume
+        })
 
-        this.queue.shift()
+        this._queue.shift()
 
         // End of track
-        this.dispatcher.on('end', async () => {
-            if (this.queue[0]) {
-                this.newDispatcher()
+        this._dispatcher.on('end', async () => {
+            if (this._queue[0]) {
+                this._newDispatcher()
             } else {
-                this.dispatcher = null
+                this._dispatcher = null
             }
         })
 
-        this.dispatcher.on('finish', async () => {
-            if (this.queue[0]) {
-                this.newDispatcher()
+        this._dispatcher.on('finish', async () => {
+            if (this._queue[0]) {
+                this._newDispatcher()
             } else {
-                this.dispatcher = null
+                this._dispatcher = null
             }
         })
     }
 
     /**
      * Volume changing
+     * @public
      * @param { number } volume
      */
     async volumeChange(volume) {
-        this.volume = (BASE_VOLUME / 5) * volume
-        this.dispatcher.setVolume(this.volume)
+        this._volume = (BASE_VOLUME / 5) * volume
+        this._dispatcher.setVolume(this._volume)
     }
 
     /**
      * Skipping
+     * @public
      */
     skip() {
-        if (!this.dispatcher) return 0
-        fadeOut(this.dispatcher)
-
-        return 1
+        if (!this._dispatcher) return
+        fadeOut(this._dispatcher)
     }
 
     /**
      * Stopping
+     * @public
      */
     stop() {
-        if (!this.dispatcher) return 0
-        this.newQueue()
-        fadeOut(this.dispatcher)
-
-        return 1
+        if (!this._dispatcher) return
+        this._newQueue()
+        fadeOut(this._dispatcher)
     }
 
     /**
      * Queue clearing
+     * @private
      */
-    newQueue() {
-        this.queue = new ShuffleableArray()
+    _newQueue() {
+        this._queue = new ShuffleableArray()
     }
 
     /**
+     * Checking playing status
      * @returns { boolean }
      */
     isPlaying() {
-        return !!this.dispatcher
+        return !!this._dispatcher
     }
 }

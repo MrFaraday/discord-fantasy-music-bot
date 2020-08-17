@@ -1,10 +1,10 @@
 // Shuffleable array class
 
-/**
- * Shuffleable array class
- * @type { import('../type').ShuffleableArray }
- */
 class ShuffleableArray extends Array {
+    /**
+     * Shuffle array
+     * @returns { this }
+     */
     shuffle() {
         let counter = this.length
         let temp

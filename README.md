@@ -16,13 +16,7 @@ You can invate my bot to test it and may be use it ;) [Draggy - Fantasy Musicbot
 
 Clone repository, next create application and bot on discord developer site. Create `.env` file in the root, copy bot API token and write the line in `.env` file like `TOKEN=<your token>`. Also there you can set the prefix for bot commands by line `PREFIX=<prefix>`. In `src/config/tracks.config.json` file contain list of tracks splited by categories.
 
-Next you need to build application by command:
-
-```sh
-npm run build
-```
-
-Futher start application by command:
+Next start application by command:
 
 ```sh
 npm run start
@@ -36,19 +30,21 @@ node run dev
 
 Then copy invite link to browser and choose the guild. When bot get command to play it automatically join to your voice channel. Commands:
 
-* `hello` greetings
-* `p [url]` play(or add to queue) video from YouTube
-* `fp [url]` play video from YouTube immediately
-* `n` skip curent track
-* `s` stop playing
-* `v [value]` change volume, 5 - default, after 50 may have distortion
+-   `hello` greetings
+-   `p [url]` play(or add to queue) video from YouTube
+-   `fp [url]` play video from YouTube immediately
+-   `n` skip curent track
+-   `s` stop playing
+-   `v [value]` change volume, 5 - default, after 50 may have distortion
+
+It can add to queue videos from playlists by sending link to it with `p` or `fp` command. Make sure playlist are unlisted or public. Playing may stuck if it bump into deleted video or video with limitations.
 
 To paly themes immediately I've binded it to `1`,`2`, ... , `7` commands. It's easy to switch on numpad, Peace - first column, Combat - second and Tension - third, where:
 
-* `1` - peaceful music for exploering
-* `4` - city theme
-* `7` - tavern theme
-* `2` - common combat music
-* `5` - boss fight theme
-* `3` - dungeon exploering music
-* `6` - mysterious music
+-   `1` - peaceful music for exploering
+-   `4` - city theme
+-   `7` - tavern theme
+-   `2` - common combat music
+-   `5` - boss fight theme
+-   `3` - dungeon exploering music
+-   `6` - mysterious music
