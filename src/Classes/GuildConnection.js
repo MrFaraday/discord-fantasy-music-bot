@@ -142,10 +142,8 @@ module.exports = class GuildConnection {
      * @public
      */
     skip() {
-        if (!this._dispatcher) return 0
+        if (!this._dispatcher) return
         fadeOut(this._dispatcher)
-
-        return 1
     }
 
     /**
@@ -153,11 +151,9 @@ module.exports = class GuildConnection {
      * @public
      */
     stop() {
-        if (!this._dispatcher) return 0
+        if (!this._dispatcher) return
         this._newQueue()
         fadeOut(this._dispatcher)
-
-        return 1
     }
 
     /**
