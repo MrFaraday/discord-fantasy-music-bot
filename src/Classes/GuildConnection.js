@@ -6,9 +6,6 @@ const { fadeOut } = require('../libs/effects') // Effects
 
 const BASE_VOLUME = 0.12 // Default volume
 
-/**
- * Guild connection instance
- */
 module.exports = class GuildConnection {
     /**
      * @param { Guild } guild
@@ -91,7 +88,7 @@ module.exports = class GuildConnection {
         this._connection = await channel.join()
         this._newDispatcher()
 
-        this._connection.on('disconnect', async () => {
+        this._connection.on('disconnect', () => {
             this._newQueue()
             this._connection = null
             if (this._dispatcher) this._dispatcher.end()
@@ -103,14 +100,13 @@ module.exports = class GuildConnection {
      * @private
      */
     _newDispatcher() {
-        this._dispatcher = this._connection.play(ytdl(this._queue[0], { filter: 'audioonly' }), {
-            volume: this._volume
-        })
+        const stream = ytdl(this._queue[0], { filter: 'audioonly' })
+        this._dispatcher = this._connection.play(stream, { volume: this._volume })
 
         this._queue.shift()
 
         // End of track
-        this._dispatcher.on('end', async () => {
+        this._dispatcher.on('end', () => {
             if (this._queue[0]) {
                 this._newDispatcher()
             } else {
@@ -118,7 +114,7 @@ module.exports = class GuildConnection {
             }
         })
 
-        this._dispatcher.on('finish', async () => {
+        this._dispatcher.on('finish', () => {
             if (this._queue[0]) {
                 this._newDispatcher()
             } else {
@@ -132,7 +128,7 @@ module.exports = class GuildConnection {
      * @public
      * @param { number } volume
      */
-    async volumeChange(volume) {
+    volumeChange(volume) {
         this._volume = (BASE_VOLUME / 5) * volume
         this._dispatcher.setVolume(this._volume)
     }
