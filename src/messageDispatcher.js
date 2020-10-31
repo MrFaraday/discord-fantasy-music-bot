@@ -58,7 +58,9 @@ const messageDispatcher = async (message) => {
                     message.reply("It's empty... Or They're just hidden from me.")
                     return
                 }
-            } catch (err) {}
+            } catch (err) {
+                // not playlist
+            }
 
             try {
                 if (mode === 'p' && !playList) {
@@ -95,7 +97,14 @@ const messageDispatcher = async (message) => {
                 break
             }
 
-            guild.forcePlay(message.member.voice.channel, await issuePlaylist(args[0]))
+            const playlistLink = issuePlaylist(args[0])
+
+            const { data } = await ytlist(playlistLink, 'url')
+            const playlist = data.playlist.map((url) => ({
+                url
+            }))
+
+            guild.forcePlay(message.member.voice.channel, playlist)
 
             break
         }

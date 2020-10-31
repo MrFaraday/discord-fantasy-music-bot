@@ -5,7 +5,7 @@ const list = require('../config/tracks.config.json')
  * Getting playlists
  * @param { string } key
  */
-const issuePlaylist = async (key) => {
+const issuePlaylist = (key) => {
     switch (key) {
         case '1':
             return list.peaceful
