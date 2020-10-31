@@ -2,7 +2,7 @@
     "name": "discord-fantasy-musicbot",
     "version": "1.2.3",
     "description": "Music bot fo fantasy board gaming",
-    "main": "./build/app.js",
+    "main": "./src/app.js",
     "scripts": {
         "start": "node ./src/app.js",
         "dev": "nodemon ./src/app.js"
@@ -17,14 +17,14 @@
     "repository": "https://github.com/MrFaraday/discord-fantasy-musicbot",
     "license": "MIT",
     "dependencies": {
-        "@discordjs/opus": "^0.1.0",
-        "discord.js": "^12.2.0",
+        "@discordjs/opus": "^0.3.3",
+        "discord.js": "^12.4.1",
         "sodium": "^3.0.2",
         "youtube-playlist": "^1.0.4",
-        "ytdl-core": "^3.2.1"
+        "ytdl-core": "^4.0.0"
     },
     "devDependencies": {
         "dotenv": "^8.2.0",
-        "nodemon": "^2.0.4"
+        "nodemon": "^2.0.6"
     }
 }
