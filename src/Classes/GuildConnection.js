@@ -1,6 +1,6 @@
 const { Guild, VoiceChannel, VoiceConnection, StreamDispatcher } = require('discord.js')
 
-const ytdl = require('ytdl-core') // youtube downloader
+const ytdl = require('ytdl-core-discord') // youtube downloader
 const ShuffleableArray = require('./ShuffleableArray')
 const { fadeOut } = require('../libs/effects') // Effects
 
@@ -65,10 +65,15 @@ module.exports = class GuildConnection {
      * @param { import('../types').Track[] } tracks
      */
     async forcePlay(channel, tracks) {
-        this._newQueue() // Очистка очереди
-        for (const track of tracks) this._queue.push(track.url) // Создание новой очереди
+        if (tracks.length === 0) {
+            throw new Error('empty')
+        }
 
-        this._queue.shuffle() // Shuffling
+        this._newQueue()
+
+        tracks.forEach((track) => this._queue.push(track.url))
+
+        this._queue.shuffle()
 
         if (!this._connection) {
             await this._newVoiceConnection(channel)
@@ -99,9 +104,9 @@ module.exports = class GuildConnection {
      * Creating dispatcher and event listeners
      * @private
      */
-    _newDispatcher() {
-        const stream = ytdl(this._queue[0], { filter: 'audioonly' })
-        this._dispatcher = this._connection.play(stream, { volume: this._volume })
+    async _newDispatcher() {
+        const stream = await ytdl(this._queue[0])
+        this._dispatcher = this._connection.play(stream, { volume: this._volume, type: 'opus' })
 
         this._queue.shift()
 

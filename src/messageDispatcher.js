@@ -99,12 +99,19 @@ const messageDispatcher = async (message) => {
 
             const playlistLink = issuePlaylist(args[0])
 
-            const { data } = await ytlist(playlistLink, 'url')
-            const playlist = data.playlist.map((url) => ({
+            const res = await ytlist(playlistLink, 'url')
+            console.log(res)
+            const playlist = res.data.playlist.map((url) => ({
                 url
             }))
 
-            guild.forcePlay(message.member.voice.channel, playlist)
+            try {
+                await guild.forcePlay(message.member.voice.channel, playlist)
+            } catch (error) {
+                if (error.message === 'empty') {
+                    message.reply("Wow, It's empty...")
+                }
+            }
 
             break
         }
