@@ -2,21 +2,39 @@ const { Guild, VoiceChannel, VoiceConnection, StreamDispatcher } = require('disc
 
 const ytdl = require('ytdl-core-discord') // youtube downloader
 const ShuffleableArray = require('./ShuffleableArray')
-const { fadeOut } = require('../libs/effects') // Effects
+const Effects = require('../libs/effects')
 
 const BASE_VOLUME = 0.12 // Default volume
 
 module.exports = class GuildConnection {
     /**
+     * @private
+     * @type { ShuffleableArray }
+     */
+    _queue = new ShuffleableArray()
+
+    /**
+     * @private
+     * @type { number }
+     */
+    _volume = BASE_VOLUME
+
+    /**
+     * @private
+     * @type { VoiceConnection }
+     */
+    _connection
+
+    /**
+     * @private
+     * @type { StreamDispatcher }
+     */
+    _dispatcher
+
+    /**
      * @param { Guild } guild
      */
     constructor(guild) {
-        /**
-         * @private
-         * @type { ShuffleableArray }
-         */
-        this._queue = new ShuffleableArray()
-
         /**
          * @private
          * @type { Guild }
@@ -25,21 +43,8 @@ module.exports = class GuildConnection {
 
         /**
          * @private
-         * @type { number }
          */
-        this._volume = BASE_VOLUME
-
-        /**
-         * @private
-         * @type { VoiceConnection }
-         */
-        this._connection
-
-        /**
-         * @private
-         * @type { StreamDispatcher }
-         */
-        this._dispatcher
+        this._effects = new Effects()
     }
 
     /**
@@ -78,7 +83,7 @@ module.exports = class GuildConnection {
         if (!this._connection) {
             await this._newVoiceConnection(channel)
         } else if (this._dispatcher) {
-            fadeOut(this._dispatcher)
+            this._effects.fadeOut(this._dispatcher)
         } else {
             this._newDispatcher()
         }
@@ -144,7 +149,8 @@ module.exports = class GuildConnection {
      */
     skip() {
         if (!this._dispatcher) return
-        fadeOut(this._dispatcher)
+
+        this._effects.fadeOut(this._dispatcher)
     }
 
     /**
@@ -154,7 +160,7 @@ module.exports = class GuildConnection {
     stop() {
         if (!this._dispatcher) return
         this._newQueue()
-        fadeOut(this._dispatcher)
+        this._effects.fadeOut(this._dispatcher)
     }
 
     /**
