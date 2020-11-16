@@ -13,7 +13,8 @@ module.exports = class YouTube {
             const { data } = await axios.get(this.baseUrl, {
                 params: {
                     part: 'snippet',
-                    playlistId: id
+                    playlistId: id,
+                    maxResults: 50
                 }
             })
 

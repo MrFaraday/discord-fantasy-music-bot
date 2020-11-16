@@ -110,27 +110,38 @@ module.exports = class GuildConnection {
      * @private
      */
     async _newDispatcher() {
-        const stream = await ytdl(this._queue[0])
-        this._dispatcher = this._connection.play(stream, { volume: this._volume, type: 'opus' })
+        const url = this._queue.shift()
 
-        this._queue.shift()
+        if (!url) {
+            this._dispatcher = null
+            return
+        }
 
-        // End of track
-        this._dispatcher.on('end', () => {
-            if (this._queue[0]) {
+        try {
+            const stream = await ytdl(url)
+
+            this._dispatcher = this._connection.play(stream, { volume: this._volume, type: 'opus' })
+
+            // End of track
+            this._dispatcher.on('end', () => this._newDispatcher())
+            this._dispatcher.on('finish', () => this._newDispatcher())
+
+            this._dispatcher.on('error', (err) => {
+                console.warn('Playing item: ' + url)
+                console.warn(err.message)
+
                 this._newDispatcher()
-            } else {
-                this._dispatcher = null
-            }
-        })
+            })
+        } catch (error) {
+            console.warn('Playing item: ' + url)
+            console.warn(error.message, '\n')
 
-        this._dispatcher.on('finish', () => {
-            if (this._queue[0]) {
-                this._newDispatcher()
-            } else {
-                this._dispatcher = null
+            if (error.message.includes('Unable to retrieve video metadata')) {
+                this._queue.unshift(url)
             }
-        })
+
+            this._newDispatcher()
+        }
     }
 
     /**
