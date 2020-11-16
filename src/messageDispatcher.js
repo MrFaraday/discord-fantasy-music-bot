@@ -1,14 +1,20 @@
 const { Message } = require('discord.js')
 const ytlist = require('youtube-playlist')
+const YouTube = require('./api/YouTube')
 
 const GuildConnection = require('./Classes/GuildConnection') // Guild class
 const issuePlaylist = require('./libs/issuePlaylist') // Playlists issue service
+const { getListId, buildPlayLink } = require('./libs/urlParser')
 
 // loading environment variables for development
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
+
 const PREFIX = process.env.PREFIX || ''
+const YT_API_KEY = process.env.YOUTUBE_API_KEY || ''
+
+const ytApi = new YouTube(YT_API_KEY)
 
 /**
  * @type { Object.<string, GuildConnection> }
@@ -97,14 +103,25 @@ const messageDispatcher = async (message) => {
                 break
             }
 
-            const playlistLink = issuePlaylist(args[0])
+            try {
+                const playlistLink = issuePlaylist(args[0])
+                const listId = getListId(playlistLink)
 
-            const { data } = await ytlist(playlistLink, 'url')
-            const playlist = data.playlist.map((url) => ({
-                url
-            }))
+                const itemsIDs = await ytApi.getListContent(listId)
+                const links = itemsIDs.map(buildPlayLink)
 
-            guild.forcePlay(message.member.voice.channel, playlist)
+                const playlist = links.map((url) => ({
+                    url
+                }))
+
+                await guild.forcePlay(message.member.voice.channel, playlist)
+            } catch (error) {
+                if (error.message === 'empty') {
+                    message.reply("Wow, It's empty...")
+                } else {
+                    message.reply('Something went wrong.')
+                }
+            }
 
             break
         }
