@@ -1,22 +1,40 @@
 const { Guild, VoiceChannel, VoiceConnection, StreamDispatcher } = require('discord.js')
 
-const ytdl = require('ytdl-core') // youtube downloader
+const ytdl = require('ytdl-core-discord') // youtube downloader
 const ShuffleableArray = require('./ShuffleableArray')
-const { fadeOut } = require('../libs/effects') // Effects
+const Effects = require('../libs/effects')
 
 const BASE_VOLUME = 0.12 // Default volume
 
 module.exports = class GuildConnection {
     /**
+     * @private
+     * @type { ShuffleableArray }
+     */
+    _queue = new ShuffleableArray()
+
+    /**
+     * @private
+     * @type { number }
+     */
+    _volume = BASE_VOLUME
+
+    /**
+     * @private
+     * @type { VoiceConnection }
+     */
+    _connection
+
+    /**
+     * @private
+     * @type { StreamDispatcher }
+     */
+    _dispatcher
+
+    /**
      * @param { Guild } guild
      */
     constructor(guild) {
-        /**
-         * @private
-         * @type { ShuffleableArray }
-         */
-        this._queue = new ShuffleableArray()
-
         /**
          * @private
          * @type { Guild }
@@ -25,21 +43,8 @@ module.exports = class GuildConnection {
 
         /**
          * @private
-         * @type { number }
          */
-        this._volume = BASE_VOLUME
-
-        /**
-         * @private
-         * @type { VoiceConnection }
-         */
-        this._connection
-
-        /**
-         * @private
-         * @type { StreamDispatcher }
-         */
-        this._dispatcher
+        this._effects = new Effects()
     }
 
     /**
@@ -65,15 +70,20 @@ module.exports = class GuildConnection {
      * @param { import('../types').Track[] } tracks
      */
     async forcePlay(channel, tracks) {
-        this._newQueue() // Очистка очереди
-        for (const track of tracks) this._queue.push(track.url) // Создание новой очереди
+        if (tracks.length === 0) {
+            throw new Error('empty')
+        }
 
-        this._queue.shuffle() // Shuffling
+        this._newQueue()
+
+        tracks.forEach((track) => this._queue.push(track.url))
+
+        this._queue.shuffle()
 
         if (!this._connection) {
             await this._newVoiceConnection(channel)
         } else if (this._dispatcher) {
-            fadeOut(this._dispatcher)
+            this._effects.fadeOut(this._dispatcher)
         } else {
             this._newDispatcher()
         }
@@ -99,28 +109,39 @@ module.exports = class GuildConnection {
      * Creating dispatcher and event listeners
      * @private
      */
-    _newDispatcher() {
-        const stream = ytdl(this._queue[0], { filter: 'audioonly' })
-        this._dispatcher = this._connection.play(stream, { volume: this._volume })
+    async _newDispatcher() {
+        const url = this._queue.shift()
 
-        this._queue.shift()
+        if (!url) {
+            this._dispatcher = null
+            return
+        }
 
-        // End of track
-        this._dispatcher.on('end', () => {
-            if (this._queue[0]) {
+        try {
+            const stream = await ytdl(url)
+
+            this._dispatcher = this._connection.play(stream, { volume: this._volume, type: 'opus' })
+
+            // End of track
+            this._dispatcher.on('end', () => this._newDispatcher())
+            this._dispatcher.on('finish', () => this._newDispatcher())
+
+            this._dispatcher.on('error', (err) => {
+                console.warn('Playing item: ' + url)
+                console.warn(err.message)
+
                 this._newDispatcher()
-            } else {
-                this._dispatcher = null
-            }
-        })
+            })
+        } catch (error) {
+            console.warn('Playing item: ' + url)
+            console.warn(error.message, '\n')
 
-        this._dispatcher.on('finish', () => {
-            if (this._queue[0]) {
-                this._newDispatcher()
-            } else {
-                this._dispatcher = null
+            if (error.message.includes('Unable to retrieve video metadata')) {
+                this._queue.unshift(url)
             }
-        })
+
+            this._newDispatcher()
+        }
     }
 
     /**
@@ -139,7 +160,8 @@ module.exports = class GuildConnection {
      */
     skip() {
         if (!this._dispatcher) return
-        fadeOut(this._dispatcher)
+
+        this._effects.fadeOut(this._dispatcher)
     }
 
     /**
@@ -149,7 +171,7 @@ module.exports = class GuildConnection {
     stop() {
         if (!this._dispatcher) return
         this._newQueue()
-        fadeOut(this._dispatcher)
+        this._effects.fadeOut(this._dispatcher)
     }
 
     /**
