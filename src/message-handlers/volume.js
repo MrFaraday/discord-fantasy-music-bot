@@ -1,16 +1,14 @@
 /**
  * @type { MessageHandler }
  */
-module.exports = async function volume ({ message, guild }) {
-    const [_mode, volume] = args
+module.exports = async function volume ({ message, guild, args }) {
+    const [, volume] = args
+
     if (!volume) {
-        message.reply('Set volume, 5 - default')
-        return
-    }
-    if (isNaN(Number(volume))) {
-        message.reply('It\'s not a number, it must be rational number')
-        return
+        return message.reply('Set volume, 5 - default')
+    } else if (isNaN(Number(volume))) {
+        return message.reply('It\'s not a number, it must be rational number')
     }
 
-    guild.changeVolume(parseInt(volume, 10))
+    return guild.changeVolume(Number(volume))
 }

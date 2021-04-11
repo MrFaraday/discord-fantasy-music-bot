@@ -9,6 +9,9 @@ const interval = 20
 module.exports = function fadeOut (dispatcher) {
     const leaveVolume = dispatcher.volume
 
+    /**
+     * @param { number } rest
+     */
     const reduce = (rest) => {
         if (rest < 0) {
             dispatcher.end()

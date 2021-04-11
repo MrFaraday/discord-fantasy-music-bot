@@ -1,4 +1,8 @@
+const youtubeApi = require('../api/youtube-api')
 const list = require('../config/tracks.config.json')
+const ytdl = require('ytdl-core-discord')
+
+class PlayError extends Error {}
 
 /**
  * @type { MessageHandler }
@@ -6,22 +10,36 @@ const list = require('../config/tracks.config.json')
 module.exports = async function playPreset ({ message, guild, args }) {
     if (args[1]) return
     if (!message.member.voice.channel) {
-        message.reply('You are not connected to a voice channel...')
-        return
+        return message.reply('I need you to connected to a voice channel')
     }
 
     try {
-        const playlistLink = issuePlaylist(args[0])
-        const listId = getListId(playlistLink)
+        const playlistUrl = issuePlaylist(args[0])
 
-        const itemsIDs = await ytApi.getListContent(listId)
-        const links = itemsIDs.map(buildPlayLink)
+        try {
+            const { listId } = youtubeApi.parseUrl(playlistUrl)
+            const listContent = await youtubeApi.getListContent(listId)
 
-        const playlist = links.map((url) => ({
-            url
-        }))
+            const tracks = listContent.map(({ title, videoId }) => {
+                const url = youtubeApi.buildPlayLink(videoId)
 
-        await guild.forcePlay(message.member.voice.channel, playlist)
+                return {
+                    name: title,
+                    getStream: () => ytdl(url),
+                    meta: [['url', url]]
+                }
+            })
+
+            if (tracks.length === 0) throw new PlayError('It\'s empty')
+
+            await guild.forcePlay(message.member.voice.channel, tracks)
+        } catch (error) {
+            if (error instanceof PlayError) {
+                return message.reply(error.message)
+            } else {
+                return message.reply('It\'s hidden or something get wrong')
+            }
+        }
     } catch (error) {
         if (error.message === 'empty') {
             message.reply('Wow, It\'s empty...')

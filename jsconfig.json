@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "module": "commonJS",
+        "target": "es2019",
+        "checkJs": true,
+        "resolveJsonModule": true
+    },
+    "typeAcquisition": {
+        "include": ["index"]
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"]
+}

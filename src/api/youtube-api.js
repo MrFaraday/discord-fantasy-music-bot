@@ -1,14 +1,16 @@
 const axios = require('axios').default
+const ytdl = require('ytdl-core-discord')
 const { YOUTUBE_API_KEY } = require('../config')
-
-const listUrlRegEx = /[&?]list=([^&]+)/i
-const videoUrlRegEx = /[&?]v=[^&]+/i
 
 const videoIdRegEx = /[?&]v=([^&?#/]+)/i
 const listIdRegEx = /[?&]list=([^&?#/]+)/
 
 module.exports = {
-    async getListContent (id) {
+    /**
+     * @param { string } listId
+     * @returns { Promise<{ title: string, videoId: string }[]> }
+     */
+    async getListContent (listId) {
         try {
             const url = new URL('https://www.googleapis.com/youtube/v3/playlistItems')
             url.searchParams.append('key', YOUTUBE_API_KEY)
@@ -17,7 +19,7 @@ module.exports = {
             const { data } = await axios.get(baseUrl, {
                 params: {
                     part: 'snippet',
-                    playlistId: id,
+                    playlistId: listId,
                     maxResults: 50
                 }
             })
@@ -37,6 +39,10 @@ module.exports = {
         }
     },
 
+    /**
+     * @param { string } id
+     * @returns { Promise<string> }
+     */
     async getVideoTitle (id) {
         try {
             const url = new URL('https://www.googleapis.com/youtube/v3/videos')
@@ -78,5 +84,38 @@ module.exports = {
      */
     buildPlayLink (id) {
         return 'http://www.youtube.com/watch?v=' + id
+    },
+
+    /**
+     * Get Track from video id
+     * @param { string } videoId
+     * @return { Promise<Track> }
+     */
+    async issueTrack (videoId) {
+        const url = this.buildPlayLink(videoId)
+
+        return {
+            title: await this.getVideoTitle(videoId),
+            getStream: () => ytdl(url),
+            meta: [['url', url]]
+        }
+    },
+
+    /**
+     * Get Tracks from listId
+     * @param { string } listId
+     * @return { Promise<Track[]> }
+     */
+    async issueTracks (listId) {
+        const listContent = await this.getListContent(listId)
+        return listContent.map(({ title, videoId }) => {
+            const url = this.buildPlayLink(videoId)
+
+            return {
+                name: title,
+                getStream: () => ytdl(url),
+                meta: [['url', url]]
+            }
+        })
     }
 }

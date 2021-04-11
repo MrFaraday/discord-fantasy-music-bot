@@ -78,7 +78,6 @@ module.exports = class GuildConnection {
 
     /**
      * Checking playing status
-     * @returns { boolean }
      */
     isPlaying () {
         return !!this._dispatcher
@@ -120,13 +119,13 @@ module.exports = class GuildConnection {
             this._dispatcher.on('finish', () => this._newDispatcher())
 
             this._dispatcher.on('error', (err) => {
-                console.warn('Playing item:', track.url)
+                console.warn('Playing item:', track.title)
                 console.warn(err.message)
 
                 this._newDispatcher()
             })
         } catch (error) {
-            console.warn('Playing item:', track.url)
+            console.warn('Playing item:', track.title)
             console.warn(error.message, '\n')
 
             if (error.message.includes('Unable to retrieve video metadata')) {

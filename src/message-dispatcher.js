@@ -32,6 +32,9 @@ module.exports = async function messageDispatcher (message) {
     }
 }
 
+/**
+ * @param { string[] } args
+ */
 const getMessageHandler = (args) => {
     switch (args[0].trim()) {
         case 'hello':

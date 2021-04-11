@@ -1,6 +1,8 @@
 const youtubeApi = require('../api/youtube-api')
 const ytdl = require('ytdl-core-discord')
 
+class PlayError extends Error {}
+
 /**
  * @type { MessageHandler }
  */
@@ -40,9 +42,13 @@ module.exports = async function play ({ message, guild, args }) {
                 }
             })
 
-            if (playList.length === 0) throw new Error('List is empty')
+            if (playList.length === 0) throw new PlayError('It\'s empty')
         } catch (error) {
-            return message.reply('It\'s empty or just hidden from me')
+            if (error instanceof PlayError) {
+                return message.reply(error.message)
+            } else {
+                return message.reply('It\'s hidden or something get wrong')
+            }
         }
     } else {
         return message.reply('I can\'t resolve link or something else...')

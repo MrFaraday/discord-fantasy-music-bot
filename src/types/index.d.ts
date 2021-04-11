@@ -4,7 +4,7 @@ interface HandlerParams {
     args: string[]
 }
 
-type MessageHandler = (params: HandlerParams) => Promise<void>
+type MessageHandler = (params: HandlerParams) => Promise<void | Message>
 type GuildId = string
 type Stream = string | import('discord.js').VoiceBroadcast | import('stream').Readable
 
