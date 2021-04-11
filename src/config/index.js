@@ -4,5 +4,4 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 module.exports.TOKEN = process.env.TOKEN
-module.exports.PREFIX = process.env.PREFIX || ''
 module.exports.YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || ''
