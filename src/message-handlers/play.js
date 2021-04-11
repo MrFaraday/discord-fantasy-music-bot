@@ -1,6 +1,5 @@
-const youtubeApi = require('../api/youtube-api')
-
-class PlayError extends Error {}
+const issueTracks = require('../issue-tracks')
+const SourceError = require('../source-error')
 
 /**
  * @type { MessageHandler }
@@ -14,43 +13,19 @@ module.exports = async function play ({ message, guild, args }) {
         return message.reply('What to play?')
     }
 
-    /**
-     * @type { Track[] }
-     */
-    let playList
-
-    const urlData = youtubeApi.parseUrl(link)
-    if (urlData.videoId) {
-        const track = await youtubeApi.issueTrack(urlData.videoId)
-        playList = [track]
-    } else if (urlData.listId) {
-        try {
-            const tracks = await youtubeApi.issueTracks(urlData.listId)
-
-            if (tracks.length === 0) {
-                throw new PlayError('It\'s empty')
-            }
-
-            playList = tracks
-        } catch (error) {
-            if (error instanceof PlayError) {
-                return message.reply(error.message)
-            } else {
-                return message.reply('It\'s hidden or something get wrong')
-            }
-        }
-    } else {
-        return message.reply('I can\'t resolve link or something else...')
-    }
-
     try {
+        const tracks = await issueTracks(link)
+
         if (mode === 'p') {
-            await guild.play(message.member.voice.channel, playList)
+            return await guild.play(message.member.voice.channel, tracks)
         } else if (mode === 'fp') {
-            await guild.forcePlay(message.member.voice.channel, playList)
+            return await guild.forcePlay(message.member.voice.channel, tracks)
         }
     } catch (error) {
-        console.error(error)
-        message.reply('I can\'t resolve link or something else...')
+        if (error instanceof SourceError) {
+            return message.reply(error.message)
+        } else {
+            return message.reply('It\'s hidden or something get wrong')
+        }
     }
 }

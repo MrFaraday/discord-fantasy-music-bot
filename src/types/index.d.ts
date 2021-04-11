@@ -1,7 +1,8 @@
 interface HandlerParams {
+    app: import('discord.js').Client
     message: import('discord.js').Message
     guild: import('../guild-connection')
-    args: string[]
+    args?: string[]
 }
 
 type MessageHandler = (params: HandlerParams) => Promise<void | Message>
