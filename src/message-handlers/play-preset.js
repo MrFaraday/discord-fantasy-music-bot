@@ -1,6 +1,5 @@
 const youtubeApi = require('../api/youtube-api')
 const list = require('../config/tracks.config.json')
-const ytdl = require('ytdl-core-discord')
 
 class PlayError extends Error {}
 
@@ -13,38 +12,23 @@ module.exports = async function playPreset ({ message, guild, args }) {
         return message.reply('I need you to connected to a voice channel')
     }
 
+    const playlistUrl = issuePlaylist(args[0])
+    const { listId } = youtubeApi.parseUrl(playlistUrl)
+
     try {
-        const playlistUrl = issuePlaylist(args[0])
+        const tracks = await youtubeApi.issueTracks(listId)
 
-        try {
-            const { listId } = youtubeApi.parseUrl(playlistUrl)
-            const listContent = await youtubeApi.getListContent(listId)
-
-            const tracks = listContent.map(({ title, videoId }) => {
-                const url = youtubeApi.buildPlayLink(videoId)
-
-                return {
-                    name: title,
-                    getStream: () => ytdl(url),
-                    meta: [['url', url]]
-                }
-            })
-
-            if (tracks.length === 0) throw new PlayError('It\'s empty')
-
-            await guild.forcePlay(message.member.voice.channel, tracks)
-        } catch (error) {
-            if (error instanceof PlayError) {
-                return message.reply(error.message)
-            } else {
-                return message.reply('It\'s hidden or something get wrong')
-            }
+        if (tracks.length === 0) {
+            throw new PlayError('It\'s empty')
         }
+
+        await guild.forcePlay(message.member.voice.channel, tracks)
     } catch (error) {
-        if (error.message === 'empty') {
-            message.reply('Wow, It\'s empty...')
+        if (error instanceof PlayError) {
+            return message.reply(error.message)
         } else {
-            message.reply('Something went wrong.')
+            console.warn(error)
+            return message.reply('It\'s hidden or something get wrong')
         }
     }
 }

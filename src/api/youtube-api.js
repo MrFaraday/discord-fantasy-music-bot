@@ -108,11 +108,12 @@ module.exports = {
      */
     async issueTracks (listId) {
         const listContent = await this.getListContent(listId)
+
         return listContent.map(({ title, videoId }) => {
             const url = this.buildPlayLink(videoId)
 
             return {
-                name: title,
+                title,
                 getStream: () => ytdl(url),
                 meta: [['url', url]]
             }

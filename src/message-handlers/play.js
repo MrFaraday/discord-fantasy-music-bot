@@ -1,5 +1,4 @@
 const youtubeApi = require('../api/youtube-api')
-const ytdl = require('ytdl-core-discord')
 
 class PlayError extends Error {}
 
@@ -15,34 +14,24 @@ module.exports = async function play ({ message, guild, args }) {
         return message.reply('What to play?')
     }
 
+    /**
+     * @type { Track[] }
+     */
     let playList
 
     const urlData = youtubeApi.parseUrl(link)
     if (urlData.videoId) {
-        const url = youtubeApi.buildPlayLink(urlData.videoId)
-
-        playList = [
-            {
-                name: await youtubeApi.getVideoTitle(urlData.videoId),
-                getStream: () => ytdl(url),
-                meta: [['url', url]]
-            }
-        ]
+        const track = await youtubeApi.issueTrack(urlData.videoId)
+        playList = [track]
     } else if (urlData.listId) {
         try {
-            const listContent = await youtubeApi.getListContent(urlData.listId)
+            const tracks = await youtubeApi.issueTracks(urlData.listId)
 
-            playList = listContent.map(({ title, videoId }) => {
-                const url = youtubeApi.buildPlayLink(videoId)
+            if (tracks.length === 0) {
+                throw new PlayError('It\'s empty')
+            }
 
-                return {
-                    name: title,
-                    getStream: () => ytdl(url),
-                    meta: [['url', url]]
-                }
-            })
-
-            if (playList.length === 0) throw new PlayError('It\'s empty')
+            playList = tracks
         } catch (error) {
             if (error instanceof PlayError) {
                 return message.reply(error.message)

@@ -2,9 +2,7 @@ const Discord = require('discord.js')
 const { TOKEN } = require('./config')
 
 if (!TOKEN) {
-    throw new Error(
-        'Token not found. Check your .env file or environment variables on your server'
-    )
+    throw new Error('Token not found. Check your .env file or environment variables on your server')
 }
 
 const bot = new Discord.Client()

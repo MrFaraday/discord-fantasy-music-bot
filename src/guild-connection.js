@@ -1,5 +1,4 @@
-const { shuffle } = require('lodash')
-const ytdl = require('ytdl-core-discord')
+const shuffle = require('lodash.shuffle')
 const fadeOut = require('./easing/fade-out')
 
 const defaultVolume = 0.12
@@ -36,6 +35,7 @@ module.exports = class GuildConnection {
     /**
      * Force playing
      * @param { import('discord.js').VoiceChannel } channel
+     * @param { Track[] } tracks
      */
     async forcePlay (channel, tracks) {
         this._queue = shuffle(tracks)

@@ -11,6 +11,7 @@ const guilds = new Map()
  */
 module.exports = async function messageDispatcher (message) {
     const { id: guildId } = message.guild
+
     const args = message.content
         .split(' ')
         .map((arg) => arg.trim())
@@ -36,7 +37,9 @@ module.exports = async function messageDispatcher (message) {
  * @param { string[] } args
  */
 const getMessageHandler = (args) => {
-    switch (args[0].trim()) {
+    switch (args[0]) {
+        case 'help':
+            return require('./message-handlers/help')
         case 'hello':
             return require('./message-handlers/greetings')
 

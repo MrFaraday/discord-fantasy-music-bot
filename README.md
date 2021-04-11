@@ -31,11 +31,17 @@ node run dev
 Then copy invite link to browser and choose the guild. When bot get command to play it automatically join to your voice channel. Commands:
 
 -   `hello` greetings
--   `p [url]` play(or add to queue) video from YouTube
--   `fp [url]` play video from YouTube immediately
+-   `help` list of commands
+-   `p [url]` play(or add to queue) track or tracks
+-   `fp [url]` play track or list immediately
 -   `n` skip curent track
 -   `s` stop playing
 -   `v [value]` change volume, 5 - default, after 50 may have distortion
+
+Supported sources:
+
+- Playlists from youtube
+- Video from youtube
 
 It can add to queue videos from playlists by sending link to it with `p` or `fp` command. Make sure playlist are unlisted or public. Playing may stuck if it bump into deleted video or video with limitations.
 
