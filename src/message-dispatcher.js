@@ -1,33 +1,22 @@
-const { PREFIX } = require('./config')
+const guilds = require('./guilds')
 const GuildConnection = require('./guild-connection')
 
 /**
- * @type { Map<GuildId, GuildConnection> }
- */
-const guilds = new Map()
-
-/**
  * @param { import('discord.js').Message } message
+ * @this { import('discord.js').Client }
  */
 module.exports = async function messageDispatcher (message) {
     const { id: guildId } = message.guild
-
-    const args = message.content
-        .split(' ')
-        .map((arg) => arg.trim())
-        .filter((arg) => arg)
-
-    if (PREFIX && args[0] !== PREFIX) return
-    else if (PREFIX) args.shift()
 
     if (!guilds.has(guildId)) {
         guilds.set(guildId, new GuildConnection(message.guild))
     }
 
     const guild = guilds.get(guildId)
+    const args = getCommandArgs(this.user.username, message.content.trim(), guild.prefix)
 
     try {
-        return await getMessageHandler(args)({ message, guild, args })
+        return await getMessageHandler(args)({ message, guild, args, app: this })
     } catch (error) {
         console.warn('Message handler error:', error)
     }
@@ -43,12 +32,16 @@ const getMessageHandler = (args) => {
         case 'hello':
             return require('./message-handlers/greetings')
 
+        case 'prefix':
+            return require('./message-handlers/prefix')
+
         // Standard command to play track or add it to a queue
         case 'p':
         case 'fp':
             return require('./message-handlers/play')
 
         // Play preset
+        case '0':
         case '1':
         case '2':
         case '3':
@@ -56,6 +49,8 @@ const getMessageHandler = (args) => {
         case '5':
         case '6':
         case '7':
+        case '8':
+        case '9':
             return require('./message-handlers/play-preset')
 
         // Next song
@@ -72,5 +67,27 @@ const getMessageHandler = (args) => {
 
         default:
             return () => 0
+    }
+}
+
+/**
+ * @param { string } clientName
+ * @param { string } message
+ * @param { string } prefix
+ */
+const getCommandArgs = (clientName, message, prefix) => {
+    const universalPrefix = `${clientName}!`
+    const parts = message
+        .split(' ')
+        .map((arg) => arg.trim())
+        .filter((arg) => arg)
+
+    if (parts[0] === universalPrefix) {
+        return parts.slice(1)
+    } else if (parts[0] && parts[0].startsWith(prefix)) {
+        parts[0] = parts[0].substr(prefix.length)
+        return parts
+    } else {
+        return []
     }
 }

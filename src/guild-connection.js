@@ -15,6 +15,7 @@ module.exports = class GuildConnection {
          */
         this._queue = []
         this._volume = defaultVolume
+        this.prefix = ''
     }
 
     /**
