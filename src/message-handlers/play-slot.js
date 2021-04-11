@@ -5,28 +5,31 @@ class PlayError extends Error {}
 /**
  * @type { MessageHandler }
  */
-module.exports = async function play ({ message, guild, args }) {
-    const [mode, link] = args
+module.exports = async function playPreset ({ message, guild, args }) {
+    const slot = Number(args[0])
 
+    if (args[1]) return
     if (!message.member.voice.channel) {
-        return message.reply('You are not connected to a voice channel...')
-    } else if (!link) {
-        return message.reply('What to play?')
+        return message.reply('I need you to connected to a voice channel')
     }
 
-    const urlData = youtubeApi.parseUrl(link)
+    const saved = guild.slots.get(slot)
+
+    if (!saved) return
+
+    const urlData = youtubeApi.parseUrl(saved.value)
 
     /**
      * @type { Track[] }
      */
-    let tracks
+    let tracks = []
 
     if (urlData.videoId) {
         const track = await youtubeApi.issueTrack(urlData.videoId)
         tracks = [track]
     } else if (urlData.listId) {
         try {
-            const tracks = await youtubeApi.issueTracks(urlData.listId)
+            tracks = await youtubeApi.issueTracks(urlData.listId)
 
             if (tracks.length === 0) {
                 throw new PlayError('It\'s empty')
@@ -43,11 +46,7 @@ module.exports = async function play ({ message, guild, args }) {
     }
 
     try {
-        if (mode === 'p') {
-            await guild.play(message.member.voice.channel, tracks)
-        } else if (mode === 'fp') {
-            await guild.forcePlay(message.member.voice.channel, tracks)
-        }
+        await guild.forcePlay(message.member.voice.channel, tracks)
     } catch (error) {
         console.error(error)
         message.reply('I can\'t resolve link or something else...')

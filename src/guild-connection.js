@@ -1,5 +1,6 @@
 const shuffle = require('lodash.shuffle')
 const fadeOut = require('./easing/fade-out')
+const defaultSlots = require('./config/default-slots.config.json')
 
 const defaultVolume = 0.12
 
@@ -16,6 +17,11 @@ module.exports = class GuildConnection {
         this._queue = []
         this._volume = defaultVolume
         this.prefix = ''
+
+        this.slots = new Map()
+        defaultSlots.forEach((slot) => {
+            this.slots.set(slot.slot, { name: slot.name, value: slot.value })
+        })
     }
 
     /**

@@ -40,7 +40,7 @@ const getMessageHandler = (args) => {
         case 'fp':
             return require('./message-handlers/play')
 
-        // Play preset
+        // Play saved url
         case '0':
         case '1':
         case '2':
@@ -51,7 +51,10 @@ const getMessageHandler = (args) => {
         case '7':
         case '8':
         case '9':
-            return require('./message-handlers/play-preset')
+            return require('./message-handlers/play-slot')
+
+        case 'save':
+            return require('./message-handlers/save')
 
         // Next song
         case 'n':
