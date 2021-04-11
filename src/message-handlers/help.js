@@ -1,5 +1,4 @@
 const { MessageEmbed } = require('discord.js')
-const list = require('../config/tracks.config.json')
 
 /**
  * @type { MessageHandler }
@@ -20,12 +19,12 @@ module.exports = async function help ({ app, message, guild }) {
         \`p [url]\` — play track or add to queue\n\
         \`fp [url]\` — same but clear queue before\n\
         \`n\` — skip track\n\
-        \`s\` — stop playing\n\
+        \`s\` — stop playing, clear queue\n\
         \`v [volume]\` — set volume, default \`5\`\n\
         \`prefix [value]\` — set new prefix for commands; enter \`none\` to remove it\n\
         \n\
-        \`[0..9]\` — play saved tracks\n\
-        \`save [0..9] [url] [name?]\` — bind url to slot, field name is optional, type without spaces \n\
+        \`[0..9]\` — play saved tracks immediately, if it's list – shuffle it\n\
+        \`save [0..9] [url] [name?]\` — bind url to slot, field name is optional, type without spaces\n\
         \n\
         Slots:\n\
         ${slotRecords}

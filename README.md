@@ -38,6 +38,7 @@ Then copy invite link to browser and choose the guild. When bot get command to p
 -   `s` stop playing
 -   `v [value]` change volume, 5 - default, after 50 may have distortion
 -   `prefix [value]` set new prefix for commands, enter `none` to remove it
+-   `save [0..9] [url] [name?]\` — bind url to slot, field name is optional, type without spaces
 
 Supported sources:
 
