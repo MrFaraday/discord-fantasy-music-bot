@@ -68,6 +68,10 @@ const getMessageHandler = (args) => {
         case 'v':
             return require('./message-handlers/volume')
 
+        // Disconnect
+        case 'd':
+            return require('./message-handlers/disconnect')
+
         default:
             return () => 0
     }

@@ -5,3 +5,4 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports.TOKEN = process.env.TOKEN
 module.exports.YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || ''
+module.exports.DATABASE_URL = process.env.DATABASE_URL

@@ -90,6 +90,12 @@ module.exports = class GuildConnection {
         return !!this._dispatcher
     }
 
+    disconnect () {
+        this._queue = []
+        this._dispatcher.end()
+        return this._connection.disconnect()
+    }
+
     /**
      * Creating connection to voice channel
      * @param { import('discord.js').VoiceChannel } channel

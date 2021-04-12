@@ -26,6 +26,7 @@ Copy invite link to browser and choose the guild. When bot get command to play i
 -   `n` skip curent track
 -   `s` stop playing, clear queue
 -   `v [value]` set volume, default `5`
+-   `d` disconnect from voice channel
 -   `save [0..9] [url] [name?]\` bind url to slot, field name is optional, type without spaces
 -   `prefix [value]` set prefix for commands, enter `none` to remove it
 -   `hello` greetings

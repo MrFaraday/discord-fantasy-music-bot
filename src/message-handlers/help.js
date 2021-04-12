@@ -22,6 +22,7 @@ module.exports = async function help ({ app, message, guild }) {
         \`n\` skip curent track\n\
         \`s\` stop playing, clear queue\n\
         \`v [volume]\` set volume, default \`5\`\n\
+        \`d\` disconnect from voice channel\n\
         \`save [0..9] [url] [name?]\` bind url to slot, field name is optional, type without spaces\n\
         \`prefix [value]\` set new prefix for commands; enter \`none\` to remove it\n\
         \n\
