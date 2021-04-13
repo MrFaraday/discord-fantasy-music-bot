@@ -1,27 +1,26 @@
 const shuffle = require('lodash.shuffle')
 const fadeOut = require('./easing/fade-out')
-const defaultSlots = require('./config/default-slots.config.json')
-
-const defaultVolume = 0.12
 
 module.exports = class GuildConnection {
     /**
-     * @param { import('discord.js').Guild } guild
+     * @param { Object } p
+     * @param { import('discord.js').Client } p.app
+     * @param { import('discord.js').Guild } p.guild
+     * @param { Slots } p.slots
+     * @param { string } p.prefix
+     * @param { number } p.volume
      */
-    constructor (guild) {
-        this._guild = guild // Link to instance of Discord Guild
+    constructor ({ app, guild, slots, prefix, volume }) {
+        this._app = app
+        this._guild = guild
 
         /**
          * @type { Track[] }
          */
         this._queue = []
-        this._volume = defaultVolume
-        this.prefix = ''
-
-        this.slots = new Map()
-        defaultSlots.forEach((slot) => {
-            this.slots.set(slot.slot, { name: slot.name, value: slot.value })
-        })
+        this.volume = volume
+        this.prefix = prefix
+        this.slots = slots
     }
 
     /**
@@ -61,8 +60,11 @@ module.exports = class GuildConnection {
      * @param { number } volume
      */
     changeVolume (volume) {
-        this._volume = (defaultVolume / 5) * volume
-        this._dispatcher.setVolume(this._volume)
+        this.volume = volume
+
+        if (this._dispatcher) {
+            this._dispatcher.setVolume(this._dispatcherVolume)
+        }
     }
 
     /**
@@ -92,8 +94,19 @@ module.exports = class GuildConnection {
 
     disconnect () {
         this._queue = []
-        this._dispatcher.end()
-        return this._connection.disconnect()
+
+        if (this._dispatcher) {
+            this._dispatcher.end()
+        }
+
+        if (this._connection) {
+            this._connection.disconnect()
+        }
+    }
+
+    get _dispatcherVolume () {
+        const v = 0.0025 * this.volume
+        return v
     }
 
     /**
@@ -125,7 +138,10 @@ module.exports = class GuildConnection {
         try {
             const stream = await track.getStream()
 
-            this._dispatcher = this._connection.play(stream, { volume: this._volume, type: 'opus' })
+            this._dispatcher = this._connection.play(stream, {
+                volume: this._dispatcherVolume,
+                type: 'opus'
+            })
 
             // End of track
             this._dispatcher.on('end', () => this._newDispatcher())

@@ -1,5 +1,5 @@
 const guilds = require('./guilds')
-const GuildConnection = require('./guild-connection')
+const connectGuild = require('./connect-guild')
 
 /**
  * @param { import('discord.js').Message } message
@@ -9,7 +9,13 @@ module.exports = async function messageDispatcher (message) {
     const { id: guildId } = message.guild
 
     if (!guilds.has(guildId)) {
-        guilds.set(guildId, new GuildConnection(message.guild))
+        const guildConnection = await connectGuild(message.guild, this)
+
+        if (!guildConnection) {
+            return // message.reply('Sorry... I seem to be having trouble')
+        }
+
+        guilds.set(guildId, guildConnection)
     }
 
     const guild = guilds.get(guildId)

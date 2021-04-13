@@ -14,3 +14,5 @@ interface Track {
     getStream(): Promise<Stream>
     meta?: [string, string][]
 }
+
+type Slots = Map<number, { name: string, value: string }>

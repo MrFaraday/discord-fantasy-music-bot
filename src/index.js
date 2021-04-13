@@ -1,12 +1,11 @@
 const { fireApp } = require('./app')
 const { query } = require('./db')
-const scripts = require('./db/scripts')
+const scripts = require('./db/queries')
 
 async function startup () {
     try {
         await query(scripts.init)
-
-        // await fireApp()
+        await fireApp()
     } catch (error) {
         console.error('Stratup error')
         console.error(error)

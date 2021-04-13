@@ -13,7 +13,7 @@ app.on('message', require('./message-dispatcher'))
 app.on('ready', async () => {
     console.log(`\nBot ${app.user.username} has lauched!`)
     const link = await app.generateInvite({
-        permissions: ['ADD_REACTIONS', 'SEND_MESSAGES', 'SPEAK']
+        permissions: ['ADD_REACTIONS', 'SEND_MESSAGES', 'SPEAK', 'ADD_REACTIONS', 'CONNECT']
     })
     console.log('Link to invite bot to your guild:')
     console.log(link, '\n')
