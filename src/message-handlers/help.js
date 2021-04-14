@@ -28,10 +28,12 @@ module.exports = async function help ({ app, message, guild }) {
         \`v [0..100?]\` set or display volume, default **50**\n\
         \`d\` disconnect from voice channel\n\
         \`save [0..9] [url] [name?]\` bind url to slot, field name is optional, type without spaces\n\
-        \`prefix [value]\` set new prefix for commands; enter \`none\` to remove it\n\
+        \`prefix [value]\` set new prefix for commands; enter **none** to remove it\n\
         \n\
         Slots:\n\
-        ${slotRecords || '***Empty***'}
+        ${slotRecords || '***Empty***'}\n\
+        \n\
+        [***Support***](https://github.com/MrFaraday/discord-fantasy-music-bot/issues)\n\
         `
         )
 

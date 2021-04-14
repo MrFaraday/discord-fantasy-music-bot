@@ -1,3 +1,4 @@
+const { Constants } = require('discord.js')
 const guilds = require('./guilds')
 const connectGuild = require('./connect-guild')
 
@@ -24,7 +25,15 @@ module.exports = async function messageDispatcher (message) {
     try {
         return await getMessageHandler(args)({ message, guild, args, app: this })
     } catch (error) {
-        console.warn('Message handler error:', error)
+        if (error.code === Constants.APIErrors.MISSING_PERMISSIONS) {
+            try {
+                message.react('🤐')
+            } catch (error) {
+                // not permissions
+            }
+        } else {
+            console.warn('Message handler error:', error)
+        }
     }
 }
 
