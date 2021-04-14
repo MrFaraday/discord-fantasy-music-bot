@@ -19,7 +19,7 @@ module.exports = async function volume ({ message, guild, args }) {
         return message.reply('Must be from 0 to 100')
     }
 
-    await db.query('UPDATE guild SET volume = $1 WHERE id = $2', [volume, message.guild.id])
+    await db.query('UPDATE guild SET volume = $1 WHERE id = $2', [volume, String(message.guild.id)])
     guild.changeVolume(Number(volume))
 
     return message.reply(`Volume set to **${volume}%**`)
