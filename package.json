@@ -1,6 +1,6 @@
 {
     "name": "discord-fantasy-music-bot",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "description": "Music bot fo fantasy board gaming",
     "main": "./src/app.js",
     "scripts": {

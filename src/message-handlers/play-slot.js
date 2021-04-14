@@ -13,7 +13,7 @@ module.exports = async function playPreset ({ message, guild, args }) {
     if (!saved) return
 
     if (!message.member.voice.channel) {
-        return message.reply('I need you to connected to a voice channel')
+        return await message.reply('I need you to connected to a voice channel')
     }
 
     try {
@@ -21,9 +21,9 @@ module.exports = async function playPreset ({ message, guild, args }) {
         return await guild.forcePlay(message.member.voice.channel, tracks)
     } catch (error) {
         if (error instanceof SourceError) {
-            return message.reply(error.message)
+            return await message.reply(error.message)
         } else {
-            return message.reply('It\'s hidden or something get wrong')
+            return await message.reply('It\'s hidden or something get wrong')
         }
     }
 }

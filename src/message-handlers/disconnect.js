@@ -1,6 +1,6 @@
 /**
  * @type { MessageHandler }
  */
-module.exports = function disconnect ({ guild }) {
+module.exports = async function disconnect ({ guild }) {
     guild.disconnect()
 }

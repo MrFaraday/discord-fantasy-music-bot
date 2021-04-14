@@ -8,9 +8,9 @@ module.exports = async function play ({ message, guild, args }) {
     const [mode, link] = args
 
     if (!message.member.voice.channel) {
-        return message.reply('You are not connected to a voice channel...')
+        return await message.reply('You are not connected to a voice channel...')
     } else if (!link) {
-        return message.reply('What to play?')
+        return await message.reply('What to play?')
     }
 
     try {
@@ -23,9 +23,9 @@ module.exports = async function play ({ message, guild, args }) {
         }
     } catch (error) {
         if (error instanceof SourceError) {
-            return message.reply(error.message)
+            return await message.reply(error.message)
         } else {
-            return message.reply('It\'s hidden or something get wrong')
+            return await message.reply('It\'s hidden or something get wrong')
         }
     }
 }

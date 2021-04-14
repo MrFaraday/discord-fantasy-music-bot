@@ -10,21 +10,21 @@ module.exports = async function save ({ guild, args, message }) {
     const slot = Number(slotParam)
 
     if (!slotParam) {
-        return message.reply('No params provided')
+        return await message.reply('No params provided')
     } else if (Number.isNaN(slotParam)) {
-        return message.reply('Slot must be a number')
+        return await message.reply('Slot must be a number')
     } else if (!Number.isInteger(slot)) {
-        return message.reply('Slot number must be integer')
+        return await message.reply('Slot number must be integer')
     } else if (slot < 0 || slot > 9) {
-        return message.reply('Slot number must be from 0 to 9')
+        return await message.reply('Slot number must be from 0 to 9')
     } else if (!url) {
-        return message.reply('No URL provided')
+        return await message.reply('No URL provided')
     } else if (url.length > 255) {
-        return message.reply('Too long URL, maximum 255 of characters')
+        return await message.reply('Too long URL, maximum 255 of characters')
     } else if (!urlRegEx.test(url)) {
-        return message.reply('It\'s not an URL, maybe')
+        return await message.reply('It\'s not an URL, maybe')
     } else if (slotName && slotName.length > 50) {
-        return message.reply('Name is too long, maximum 50 of characters')
+        return await message.reply('Name is too long, maximum 50 of characters')
     }
 
     guild.slots.set(slot, { name: slotName, value: url })
