@@ -15,4 +15,4 @@ interface Track {
     meta?: [string, string][]
 }
 
-type Slots = Map<number, { name: string, value: string }>
+type Slots = Map<number, { name?: string, value: string }>

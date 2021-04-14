@@ -8,13 +8,13 @@ module.exports = async function playPreset ({ message, guild, args }) {
     const slot = Number(args[0])
 
     if (args[1]) return
+
+    const saved = guild.slots.get(slot)
+    if (!saved) return
+
     if (!message.member.voice.channel) {
         return message.reply('I need you to connected to a voice channel')
     }
-
-    const saved = guild.slots.get(slot)
-
-    if (!saved) return
 
     try {
         const tracks = await issueTracks(saved.value)

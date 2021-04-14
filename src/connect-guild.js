@@ -44,12 +44,14 @@ const loadGuild = async (app, guild, client, guildData) => {
     const slots = new Map()
 
     const fetchSlotsQuery = (
-        await client.query('SELECT slot, value, name FROM slot WHERE guild_id = $1', [
+        await client.query('SELECT slot_number, value, name FROM slot WHERE guild_id = $1', [
             String(guild.id)
         ])
     ).rows
 
-    fetchSlotsQuery.forEach((slot) => slots.set(slot.slot, { value: slot.value, name: slot.name }))
+    fetchSlotsQuery.forEach((slot) =>
+        slots.set(slot.slot_number, { value: slot.value, name: slot.name })
+    )
 
     const { command_prefix, volume } = guildData
 
@@ -73,7 +75,7 @@ const registerGuild = async (app, guild, client) => {
         'INSERT INTO guild (id, command_prefix, volume) VALUES ($1, $2, $3)'
     await client.query(registrateGuildQuery, [String(guild.id), prefix, volume])
     const insertDefaultSlotsQuery = format(
-        'INSERT INTO slot (guild_id, slot, value, name) VALUES %L',
+        'INSERT INTO slot (guild_id, slot_number, value, name) VALUES %L',
         getDefaultSlotsInsertData(guild.id)
     )
     await client.query(insertDefaultSlotsQuery)

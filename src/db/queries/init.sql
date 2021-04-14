@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS guild (
 CREATE TABLE IF NOT EXISTS slot (
     id SERIAL,
     guild_id varchar(255) NOT NULL,
-    slot smallint NOT NULL,
+    slot_number smallint NOT NULL,
     value varchar(511) NOT NULL,
     name varchar(63),
 
