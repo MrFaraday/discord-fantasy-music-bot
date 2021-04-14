@@ -19,7 +19,7 @@ module.exports = async function connectGuild (guild, app) {
 
     try {
         const [guildData] = (
-            await client.query('SELECT command_prefix, volume FROM guilds WHERE guild_id = $1', [
+            await client.query('SELECT command_prefix, volume FROM guild WHERE id = $1', [
                 String(guild.id)
             ])
         ).rows
@@ -44,7 +44,7 @@ const loadGuild = async (app, guild, client, guildData) => {
     const slots = new Map()
 
     const fetchSlotsQuery = (
-        await client.query('SELECT slot, value, name FROM slots WHERE guild_id = $1', [
+        await client.query('SELECT slot, value, name FROM slot WHERE guild_id = $1', [
             String(guild.id)
         ])
     ).rows
@@ -70,10 +70,10 @@ const registerGuild = async (app, guild, client) => {
     const volume = defaultVolume
 
     const registrateGuildQuery =
-        'INSERT INTO guilds (guild_id, command_prefix, volume) VALUES ($1, $2, $3)'
+        'INSERT INTO guild (id, command_prefix, volume) VALUES ($1, $2, $3)'
     await client.query(registrateGuildQuery, [String(guild.id), prefix, volume])
     const insertDefaultSlotsQuery = format(
-        'INSERT INTO slots (guild_id, slot, value, name) VALUES %L',
+        'INSERT INTO slot (guild_id, slot, value, name) VALUES %L',
         getDefaultSlotsInsertData(guild.id)
     )
     await client.query(insertDefaultSlotsQuery)

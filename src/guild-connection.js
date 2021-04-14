@@ -105,7 +105,7 @@ module.exports = class GuildConnection {
     }
 
     get _dispatcherVolume () {
-        const v = 0.0025 * this.volume
+        const v = 0.005 * this.volume
         return v
     }
 

@@ -1,12 +1,12 @@
-CREATE TABLE IF NOT EXISTS guilds (
-    guild_id varchar(255) NOT NULL,
+CREATE TABLE IF NOT EXISTS guild (
+    id varchar(255) NOT NULL,
     command_prefix varchar(7) NOT NULL,
     volume smallint NOT NULL,
 
-    PRIMARY KEY (guild_id)
+    PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS slots (
+CREATE TABLE IF NOT EXISTS slot (
     id SERIAL,
     guild_id varchar(255) NOT NULL,
     slot smallint NOT NULL,
@@ -15,6 +15,6 @@ CREATE TABLE IF NOT EXISTS slots (
 
     PRIMARY KEY (id),
     CONSTRAINT fk_guild
-      FOREIGN KEY(guild_id)
-	  REFERENCES guilds(guild_id)
+        FOREIGN KEY(guild_id)
+	    REFERENCES guild(id)
 );
