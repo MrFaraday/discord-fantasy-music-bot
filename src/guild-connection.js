@@ -131,11 +131,13 @@ module.exports = class GuildConnection {
         const track = this._queue.shift()
 
         if (!track) {
+            this._scheduleDisconnect()
             this._dispatcher = null
             return
         }
 
         try {
+            clearTimeout(this._disconnectTimeout)
             const stream = await track.getStream()
 
             this._dispatcher = this._connection.play(stream, {
@@ -163,5 +165,9 @@ module.exports = class GuildConnection {
 
             this._newDispatcher()
         }
+    }
+
+    _scheduleDisconnect () {
+        this._disconnectTimeout = setTimeout(() => this.disconnect(), 5 * 60 * 1000)
     }
 }
