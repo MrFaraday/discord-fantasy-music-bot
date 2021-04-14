@@ -1,4 +1,4 @@
-const { Constants } = require('discord.js')
+const { Constants, MessageEmbed } = require('discord.js')
 const guilds = require('./guilds')
 const connectGuild = require('./connect-guild')
 
@@ -7,6 +7,10 @@ const connectGuild = require('./connect-guild')
  * @this { import('discord.js').Client }
  */
 module.exports = async function messageDispatcher (message) {
+    if (message.channel.type !== 'text') return
+    if (message.type === 'GUILD_MEMBER_JOIN' && message.author.id === this.user.id)
+        message.channel.send(joinGreetings)
+
     const { id: guildId } = message.guild
 
     if (!guilds.has(guildId)) {
@@ -113,3 +117,5 @@ const getCommandArgs = (clientName, message, prefix) => {
         return []
     }
 }
+
+const joinGreetings = new MessageEmbed().setDescription('Yeeeee')
