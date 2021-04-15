@@ -1,6 +1,5 @@
 const { Constants } = require('discord.js')
-const guilds = require('./guilds')
-const connectGuild = require('./connect-guild')
+const { getGuildSession } = require('./guild-sessions')
 
 /**
  * @param { import('discord.js').Message } message
@@ -9,19 +8,7 @@ const connectGuild = require('./connect-guild')
 module.exports = async function messageDispatcher (message) {
     if (message.channel.type !== 'text' || message.author.id === this.user.id) return
 
-    const { id: guildId } = message.guild
-
-    if (!guilds.has(guildId)) {
-        const guildConnection = await connectGuild(message.guild, this)
-
-        if (!guildConnection) {
-            return // message.reply('Sorry... I seem to be having trouble')
-        }
-
-        guilds.set(guildId, guildConnection)
-    }
-
-    const guild = guilds.get(guildId)
+    const guild = await getGuildSession(this, message.guild)
     const args = getCommandArgs(this.user.username, message.content.trim(), guild.prefix)
 
     try {

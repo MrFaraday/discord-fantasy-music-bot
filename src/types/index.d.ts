@@ -1,7 +1,7 @@
 interface HandlerParams {
     app: import('discord.js').Client
     message: import('discord.js').Message
-    guild: import('../guild-connection')
+    guild: import('../guild-session')
     args?: string[]
 }
 

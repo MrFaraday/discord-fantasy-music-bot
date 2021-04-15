@@ -1,7 +1,7 @@
 const shuffle = require('lodash.shuffle')
 const fadeOut = require('./easing/fade-out')
 
-module.exports = class GuildConnection {
+module.exports = class GuildSession {
     /**
      * @param { Object } p
      * @param { import('discord.js').Client } p.app
