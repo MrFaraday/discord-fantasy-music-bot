@@ -3,7 +3,7 @@ const db = require('./db')
 const GuildConnection = require('./guild-connection')
 
 const defaultPrefix = ''
-const defaultVolume = 50
+const defaultVolume = 100
 const defaultSlots = require('./config/default-slots.config.json')
 
 const getDefaultSlotsInsertData = (guildId) =>
@@ -12,7 +12,6 @@ const getDefaultSlotsInsertData = (guildId) =>
 /**
  * @param { import('discord.js').Guild } guild
  * @param { import('discord.js').Client } app
- * @returns
  */
 module.exports = async function connectGuild (guild, app) {
     const client = await db.getClient()

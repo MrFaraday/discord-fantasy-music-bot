@@ -14,7 +14,7 @@ Text me if you interested to use it but have questions or suggestions for better
 
 Bot invite link: [Shyrlonay - Fantasy Musicbot](https://discord.com/api/oauth2/authorize?client_id=667765780863254558&permissions=3147840&scope=bot)
 
-Opne link in a browser and choose the guild. When bot get command to play it automatically join to your voice channel. If you set prefix, add it right before command, e.g. `!help`, `#s`
+Open link in a browser and choose the guild. When bot get command to play it automatically join to your voice channel. If you set prefix, add it right before command, e.g. `!help`, `#s`
 
 #### Commands
 
@@ -24,11 +24,10 @@ Opne link in a browser and choose the guild. When bot get command to play it aut
 -   `help` list of commands
 -   `n` skip curent track
 -   `s` stop playing, clear queue
--   `v [0..100?]` display or set volume, default is ***50***
+-   `v [0..200?]` display or set volume
 -   `d` disconnect from voice channel
 -   `save [0..9] [url] [name?]` bind url to slot, field name is optional, type name without spaces
 -   `prefix [value]` set prefix for commands, enter *none* to remove it
--   `hello` greetings
 
 #### Supported sources
 
@@ -50,10 +49,10 @@ Opne link in a browser and choose the guild. When bot get command to play it aut
 
 ##### .env file keys
 
-```
+```ini
 TOKEN= ...                # bot api token at developer portal
 YOUTUBE_API_KEY= ...      # youtube api key
-DATABASE_URL= ...         # database url
+DATABASE_URL= ...         # database url or add other configs like host, username, password
 ```
 
 Stratup application:

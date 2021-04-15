@@ -137,13 +137,14 @@ module.exports = class GuildConnection {
         }
 
         try {
-            clearTimeout(this._disconnectTimeout)
             const stream = await track.getStream()
 
             this._dispatcher = this._connection.play(stream, {
                 volume: this._dispatcherVolume,
                 type: 'opus'
             })
+
+            clearTimeout(this._disconnectTimeout)
 
             // End of track
             this._dispatcher.on('end', () => this._newDispatcher())

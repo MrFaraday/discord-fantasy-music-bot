@@ -11,21 +11,8 @@ const app = new Discord.Client()
 // Message dispatcher
 app.on('message', require('./message-dispatcher'))
 
-app.on('guildCreate', async (guild) => {
-    console.log(
-        `New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`
-    )
-
-    if (!guild.available) return
-
-    try {
-        const owner = await guild.members.fetch(guild.ownerID)
-        owner.send('Thanks! You can use *help* to discover commands.')
-    } catch (error) {
-        console.error('Can\'t send greetings to owner')
-        console.error(error)
-    }
-})
+// new server salute service
+require('./salute')(app)
 
 app.on('guildDelete', async (guild) => {
     const client = await db.getClient()

@@ -1,4 +1,5 @@
 const { MessageEmbed } = require('discord.js')
+const { EMBED_COLOR } = require('../config')
 const { shortString } = require('../utils/string')
 
 /**
@@ -12,7 +13,7 @@ module.exports = async function help ({ app, message, guild }) {
         .join('\n')
 
     const helpEmbed = new MessageEmbed()
-        .setColor('#f26d53')
+        .setColor(EMBED_COLOR)
         .setTitle('Commands')
         .setDescription(
             `
