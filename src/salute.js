@@ -1,40 +1,55 @@
 const { saluteEmbed } = require('./config')
-const { sleep } = require('./utils/timeout')
 
-const isSaluteSent = {}
+/**
+ * @param { import('discord.js').Guild } guild
+ */
+module.exports = async function onGuildCreate (guild) {
+    console.log(
+        `New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`
+    )
 
-module.exports = function salute (app) {
-    app.on('message', async function (message) {
-        if (
-            message.channel.type === 'text' &&
-            message.type === 'GUILD_MEMBER_JOIN' &&
-            message.author.id === this.user.id
-        ) {
+    return (
+        (await tryToSaluteOnSystemChannel(guild)) ||
+        (await tryToSaluteOnRandomChannel(guild)) ||
+        (await tryToSaluteOwner(guild))
+    )
+}
+
+/**
+ * @param { import('discord.js').Guild } guild
+ */
+const tryToSaluteOnSystemChannel = async (guild) => {
+    try {
+        return await guild.systemChannel.send(saluteEmbed)
+    } catch (error) {
+        // fail
+    }
+}
+
+/**
+ * @param { import('discord.js').Guild } guild
+ */
+const tryToSaluteOnRandomChannel = async (guild) => {
+    for (const guildChannel of guild.channels.cache) {
+        const [, channel] = guildChannel
+        if (channel.type === 'text' && channel.isText()) {
             try {
-                await message.channel.send(saluteEmbed)
-                isSaluteSent[message.guild.id] = true
+                return await channel.send(saluteEmbed)
             } catch (error) {
-                // permissions or other error
+                // fail
             }
         }
-    })
+    }
+}
 
-    app.on('guildCreate', async (guild) => {
-        console.log(
-            `New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`
-        )
-
-        try {
-            await sleep(3000)
-
-            if (!isSaluteSent[guild.id]) {
-                const owner = await guild.members.fetch(guild.ownerID)
-                await owner.send(saluteEmbed)
-            } else {
-                delete isSaluteSent[guild.id]
-            }
-        } catch (error) {
-            // permissions or other
-        }
-    })
+/**
+ * @param { import('discord.js').Guild } guild
+ */
+const tryToSaluteOwner = async (guild) => {
+    try {
+        const owner = await guild.members.fetch(guild.ownerID)
+        return await owner.send(saluteEmbed)
+    } catch (error) {
+        // fail
+    }
 }

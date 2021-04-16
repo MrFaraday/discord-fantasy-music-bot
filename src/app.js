@@ -12,7 +12,7 @@ const app = new Discord.Client()
 app.on('message', require('./message-dispatcher'))
 
 // new server salute service
-require('./salute')(app)
+app.on('guildCreate', require('./salute'))
 
 app.on('guildDelete', async (guild) => {
     const client = await db.getClient()
