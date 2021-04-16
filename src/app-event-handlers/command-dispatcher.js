@@ -1,5 +1,5 @@
 const { Constants } = require('discord.js')
-const { getGuildSession } = require('./guild-sessions')
+const { getGuildSession } = require('../guild-sessions')
 
 /**
  * @param { import('discord.js').Message } message
@@ -12,7 +12,7 @@ module.exports = async function messageDispatcher (message) {
     const args = getCommandArgs(this.user.username, message.content.trim(), guild.prefix)
 
     try {
-        return await getMessageHandler(args)({ message, guild, args, app: this })
+        return await getCommandHandler(args).call(this, { message, guild, args })
     } catch (error) {
         if (error.code === Constants.APIErrors.MISSING_PERMISSIONS) {
             try {
@@ -29,20 +29,20 @@ module.exports = async function messageDispatcher (message) {
 /**
  * @param { string[] } args
  */
-const getMessageHandler = (args) => {
+const getCommandHandler = (args) => {
     switch (args[0]) {
         case 'help':
-            return require('./message-handlers/help')
+            return require('../command-handlers/help')
         case 'hello':
-            return require('./message-handlers/greetings')
+            return require('../command-handlers/greetings')
 
         case 'prefix':
-            return require('./message-handlers/prefix')
+            return require('../command-handlers/prefix')
 
         // Standard command to play track or add it to a queue
         case 'p':
         case 'fp':
-            return require('./message-handlers/play')
+            return require('../command-handlers/play')
 
         // Play saved url
         case '0':
@@ -55,26 +55,26 @@ const getMessageHandler = (args) => {
         case '7':
         case '8':
         case '9':
-            return require('./message-handlers/play-slot')
+            return require('../command-handlers/play-slot')
 
         case 'save':
-            return require('./message-handlers/save')
+            return require('../command-handlers/save')
 
         // Next song
         case 'n':
-            return require('./message-handlers/next')
+            return require('../command-handlers/next')
 
         // Stoping
         case 's':
-            return require('./message-handlers/stop')
+            return require('../command-handlers/stop')
 
         // Volume
         case 'v':
-            return require('./message-handlers/volume')
+            return require('../command-handlers/volume')
 
         // Disconnect
         case 'd':
-            return require('./message-handlers/disconnect')
+            return require('../command-handlers/disconnect')
 
         default:
             return () => 0

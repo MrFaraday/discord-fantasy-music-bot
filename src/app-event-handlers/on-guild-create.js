@@ -1,4 +1,5 @@
-const { saluteEmbed } = require('./config')
+const { MessageEmbed } = require('discord.js')
+const { EMBED_COLOR } = require('../config')
 
 /**
  * @param { import('discord.js').Guild } guild
@@ -53,3 +54,14 @@ const tryToSaluteOwner = async (guild) => {
         // fail
     }
 }
+
+const saluteEmbed = new MessageEmbed()
+    .setColor(EMBED_COLOR)
+    .setTitle('Hello and thanks for adding me!')
+    .setDescription(
+        'Now you can call me to play music anytime.\
+ Join a voice channel and type `p [link]` to play any song or playlist from YouTube!\n\
+ \n\
+ Type `help` to discover commands.\n\
+ If you have questions or suggestions open issue [here](https://github.com/mr-faraday/discord-fantasy-music-bot/issues).'
+    )

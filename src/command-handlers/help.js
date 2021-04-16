@@ -5,7 +5,7 @@ const { shortString } = require('../utils/string')
 /**
  * @type { MessageHandler }
  */
-module.exports = async function help ({ app, message, guild }) {
+module.exports = async function help ({ message, guild }) {
     const slots = [...guild.slots]
 
     const slotRecords = slots
@@ -18,7 +18,7 @@ module.exports = async function help ({ app, message, guild }) {
         .setDescription(
             `
         Add prefix before each command, no prefix by default\n\
-        Call without prefix: \`${app.user.username}! [command]\`\n\
+        Call without prefix: \`${this.user.username}! [command]\`\n\
         \n\
         \`p [url]\` play track(list) or add to queue\n\
         \`fp [url]\` same but clear queue before\n\

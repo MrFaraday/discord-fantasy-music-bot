@@ -1,6 +1,5 @@
 const Discord = require('discord.js')
 const { TOKEN } = require('./config')
-const db = require('./db')
 
 if (!TOKEN) {
     throw new Error('Token not found. Check your .env file or environment variables on your server')
@@ -9,27 +8,12 @@ if (!TOKEN) {
 const app = new Discord.Client()
 
 // Message dispatcher
-app.on('message', require('./message-dispatcher'))
+app.on('message', require('./app-event-handlers/command-dispatcher'))
 
 // new server salute service
-app.on('guildCreate', require('./salute'))
+app.on('guildCreate', require('./app-event-handlers/on-guild-create'))
 
-app.on('guildDelete', async (guild) => {
-    const client = await db.getClient()
-
-    try {
-        await client.query(
-            'DELETE FROM slot WHERE guild_id IN (SELECT id FROM guild) AND guild_id = $1',
-            [String(guild.id)]
-        )
-        await client.query('DELETE FROM guild WHERE id = $1', [String(guild.id)])
-    } catch (error) {
-        console.error('Error on guildDelete')
-        console.error(error)
-    } finally {
-        client.release()
-    }
-})
+app.on('guildDelete', require('./app-event-handlers/on-guild-delete'))
 
 app.on('ready', async () => {
     console.log(`\nBot ${app.user.username} has lauched!`)
