@@ -17,8 +17,7 @@
     "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        "plugin:prettier/recommended"
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
     ],
 
     "rules": {
@@ -44,6 +43,8 @@
         "space-before-function-paren": ["warn", "always"],
         "arrow-parens": "off",
         "no-unused-expressions": "off",
-        "no-unused-vars": "warn"
+        "no-unused-vars": "warn",
+
+        "@typescript-eslint/no-misused-promises": "off"
     }
 }

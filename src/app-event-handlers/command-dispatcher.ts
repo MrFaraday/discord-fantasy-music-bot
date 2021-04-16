@@ -1,11 +1,8 @@
-const { Constants } = require('discord.js')
+import { Client, Constants, Message } from 'discord.js'
+
 const { getGuildSession } = require('../guild-sessions')
 
-/**
- * @param { import('discord.js').Message } message
- * @this { import('discord.js').Client }
- */
-module.exports = async function messageDispatcher (message) {
+export default async function commandDispatcher (this: Client, message: Message): Promise<void> {
     if (message.channel.type !== 'text' || message.author.id === this.user.id) return
 
     const guild = await getGuildSession(this, message.guild)

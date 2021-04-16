@@ -1,9 +1,7 @@
-const db = require('../db')
+import { Guild } from 'discord.js'
+import db from '../db'
 
-/**
- * @param { import('discord.js').Guild } guild
- */
-module.exports = async function onGuildDelete (guild) {
+export default async function onGuildDelete (guild: Guild): Promise<void> {
     const client = await db.getClient()
 
     try {

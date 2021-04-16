@@ -1,10 +1,10 @@
-const { fireApp } = require('./app')
-const { query } = require('./db')
-const scripts = require('./db/queries')
+import { fireApp } from './app'
+import { query } from './db'
+import queries from './db/queries'
 
 async function startup () {
     try {
-        await query(scripts.init)
+        await query(queries.init)
 
         await fireApp()
     } catch (error) {
@@ -13,4 +13,4 @@ async function startup () {
     }
 }
 
-startup()
+void startup()
