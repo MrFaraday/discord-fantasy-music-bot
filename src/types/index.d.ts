@@ -1,19 +1,16 @@
 interface HandlerParams {
-    message: import("discord.js").Message;
-    guild: import("../guild-session");
+    message: import('discord.js').Message;
+    guild: import('../guild-session');
     args?: string[];
 }
 
 type MessageHandler = (
-    this: import("discord.js").Client,
+    this: import('discord.js').Client,
     params: HandlerParams
 ) => Promise<void | Message>;
 
 type GuildId = string;
-type Stream =
-    | string
-    | import("discord.js").VoiceBroadcast
-    | import("stream").Readable;
+type Stream = string | import('discord.js').VoiceBroadcast | import('stream').Readable;
 
 interface Track {
     title: string;

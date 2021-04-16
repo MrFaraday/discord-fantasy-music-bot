@@ -5,6 +5,7 @@ const scripts = require('./db/queries')
 async function startup () {
     try {
         await query(scripts.init)
+
         await fireApp()
     } catch (error) {
         console.error('Stratup error')
