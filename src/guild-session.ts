@@ -15,20 +15,16 @@ export default class GuildSession {
     prefix: string
     volume: number
 
-    private queue: Track[]
-    private connection: VoiceConnection | null
-    private dispatcher: StreamDispatcher | null
-    private disconnectTimeout?: NodeJS.Timeout
+    private queue: Track[] = []
+    private connection: VoiceConnection | null = null
+    private dispatcher: StreamDispatcher | null = null
+    private disconnectTimeout: NodeJS.Timeout | null = null
 
     constructor ({ guild, slots, prefix, volume }: SessionConstructorParams) {
         this.guild = guild
-        this.queue = []
         this.volume = volume
         this.prefix = prefix
         this.slots = slots
-
-        this.connection = null
-        this.dispatcher = null
     }
 
     async play (channel: VoiceChannel, tracks: Track[]): Promise<void> {

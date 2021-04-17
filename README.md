@@ -18,12 +18,12 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 
 #### Commands
 
--   `p [url]` play track(list) or add to queue
+-   `p [url]` play track(playlist) from URL or add to queue
 -   `fp [url]` same but clear queue before
 -   `[0..9]` play saved tracks immediately, if it's list — shuffle it
 -   `help` list of commands
 -   `n` skip curent track
--   `s` stop playing, clear queue
+-   `s` stop playing and clear queue
 -   `v [0..200?]` display or set volume
 -   `d` disconnect from voice channel
 -   `save [0..9] [url] [name?]` bind url to slot, field name is optional, type name without spaces

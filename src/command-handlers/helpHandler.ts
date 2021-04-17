@@ -23,12 +23,12 @@ export default async function helpHandler (
         Add prefix before each command, no prefix by default\n\
         Call without prefix: \`${this.user?.username ?? 'Unknown'}! [command]\`\n\
         \n\
-        \`p [url]\` play track(list) or add to queue\n\
+        \`p [url]\` play track(playlist) from URL or add to queue\n\
         \`fp [url]\` same but clear queue before\n\
         \`[0..9]\` play saved tracks immediately, if it's list — shuffle it\n\
         \`help\` list of commands\n\
         \`n\` skip curent track\n\
-        \`s\` stop playing, clear queue\n\
+        \`s\` stop playing and clear queue\n\
         \`v [0..100?]\` display or set volume, default ***50***\n\
         \`d\` disconnect from voice channel\n\
         \`save [0..9] [url] [name?]\` bind url to slot, field name is optional, type without spaces\n\
