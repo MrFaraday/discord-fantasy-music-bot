@@ -1,0 +1,50 @@
+{
+    "root": true,
+    "env": {
+        "es2021": true,
+        "node": true
+    },
+
+    "parser": "@typescript-eslint/parser",
+
+    "parserOptions": {
+        "ecmaVersion": 2021,
+        "project": "./tsconfig.json"
+    },
+
+    "plugins": ["@typescript-eslint", "prettier"],
+
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    ],
+
+    "rules": {
+        "indent": ["warn", 4, { "SwitchCase": 1 }],
+        "max-len": [
+            "error",
+            {
+                "code": 100,
+                "tabWidth": 4,
+                "ignoreUrls": true,
+                "ignoreStrings": true,
+                "ignoreTemplateLiterals": true,
+                "ignoreRegExpLiterals": true,
+                "ignoreComments": true,
+                "ignoreTrailingComments": true
+            }
+        ],
+        "object-curly-spacing": ["error", "always"],
+        "linebreak-style": ["error", "unix"],
+        "quotes": ["error", "single"],
+        "semi": ["error", "never"],
+        "comma-dangle": ["error", "never"],
+        "space-before-function-paren": ["warn", "always"],
+        "arrow-parens": "off",
+        "no-unused-expressions": "off",
+        "no-unused-vars": "warn",
+
+        "@typescript-eslint/no-misused-promises": "off"
+    }
+}
