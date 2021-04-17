@@ -1,11 +1,15 @@
-const db = require('../db')
+import { Message } from 'discord.js'
+import db from '../db'
 
 const urlRegEx = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_+.~#?&//=]*)/
 
-/**
- * @type { MessageHandler }
- */
-module.exports = async function save ({ guild, args, message }) {
+export default async function saveHandler ({
+    guild,
+    args,
+    message
+}: CommadHandlerParams): Promise<void | Message> {
+    if (!message.guild) return
+
     const [, slotParam, url, slotName] = args
     const slot = Number(slotParam)
 
@@ -30,7 +34,7 @@ module.exports = async function save ({ guild, args, message }) {
     guild.slots.set(slot, { name: slotName, value: url })
 
     const client = await db.getClient()
-    const guildId = String(message.guild.id)
+    const guildId = message.guild.id
 
     try {
         const [record] = (
@@ -60,11 +64,12 @@ module.exports = async function save ({ guild, args, message }) {
                 [guildId, slot, url, slotName || null]
             )
         }
+
+        return await message.reply('Saved!')
     } catch (error) {
         // update error
+        return await message.reply('Something went wrong. I\'ll find that soon')
     } finally {
         client.release()
     }
-
-    return message.reply('Saved!')
 }

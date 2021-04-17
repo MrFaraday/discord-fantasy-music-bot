@@ -1,9 +1,13 @@
-const db = require('../db')
+import { Message } from 'discord.js'
+import db from '../db'
 
-/**
- * @type { MessageHandler }
- */
-module.exports = async function prefix ({ guild, args, message }) {
+export default async function prefixHandler ({
+    guild,
+    args,
+    message
+}: CommadHandlerParams): Promise<void | Message> {
+    if (!message.guild) return
+
     const currentPrefix = guild.prefix
     const [, newPrefix] = args
 
@@ -19,11 +23,11 @@ module.exports = async function prefix ({ guild, args, message }) {
 
     if (newPrefix === 'none') {
         guild.prefix = ''
-        await db.query(setPrefixQuery, ['', String(message.guild.id)])
+        await db.query(setPrefixQuery, ['', message.guild.id])
         return await message.reply('Prefix removed')
     } else {
         guild.prefix = newPrefix
-        await db.query(setPrefixQuery, [newPrefix, String(message.guild.id)])
+        await db.query(setPrefixQuery, [newPrefix, message.guild.id])
         return await message.reply(`New prefix: **${newPrefix}**`)
     }
 }

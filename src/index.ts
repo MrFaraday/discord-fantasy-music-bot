@@ -1,11 +1,10 @@
 import { fireApp } from './app'
-import { query } from './db'
+import db from './db'
 import queries from './db/queries'
 
 async function startup () {
     try {
-        await query(queries.init)
-
+        await db.query(queries.init)
         await fireApp()
     } catch (error) {
         console.error('Stratup error')

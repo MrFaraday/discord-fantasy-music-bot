@@ -1,5 +1,7 @@
-import { ClientBase, Pool, PoolClient, Query, QueryResult } from 'pg'
+import { Pool, PoolClient, QueryResult } from 'pg'
 import { DATABASE_URL } from '../config'
+
+type Value = string | number | null
 
 const pool = new Pool({
     connectionString: DATABASE_URL,
@@ -8,7 +10,7 @@ const pool = new Pool({
     }
 })
 
-export async function query<T> (text: string, params?: string[]): Promise<QueryResult<T>> {
+async function query<T> (text: string, params?: Value[]): Promise<QueryResult<T>> {
     const start = Date.now()
     const res = await pool.query(text, params)
 
@@ -18,35 +20,37 @@ export async function query<T> (text: string, params?: string[]): Promise<QueryR
     return res
 }
 
-interface DbClient {
-    query(): any
-    release(): any
-    poolClient: PoolClient
-}
+export class DbClient {
+    private poolClient: PoolClient
+    private lastQuery: { text?: string; params?: Value[] }
+    private timeout: NodeJS.Timeout
 
-export async function getClient (): Promise<DbClient> {
-    const client = await pool.connect()
-    let lastQuery: any[]
+    constructor (poolClient: PoolClient) {
+        this.poolClient = poolClient
+        this.lastQuery = {}
+        this.timeout = setTimeout(() => {
+            console.error('A client has been checked out for more than 5 seconds!')
+            console.error('The last executed query on this client was:')
+            console.error(this.lastQuery)
+        }, 5000)
+    }
 
-    const timeout = setTimeout(() => {
-        console.error('A client has been checked out for more than 5 seconds!')
-        console.error(`The last executed query on this client was: ${lastQuery}`)
-    }, 5000)
+    query<T> (text: string, params?: Value[]): Promise<QueryResult<T>> {
+        this.lastQuery = { text, params }
+        return this.poolClient.query<T>(text, params)
+    }
 
-    return {
-        query (...args: any[]): any {
-            lastQuery = args
-            return client.query(...args)
-        },
-
-        release (): void {
-            clearTimeout(timeout)
-            return client.release()
-        },
-
-        poolClient: client
+    release (): void {
+        clearTimeout(this.timeout)
+        return this.poolClient.release()
     }
 }
 
+async function getClient (): Promise<DbClient> {
+    const poolClient = await pool.connect()
+    return new DbClient(poolClient)
+}
+
 const db = { query, getClient }
+
 export default db

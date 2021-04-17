@@ -3,9 +3,12 @@ import { TOKEN } from './config'
 
 import commandDispatcher from './app-event-handlers/command-dispatcher'
 import onGuildDelete from './app-event-handlers/on-guild-delete'
+import onGuildCreate from './app-event-handlers/on-guild-create'
 
 if (!TOKEN) {
-    throw new Error('Token not found. Check your .env file or environment variables on your server')
+    throw new Error(
+        'Token not found. Check your .env file or environment variables on your server'
+    )
 }
 
 const app = new Discord.Client()
@@ -14,16 +17,20 @@ const app = new Discord.Client()
 app.on('message', commandDispatcher)
 
 // new server salute service
-app.on('guildCreate', require('./app-event-handlers/on-guild-create'))
+app.on('guildCreate', onGuildCreate)
 
 app.on('guildDelete', onGuildDelete)
 
 app.on('ready', async () => {
-    const botName = app.user?.username ?? 'Unknow'
-
-    console.log(`\nBot ${botName} has lauched!`)
+    console.log(`\nBot ${app.user?.username ?? 'Unknown'} has lauched!`)
     const link = await app.generateInvite({
-        permissions: ['ADD_REACTIONS', 'SEND_MESSAGES', 'SPEAK', 'ADD_REACTIONS', 'CONNECT']
+        permissions: [
+            'ADD_REACTIONS',
+            'SEND_MESSAGES',
+            'SPEAK',
+            'ADD_REACTIONS',
+            'CONNECT'
+        ]
     })
     console.log('Link to invite bot to your guild:')
     console.log(link, '\n')

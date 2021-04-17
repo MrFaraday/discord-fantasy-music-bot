@@ -22,18 +22,12 @@ const tryToSaluteOnSystemChannel = async (guild: Guild) => {
 }
 
 const tryToSaluteOnRandomChannel = async (guild: Guild) => {
-    try {
-        return guild.channels.cache.find
-    } catch (error) {
-        // fail
-    }
+    const channels = guild.channels.cache.array()
 
-    const channels = guild.channels.cache.keys()
     for (const guildChannel of channels) {
-        const [, channel] = guildChannel
-        if (channel.type === 'text' && channel.isText()) {
+        if (guildChannel.type === 'text' && guildChannel.isText()) {
             try {
-                return await channel.send(saluteEmbed)
+                return await guildChannel.send(saluteEmbed)
             } catch (error) {
                 // fail
             }

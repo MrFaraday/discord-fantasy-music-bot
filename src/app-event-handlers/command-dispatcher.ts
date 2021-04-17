@@ -1,8 +1,13 @@
-import { Client, Constants, Message } from 'discord.js'
+import { Client, Constants, DiscordAPIError, Message } from 'discord.js'
+import { getGuildSession } from '../guild-sessions'
+import commandHandlers from '../command-handlers'
 
-const { getGuildSession } = require('../guild-sessions')
-
-export default async function commandDispatcher (this: Client, message: Message): Promise<void> {
+export default async function commandDispatcher (
+    this: Client,
+    message: Message
+): Promise<void> {
+    if (!message.guild) return
+    if (!this.user) return
     if (message.channel.type !== 'text' || message.author.id === this.user.id) return
 
     const guild = await getGuildSession(this, message.guild)
@@ -11,9 +16,12 @@ export default async function commandDispatcher (this: Client, message: Message)
     try {
         return await getCommandHandler(args).call(this, { message, guild, args })
     } catch (error) {
-        if (error.code === Constants.APIErrors.MISSING_PERMISSIONS) {
+        if (
+            error instanceof DiscordAPIError &&
+            error.code === Constants.APIErrors.MISSING_PERMISSIONS
+        ) {
             try {
-                message.react('🤐')
+                await message.react('🤐')
             } catch (error) {
                 // not permissions
             }
@@ -23,18 +31,15 @@ export default async function commandDispatcher (this: Client, message: Message)
     }
 }
 
-/**
- * @param { string[] } args
- */
-const getCommandHandler = (args) => {
+const getCommandHandler = (args: string[]) => {
     switch (args[0]) {
         case 'help':
-            return require('../command-handlers/help')
+            return commandHandlers.helpHandler
         case 'hello':
-            return require('../command-handlers/greetings')
+            return commandHandlers.greetingsHandler
 
         case 'prefix':
-            return require('../command-handlers/prefix')
+            return commandHandlers.prefixHandler
 
         // Standard command to play track or add it to a queue
         case 'p':
@@ -55,35 +60,30 @@ const getCommandHandler = (args) => {
             return require('../command-handlers/play-slot')
 
         case 'save':
-            return require('../command-handlers/save')
+            return commandHandlers.saveHandler
 
         // Next song
         case 'n':
-            return require('../command-handlers/next')
+            return commandHandlers.nextHandler
 
         // Stoping
         case 's':
-            return require('../command-handlers/stop')
+            return commandHandlers.stopHandler
 
         // Volume
         case 'v':
-            return require('../command-handlers/volume')
+            return commandHandlers.volumeHandler
 
         // Disconnect
         case 'd':
-            return require('../command-handlers/disconnect')
+            return commandHandlers.disconnectHandler
 
         default:
             return () => 0
     }
 }
 
-/**
- * @param { string } clientName
- * @param { string } message
- * @param { string } prefix
- */
-const getCommandArgs = (clientName, message, prefix) => {
+const getCommandArgs = (clientName: string, message: string, prefix: string) => {
     const universalPrefix = `${clientName}!`
     const parts = message
         .split(' ')

@@ -1,54 +1,68 @@
-const db = require('./db')
+import db, { DbClient } from './db'
+import { Client, Guild } from 'discord.js'
+import GuildSession from './guild-session'
+
+import defaultSlots from './config/default-slots.config.json'
+import format from 'pg-format'
 
 const defaultPrefix = ''
 const defaultVolume = 100
-const defaultSlots = require('./config/default-slots.config.json')
-const format = require('pg-format')
-const GuildSession = require('./guild-session')
 
-module.exports = class GuildSessionFactory {
-    /**
-     * @param { import('discord.js').Client } app
-     * @param { import('discord.js').Guild } guild
-     */
-    constructor (app, guild) {
+interface GuildData {
+    command_prefix: string
+    volume: number
+}
+
+interface SlotData {
+    slot_number: number
+    value: string
+    name: string
+}
+
+export default class GuildSessionFactory {
+    app: Client
+    guild: Guild
+
+    client?: DbClient
+    guildData?: GuildData
+
+    constructor (app: Client, guild: Guild) {
         this.app = app
         this.guild = guild
     }
 
-    async createSession () {
+    async createSession (): Promise<GuildSession> {
         this.client = await db.getClient()
 
         try {
-            const [guildData] = (
-                await this.client.query('SELECT command_prefix, volume FROM guild WHERE id = $1', [
-                    String(this.guild.id)
-                ])
+            const result = (
+                await this.client.query<GuildData>(
+                    'SELECT command_prefix, volume FROM guild WHERE id = $1',
+                    [String(this.guild.id)]
+                )
             ).rows
 
-            this.guildData = guildData
+            this.guildData = result[0]
 
-            if (guildData) {
+            if (this.guildData) {
                 return await this.loadGuild()
             } else {
                 return await this.registerGuild()
             }
-        } catch (error) {
-            console.error('Connecting guild error')
-            console.error(error)
         } finally {
             this.client.release()
         }
     }
 
-    async loadGuild () {
-        /**
-         * @type { Slots }
-         */
-        const slots = new Map()
+    async loadGuild (): Promise<GuildSession> {
+        if (!this.client || !this.guildData) {
+            throw new Error('No DbClient instance or guildData')
+        }
+
+        const slots = new Map<number, Slot>()
 
         const fetchSlotsQuery = (
-            await this.client.query(
+            await this.client.query<SlotData>(
                 'SELECT slot_number, value, name FROM slot WHERE guild_id = $1',
                 [String(this.guild.id)]
             )
@@ -61,7 +75,6 @@ module.exports = class GuildSessionFactory {
         const { command_prefix, volume } = this.guildData
 
         return new GuildSession({
-            app: this.app,
             guild: this.guild,
             slots,
             prefix: command_prefix,
@@ -69,11 +82,12 @@ module.exports = class GuildSessionFactory {
         })
     }
 
-    async registerGuild () {
-        /**
-         * @type { Slots }
-         */
-        const slots = new Map()
+    async registerGuild (): Promise<GuildSession> {
+        if (!this.client) {
+            throw new Error('No DbClient instance')
+        }
+
+        const slots = new Map<number, Slot>()
 
         defaultSlots.forEach((slot) => {
             slots.set(slot.slot, { name: slot.name, value: slot.value })
@@ -84,17 +98,18 @@ module.exports = class GuildSessionFactory {
 
         const registrateGuildQuery =
             'INSERT INTO guild (id, command_prefix, volume) VALUES ($1, $2, $3)'
-        await this.client.query(registrateGuildQuery, [String(this.guild.id), prefix, volume])
+        await this.client.query(registrateGuildQuery, [this.guild.id, prefix, volume])
+
         const insertDefaultSlotsQuery = format(
             'INSERT INTO slot (guild_id, slot_number, value, name) VALUES %L',
             this.getDefaultSlotsInsertData()
         )
         await this.client.query(insertDefaultSlotsQuery)
 
-        return new GuildSession({ app: this.app, guild: this.guild, slots, prefix, volume })
+        return new GuildSession({ guild: this.guild, slots, prefix, volume })
     }
 
-    getDefaultSlotsInsertData () {
+    getDefaultSlotsInsertData (): [string, number, string, string][] {
         return defaultSlots.map((s) => [this.guild.id, s.slot, s.value, s.name])
     }
 }

@@ -1,9 +1,13 @@
-const db = require('../db')
+import { Message } from 'discord.js'
+import db from '../db'
 
-/**
- * @type { MessageHandler }
- */
-module.exports = async function volume ({ message, guild, args }) {
+export default async function volumeHandler ({
+    message,
+    guild,
+    args
+}: CommadHandlerParams): Promise<void | Message> {
+    if (!message.guild) return
+
     const [, volumeParam] = args
     const volume = Number(volumeParam)
 
@@ -19,7 +23,10 @@ module.exports = async function volume ({ message, guild, args }) {
         return await message.reply('Must be from 0 to 200')
     }
 
-    await db.query('UPDATE guild SET volume = $1 WHERE id = $2', [volume, String(message.guild.id)])
+    await db.query('UPDATE guild SET volume = $1 WHERE id = $2', [
+        volume,
+        String(message.guild.id)
+    ])
     guild.changeVolume(Number(volume))
 
     return await message.reply(`Volume set to **${volume}%**`)

@@ -1,15 +1,18 @@
-const { MessageEmbed } = require('discord.js')
-const { EMBED_COLOR } = require('../config')
-const { shortString } = require('../utils/string')
+import { Client, Message, MessageEmbed } from 'discord.js'
+import { EMBED_COLOR } from '../config'
+import { shortString } from '../utils/string'
 
-/**
- * @type { MessageHandler }
- */
-module.exports = async function help ({ message, guild }) {
-    const slots = [...guild.slots]
+export default async function helpHandler (
+    this: Client,
+    { message, guild }: CommadHandlerParams
+): Promise<Message> {
+    const slots = Array.from(guild.slots)
 
     const slotRecords = slots
-        .map(([slot, { name, value }]) => `${slot}: [${name || shortString(value)}](${value})`)
+        .map(
+            ([slot, { name, value }]) =>
+                `${slot}: [${name ?? shortString(value)}](${value})`
+        )
         .join('\n')
 
     const helpEmbed = new MessageEmbed()
@@ -18,7 +21,7 @@ module.exports = async function help ({ message, guild }) {
         .setDescription(
             `
         Add prefix before each command, no prefix by default\n\
-        Call without prefix: \`${this.user.username}! [command]\`\n\
+        Call without prefix: \`${this.user?.username ?? 'Unknown'}! [command]\`\n\
         \n\
         \`p [url]\` play track(list) or add to queue\n\
         \`fp [url]\` same but clear queue before\n\
