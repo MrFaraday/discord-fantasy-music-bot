@@ -14,7 +14,7 @@ export default async function commandDispatcher (
     const args = getCommandArgs(this.user.username, message.content.trim(), guild.prefix)
 
     try {
-        return await getCommandHandler(args).call(this, { message, guild, args })
+        await getCommandHandler(args).call(this, { message, guild, args })
     } catch (error) {
         if (
             error instanceof DiscordAPIError &&
