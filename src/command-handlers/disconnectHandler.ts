@@ -1,6 +1,13 @@
+import { Client } from 'discord.js'
+
 /**
  * Disconnect from current voice channel
  */
-export default function disconnectHandler ({ guild }: CommadHandlerParams): void {
+export default async function disconnectHandler (
+    this: Client,
+    { guild }: CommadHandlerParams
+): Promise<void> {
     guild.disconnect()
+
+    return Promise.resolve()
 }

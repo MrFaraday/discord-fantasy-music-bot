@@ -1,13 +1,12 @@
-import { Message } from 'discord.js'
+import { Client, Message } from 'discord.js'
 import db from '../db'
 
 const urlRegEx = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_+.~#?&//=]*)/
 
-export default async function saveHandler ({
-    guild,
-    args,
-    message
-}: CommadHandlerParams): Promise<void | Message> {
+export default async function saveHandler (
+    this: Client,
+    { guild, args, message }: CommadHandlerParams
+): Promise<void | Message> {
     if (!message.guild) return
 
     const [, slotParam, url, slotName] = args

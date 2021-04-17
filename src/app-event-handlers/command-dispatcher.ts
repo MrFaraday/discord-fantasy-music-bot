@@ -44,7 +44,7 @@ const getCommandHandler = (args: string[]) => {
         // Standard command to play track or add it to a queue
         case 'p':
         case 'fp':
-            return require('../command-handlers/play')
+            return commandHandlers.playHandler
 
         // Play saved url
         case '0':
@@ -57,7 +57,7 @@ const getCommandHandler = (args: string[]) => {
         case '7':
         case '8':
         case '9':
-            return require('../command-handlers/play-slot')
+            return commandHandlers.playSlotHandler
 
         case 'save':
             return commandHandlers.saveHandler
@@ -79,7 +79,7 @@ const getCommandHandler = (args: string[]) => {
             return commandHandlers.disconnectHandler
 
         default:
-            return () => 0
+            return () => void 0
     }
 }
 

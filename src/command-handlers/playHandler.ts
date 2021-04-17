@@ -1,10 +1,13 @@
-const issueTracks = require('../issue-tracks')
-const SourceError = require('../source-error')
+import { Client, Message } from 'discord.js'
+import issueTracks from '../issue-tracks'
+import SourceError from '../source-error'
 
-/**
- * @type { MessageHandler }
- */
-module.exports = async function play ({ message, guild, args }) {
+export default async function playHandler (
+    this: Client,
+    { message, guild, args }: CommadHandlerParams
+): Promise<void | Message> {
+    if (!message.member) return
+
     const [mode, link] = args
 
     if (!message.member.voice.channel) {

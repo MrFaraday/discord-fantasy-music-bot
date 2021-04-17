@@ -1,14 +1,14 @@
 import { Pool, PoolClient, QueryResult } from 'pg'
 import { DATABASE_URL } from '../config'
 
-type Value = string | number | null
-
 const pool = new Pool({
     connectionString: DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
     }
 })
+
+type Value = string | number | null
 
 async function query<T> (text: string, params?: Value[]): Promise<QueryResult<T>> {
     const start = Date.now()

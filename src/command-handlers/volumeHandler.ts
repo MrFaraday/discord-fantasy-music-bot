@@ -1,11 +1,10 @@
-import { Message } from 'discord.js'
+import { Client, Message } from 'discord.js'
 import db from '../db'
 
-export default async function volumeHandler ({
-    message,
-    guild,
-    args
-}: CommadHandlerParams): Promise<void | Message> {
+export default async function volumeHandler (
+    this: Client,
+    { message, guild, args }: CommadHandlerParams
+): Promise<void | Message> {
     if (!message.guild) return
 
     const [, volumeParam] = args

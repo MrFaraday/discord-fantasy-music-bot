@@ -1,5 +1,5 @@
+import { URL } from 'url'
 import axios from 'axios'
-import { URL } from 'node:url'
 import { YOUTUBE_API_KEY } from '../config'
 import ytdl from 'ytdl-core-discord'
 

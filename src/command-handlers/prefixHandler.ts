@@ -1,11 +1,10 @@
-import { Message } from 'discord.js'
+import { Client, Message } from 'discord.js'
 import db from '../db'
 
-export default async function prefixHandler ({
-    guild,
-    args,
-    message
-}: CommadHandlerParams): Promise<void | Message> {
+export default async function prefixHandler (
+    this: Client,
+    { guild, args, message }: CommadHandlerParams
+): Promise<void | Message> {
     if (!message.guild) return
 
     const currentPrefix = guild.prefix

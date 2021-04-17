@@ -1,10 +1,11 @@
-import { Message } from 'discord.js'
+import { Client, Message } from 'discord.js'
 
 /**
  * Just hello message
  */
-export default async function greetingsHandler ({
-    message
-}: CommadHandlerParams): Promise<Message> {
+export default async function greetingsHandler (
+    this: Client,
+    { message }: CommadHandlerParams
+): Promise<Message> {
     return await message.reply('Hello :)')
 }

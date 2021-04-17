@@ -2,6 +2,8 @@ import disconnectHandler from './disconnectHandler'
 import greetingsHandler from './greetingsHandler'
 import helpHandler from './helpHandler'
 import nextHandler from './nextHandler'
+import playSlotHandler from './play-slot'
+import playHandler from './playHandler'
 import prefixHandler from './prefixHandler'
 import saveHandler from './saveHandler'
 import stopHandler from './stopHandler'
@@ -15,5 +17,7 @@ export default {
     prefixHandler,
     saveHandler,
     stopHandler,
-    volumeHandler
+    volumeHandler,
+    playHandler,
+    playSlotHandler
 }

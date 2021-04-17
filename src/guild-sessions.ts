@@ -2,7 +2,7 @@ import { Client, Guild } from 'discord.js'
 import GuildSession from './guild-session'
 import GuildSessionFactory from './guild-session-factory'
 
-const guildSessions = new Map<GuildId, GuildSession>()
+const guildSessions = new Map<string, GuildSession>()
 
 export async function getGuildSession (app: Client, guild: Guild): Promise<GuildSession> {
     const session = guildSessions.get(guild.id)

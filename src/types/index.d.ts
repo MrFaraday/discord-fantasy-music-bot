@@ -1,10 +1,13 @@
+// Type definitions for discord-fantasy-music-bot
+// Project: Shyrlonay - Fantasy Music Bot
+// Definitions by: Dmitry Lyakhovich <faradayby@gmail.com>
+
 interface CommadHandlerParams {
     message: import('discord.js').Message
     guild: import('../guild-session').default
     args: string[]
 }
 
-type GuildId = string
 type Stream = string | import('discord.js').VoiceBroadcast | import('stream').Readable
 
 interface Track {
