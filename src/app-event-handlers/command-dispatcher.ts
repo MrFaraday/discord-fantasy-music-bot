@@ -20,13 +20,9 @@ export default async function commandDispatcher (
             error instanceof DiscordAPIError &&
             error.code === Constants.APIErrors.MISSING_PERMISSIONS
         ) {
-            try {
-                await message.react('🤐')
-            } catch (error) {
-                // not permissions
-            }
+            message.react('🤐').catch(() => 0)
         } else {
-            console.warn('Message handler error:', error)
+            console.error('Message handler error:', error)
         }
     }
 }
@@ -58,6 +54,9 @@ const getCommandHandler = (args: string[]) => {
         case '8':
         case '9':
             return commandHandlers.playSlotHandler
+
+        case 'slots':
+            return commandHandlers.slotsHandler
 
         case 'save':
             return commandHandlers.saveHandler

@@ -21,6 +21,10 @@ app.on('guildCreate', onGuildCreate)
 
 app.on('guildDelete', onGuildDelete)
 
+app.on('shardError', (error) => {
+    console.error('A websocket connection encountered an error:', error)
+})
+
 app.on('ready', async () => {
     console.log(`\nBot ${app.user?.username ?? 'Unknown'} has lauched!`)
     const link = await app.generateInvite({

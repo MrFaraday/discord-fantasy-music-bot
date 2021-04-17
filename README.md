@@ -4,11 +4,10 @@ This music bot designed for playing along with tabletop RPG (such as DnD or Path
 
 #### Features
 
-- High performance
-- Quick slots for tracks/playlists
-- Smooth playing
+- Quick slots for tracks and playlists
+- ¯\\\_(ツ)_/¯
 
-Text me if you interested to use it but have questions or suggestions for better experience.
+If you interested to use it but have questions or suggestions for better experience text [me](https://discordapp.com/users/596247035469103144/) or leave issue [here](https://github.com/mr-faraday/discord-fantasy-music-bot/issues).
 
 ## Usage
 
@@ -25,8 +24,9 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 -   `n` skip curent track
 -   `s` stop playing and clear queue
 -   `v [0..200?]` display or set volume
--   `d` disconnect from voice channel
--   `save [0..9] [url] [name?]` bind url to slot, field name is optional, type name without spaces
+-   `d` disconnect from a voice channel, during idle it disconnect after 5 minutes automatically
+-   `save [0..9] [url] [name?]` bind url to slot, rest of input will be name but it optional
+-   `slots` show saved URLs
 -   `prefix [value]` set prefix for commands, enter *none* to remove it
 
 #### Supported sources
@@ -55,13 +55,7 @@ YOUTUBE_API_KEY= ...      # youtube api key
 DATABASE_URL= ...         # database url or add other configs like host, username, password
 ```
 
-Stratup application:
-
-```sh
-npm run start
-```
-
-Or start dev server:
+Run dev server:
 
 ```sh
 node run dev

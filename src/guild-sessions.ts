@@ -29,7 +29,6 @@ async function createGuildSession (
         const sessionFactory = new GuildSessionFactory(app, guild)
         return await sessionFactory.createSession()
     } catch (error) {
-        console.error('Connecting guild error')
-        console.error(error)
+        console.error('Connecting guild error:', error)
     }
 }

@@ -9,7 +9,9 @@ export default async function saveHandler (
 ): Promise<void | Message> {
     if (!message.guild) return
 
-    const [, slotParam, url, slotName] = args
+    const [, slotParam, url] = args
+    const slotName = args.slice(3).join(' ')
+
     const slot = Number(slotParam)
 
     if (!slotParam) {
@@ -22,12 +24,12 @@ export default async function saveHandler (
         return await message.reply('Slot number must be from 0 to 9')
     } else if (!url) {
         return await message.reply('No URL provided')
-    } else if (url.length > 255) {
+    } else if (url.length > 500) {
         return await message.reply('Too long URL, maximum 255 of characters')
     } else if (!urlRegEx.test(url)) {
         return await message.reply('It\'s not an URL, maybe')
-    } else if (slotName && slotName.length > 50) {
-        return await message.reply('Name is too long, maximum 50 of characters')
+    } else if (slotName.length > 80) {
+        return await message.reply('Name is too long, maximum 80 of characters')
     }
 
     guild.slots.set(slot, { name: slotName, value: url })

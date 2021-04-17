@@ -40,7 +40,7 @@ class YoutubeApi {
                 videoId: snippet.resourceId.videoId
             }))
         } catch (error) {
-            this.assert(error)
+            assert(error)
         }
     }
 
@@ -59,7 +59,7 @@ class YoutubeApi {
 
             return data.items[0].snippet.title
         } catch (error) {
-            this.assert(error)
+            assert(error)
         }
     }
 
@@ -106,15 +106,15 @@ class YoutubeApi {
             }
         })
     }
+}
 
-    assert (error: Error): never {
-        if (axios.isAxiosError(error) && error.response) {
-            throw new Error(`request failed, status: ${error.response.status}`)
-        } else if (axios.isAxiosError(error) && error.request) {
-            throw new Error('request failed, no response')
-        } else {
-            throw error
-        }
+function assert (error: Error): never {
+    if (axios.isAxiosError(error) && error.response) {
+        throw new Error(`request failed, status: ${error.response.status}`)
+    } else if (axios.isAxiosError(error) && error.request) {
+        throw new Error('request failed, no response')
+    } else {
+        throw error
     }
 }
 

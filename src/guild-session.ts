@@ -127,9 +127,7 @@ export default class GuildSession {
      * Creating dispatcher and event listeners
      */
     private async createDispatcher () {
-        if (!this.connection) {
-            throw new Error('Tried to create dispatcher with inexisting voice connection')
-        }
+        if (!this.connection) return
 
         const track = this.queue.shift()
 

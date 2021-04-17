@@ -6,6 +6,7 @@ import playSlotHandler from './play-slot'
 import playHandler from './playHandler'
 import prefixHandler from './prefixHandler'
 import saveHandler from './saveHandler'
+import slotsHandler from './slotsHandler'
 import stopHandler from './stopHandler'
 import volumeHandler from './volumeHandler'
 
@@ -19,5 +20,6 @@ export default {
     stopHandler,
     volumeHandler,
     playHandler,
-    playSlotHandler
+    playSlotHandler,
+    slotsHandler
 }
