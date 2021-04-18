@@ -61,8 +61,8 @@ const saluteEmbed = new MessageEmbed()
     .setTitle('Hello and thanks for adding me!')
     .setDescription(
         'Now you can call me to play music anytime.\
-         Join a voice channel and type `p [link]` to play any song or playlist from YouTube!\n\
+         Join a voice channel and type `-p [link]` to play any song or playlist from YouTube!\n\
          \n\
-         Type `help` to discover commands.\n\
+         Type `-help` to discover commands.\n\
          If you have questions or suggestions open issue [here](https://github.com/mr-faraday/discord-fantasy-music-bot/issues).'
     )

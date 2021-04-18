@@ -3,14 +3,18 @@ import { EMBED_COLOR } from '../config'
 
 export default async function helpHandler (
     this: Client,
-    { message }: CommadHandlerParams
+    { message, guild }: CommadHandlerParams
 ): Promise<Message> {
+    const withPrefix = `Current prefix: \`${guild.prefix}\`. Add prefix right before each command: \`${guild.prefix}p\` \`${guild.prefix}v\``
+
+    const prefixPart = guild.prefix ? withPrefix : 'There is currently no prefix.'
+
     const helpEmbed = new MessageEmbed()
         .setColor(EMBED_COLOR)
         .setTitle('Commands')
         .setDescription(
             `
-            \`p [url]\` play track(playlist) from URL or add to queue\n\
+            \`p [url]\` play track(playlist) from URL or add to queue, max queue size is 50 items\n\
             \`fp [url]\` clear queue and play track(playlist) immediately, if it's playlist — shuffle it before\n\
             \`[0..9]\` play saved tracks immediately, equal to ***fp [saved url]***\n\
             \`help\` list of commands\n\
@@ -22,8 +26,11 @@ export default async function helpHandler (
             \`slots\` show saved URLs\n\
             \`prefix [value]\` set prefix for commands, enter ***none*** to remove it\n\
             \n\
-            If you set prefix add it right before each command: \`!p\` \`#v\`. No prefix by default\n\
-            Call without prefix: \`${this.user?.username ?? 'Unknown'}! [command]\`\n\
+            Command prefix:\n\
+            Mention me to call command without prefix: <@${
+    this.user?.id ?? 'Unknown'
+}> \`[command]\`\n\
+            ${prefixPart}\n\
             \n\
             [***Support***](https://github.com/mr-faraday/discord-fantasy-music-bot/issues)\n\
         `
