@@ -18,8 +18,8 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 #### Commands
 
 -   `p [url]` play track(playlist) from URL or add to queue
--   `fp [url]` same but clear queue before
--   `[0..9]` play saved tracks immediately, if it's list — shuffle it
+-   `fp [url]` clear queue and play track(playlist) immediately
+-   `[0..9]` play saved tracks immediately, equal to ***fp [saved url]*** but if it's list — shuffle it before
 -   `help` list of commands
 -   `n` skip curent track
 -   `s` stop playing and clear queue
@@ -27,7 +27,7 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 -   `d` disconnect from a voice channel, during idle it will disconnect after 5 minutes automatically
 -   `save [0..9] [url] [name?]` bind url to slot, rest of input will be name but it optional
 -   `slots` show saved URLs
--   `prefix [value]` set prefix for commands, enter *none* to remove it
+-   `prefix [value]` set prefix for commands, enter ***none*** to remove it
 
 ###### Upcoming
 
