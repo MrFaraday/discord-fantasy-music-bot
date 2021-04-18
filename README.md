@@ -7,11 +7,11 @@ This music bot designed for playing along with tabletop RPG (such as DnD or Path
 - Quick slots for tracks and playlists
 - ¯\\\_(ツ)_/¯
 
-If you interested to use it but have questions or suggestions for better experience text [me](https://discordapp.com/users/596247035469103144/) or leave issue [here](https://github.com/mr-faraday/discord-fantasy-music-bot/issues).
+If you interested to use it but have questions or suggestions for better experience leave an [issue](https://github.com/mr-faraday/discord-fantasy-music-bot/issues) at this repository.
 
 ## Usage
 
-Bot invite link: [Shyrlonay - Fantasy Musicbot](https://discord.com/api/oauth2/authorize?client_id=667765780863254558&permissions=3164224&scope=bot)
+Bot invite link: [Shyrlonay - Fantasy Music Bot](https://discord.com/api/oauth2/authorize?client_id=667765780863254558&permissions=3164224&scope=bot)
 
 Open link in a browser and choose the guild. When bot get command to play it automatically join to your voice channel. If you set prefix, add it right before command, e.g. `!help`, `#s`
 
