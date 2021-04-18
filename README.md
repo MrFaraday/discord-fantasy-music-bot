@@ -13,7 +13,7 @@ If you interested to use it but have questions or suggestions for better experie
 
 Bot invite link: [Shyrlonay - Fantasy Music Bot](https://discord.com/api/oauth2/authorize?client_id=667765780863254558&permissions=3164224&scope=bot)
 
-Open link in a browser and choose the guild. When bot get command to play it automatically join to your voice channel. Defaul prefix: `-`, add it right before command, e.g. `-help`, `-s`
+Open link in a browser and choose the guild. When bot get command to play it automatically join to your voice channel. Default prefix: `-`, add it right before each command, e.g. `-help`, `-s`.
 
 #### Commands
 
