@@ -7,7 +7,7 @@ This music bot designed for playing along with tabletop RPG (such as DnD or Path
 - Quick slots for tracks and playlists
 - ¯\\\_(ツ)_/¯
 
-If you interested to use it but have questions or suggestions for better experience text [me](https://discordapp.com/users/596247035469103144/) or leave issue [here](https://github.com/mr-faraday/discord-fantasy-music-bot/issues).
+If you interested to use it but have questions or suggestions for better experience leave an [issue](https://github.com/mr-faraday/discord-fantasy-music-bot/issues) at this repository.
 
 ## Usage
 
