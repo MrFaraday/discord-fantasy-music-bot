@@ -44,7 +44,7 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 -   `shuffle` shuffle queue
 -   `now` show playing track
 -   `summon` attract bot to your voice channel
--   pausing and control by reactions
+-   pausing and control via reactions
 
 ## Contributing
 
