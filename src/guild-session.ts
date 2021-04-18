@@ -1,5 +1,6 @@
 import { Guild, StreamDispatcher, VoiceChannel, VoiceConnection } from 'discord.js'
 import shuffle from 'lodash.shuffle'
+import { MAX_QUEUE_LENGTH } from './config'
 import fadeOut from './easing/fade-out'
 
 interface SessionConstructorParams {
@@ -14,8 +15,8 @@ export default class GuildSession {
     slots: Slots
     prefix: string
     volume: number
+    queue: Track[] = []
 
-    private queue: Track[] = []
     private connection: VoiceConnection | null = null
     private dispatcher: StreamDispatcher | null = null
     private disconnectTimeout: NodeJS.Timeout | null = null
@@ -28,7 +29,7 @@ export default class GuildSession {
     }
 
     async play (channel: VoiceChannel, tracks: Track[]): Promise<void> {
-        tracks.forEach((track) => this.queue.push(track))
+        this.queue = [...this.queue, ...tracks].slice(0, MAX_QUEUE_LENGTH)
 
         if (!this.connection) {
             await this.connect(channel)

@@ -7,7 +7,7 @@ This music bot designed for playing along with tabletop RPG (such as DnD or Path
 - Quick slots for tracks and playlists
 - ¯\\\_(ツ)_/¯
 
-If you interested to use it but have questions or suggestions for better experience leave an [issue](https://github.com/mr-faraday/discord-fantasy-music-bot/issues) at this repository.
+If you interested to use it but have questions or suggestions for better experience leave an [issue](https://github.com/mr-faraday/discord-fantasy-music-bot/issues).
 
 ## Usage
 
@@ -18,8 +18,8 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 #### Commands
 
 -   `p [url]` play track(playlist) from URL or add to queue
--   `fp [url]` clear queue and play track(playlist) immediately
--   `[0..9]` play saved tracks immediately, equal to ***fp [saved url]*** but if it's list — shuffle it before
+-   `fp [url]` clear queue and play track(playlist) immediately, if it's playlist — shuffle it before
+-   `[0..9]` play saved tracks immediately, equal to ***fp [saved url]***
 -   `help` list of commands
 -   `n` skip curent track
 -   `s` stop playing and clear queue
@@ -29,24 +29,23 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 -   `slots` show saved URLs
 -   `prefix [value]` set prefix for commands, enter ***none*** to remove it
 
-###### Upcoming
-
--   `queue` show queue
--   `shuffle` shuffle queue
--   `now` show playing track
--   `summon` attract bot to your voice channel
-
-In plans pausing and control by reactions.
-
+> If you lost your prefix just use universal `Shyrlonay! [command]`<br>
+> Max queue size is 50 items
 
 #### Supported sources
 
 -   Playlists from YouTube
 -   Video from YouTube
 
-> Make sure playlists are unlisted or public. There is possibility that playing may stuck if it bump into deleted video or video with limitations.
+> Make sure playlists are unlisted or public. There is slightest chance that playing may stuck if it bump into deleted video or video with limitations.
 
-> If you lost your prefix just use universal `Shyrlonay! [command]`
+#### Upcoming
+
+-   `queue` show queue
+-   `shuffle` shuffle queue
+-   `now` show playing track
+-   `summon` attract bot to your voice channel
+-   pausing and control by reactions
 
 ## Contributing
 
