@@ -150,10 +150,10 @@ export default class GuildSession {
             }
 
             // End of track
-            this.dispatcher.on('end', () => this.createDispatcher())
-            this.dispatcher.on('finish', () => this.createDispatcher())
+            this.dispatcher.on('end', () => void this.createDispatcher())
+            this.dispatcher.on('finish', () => void this.createDispatcher())
 
-            this.dispatcher.on('error', () => this.createDispatcher())
+            this.dispatcher.on('error', () => void this.createDispatcher())
         } catch (error) {
             if (
                 error instanceof Error &&

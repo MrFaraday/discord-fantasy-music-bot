@@ -1,8 +1,10 @@
 import dotenv from 'dotenv'
 
 // loading environment variables for development
-if (process.env.NODE_ENV !== 'production') {
-    dotenv.config()
+if (process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
+    const { config }: typeof dotenv = require('dotenv')
+    config()
 }
 
 export const TOKEN = process.env.TOKEN

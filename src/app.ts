@@ -6,25 +6,25 @@ import onGuildDelete from './app-event-handlers/on-guild-delete'
 import onGuildCreate from './app-event-handlers/on-guild-create'
 
 if (!TOKEN) {
-    throw new Error(
-        'Token not found. Check your .env file or environment variables on your server'
-    )
+    throw new Error('Environment variable TOKEN not found')
 }
 
 const app = new Discord.Client()
 
-// Message dispatcher
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.on('message', commandDispatcher)
 
-// new server salute service
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.on('guildCreate', onGuildCreate)
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.on('guildDelete', onGuildDelete)
 
 app.on('shardError', (error) => {
     console.error('A websocket connection encountered an error:', error)
 })
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.on('ready', async () => {
     console.log(`\nBot ${app.user?.username ?? 'Unknown'} has lauched!`)
     const link = await app.generateInvite({
