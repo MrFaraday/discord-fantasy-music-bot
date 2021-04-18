@@ -1,18 +1,13 @@
-const { easeInExpo } = require('./ease-functions')
+import { StreamDispatcher } from 'discord.js'
+import { easeInExpo } from './ease-functions'
 
 const fadeDuration = 2500
 const interval = 20
 
-/**
- * @param { import('discord.js').StreamDispatcher } dispatcher
- */
-module.exports = function fadeOut (dispatcher) {
+export default function fadeOut (dispatcher: StreamDispatcher): void {
     const leaveVolume = dispatcher.volume
 
-    /**
-     * @param { number } rest
-     */
-    const reduce = (rest) => {
+    const reduce = (rest: number) => {
         if (rest < 0) {
             dispatcher.end()
             return

@@ -1,14 +1,8 @@
-const youtubeApi = require('./api/youtube-api')
-const SourceError = require('./source-error')
+import youtubeApi from './api/youtube-api'
+import SourceError from './source-error'
 
-/**
- * @param { string } url
- */
-module.exports = async function issueTracks (url) {
-    /**
-     * @type { Track[] }
-     */
-    let tracks = []
+export default async function issueTracks (url: string): Promise<Track[]> {
+    let tracks: Track[] = []
 
     const urlData = youtubeApi.parseUrl(url)
 

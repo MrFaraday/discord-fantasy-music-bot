@@ -1,12 +1,13 @@
-interface HandlerParams {
-    app: import('discord.js').Client
+// Type definitions for discord-fantasy-music-bot
+// Project: Shyrlonay - Fantasy Music Bot
+// Definitions by: Dmitry Lyakhovich <faradayby@gmail.com>
+
+interface CommadHandlerParams {
     message: import('discord.js').Message
-    guild: import('../guild-connection')
-    args?: string[]
+    guild: import('../guild-session').default
+    args: string[]
 }
 
-type MessageHandler = (params: HandlerParams) => Promise<void | Message>
-type GuildId = string
 type Stream = string | import('discord.js').VoiceBroadcast | import('stream').Readable
 
 interface Track {
@@ -14,3 +15,10 @@ interface Track {
     getStream(): Promise<Stream>
     meta?: [string, string][]
 }
+
+interface Slot {
+    name?: string
+    value: string
+}
+
+type Slots = Map<number, Slot>
