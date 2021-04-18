@@ -1,14 +1,14 @@
 {
     "name": "discord-fantasy-music-bot",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "description": "Music bot fo fantasy board gaming",
     "main": "./build/index.js",
     "scripts": {
-        "build": "rimraf ./build && tsc && node postbuild",
+        "build": "rimraf build && tsc && node postbuild",
         "start": "node build/index.js",
         "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only src",
         "lint": "eslint . --ext .ts",
-        "format": "prettier --write ./src && eslint --fix ./src"
+        "format": "prettier --write src && eslint --fix src"
     },
     "keywords": [
         "bot",
