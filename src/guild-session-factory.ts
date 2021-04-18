@@ -1,12 +1,9 @@
 import db, { DbClient } from './db'
 import { Client, Guild } from 'discord.js'
 import GuildSession from './guild-session'
-
 import defaultSlots from './config/default-slots.config.json'
 import format from 'pg-format'
-
-const defaultPrefix = ''
-const defaultVolume = 100
+import { DEFAULT_PREFIX, DEFAULT_VOLUME } from './config'
 
 interface GuildData {
     command_prefix: string
@@ -93,8 +90,8 @@ export default class GuildSessionFactory {
             slots.set(slot.slot, { name: slot.name, value: slot.value })
         })
 
-        const prefix = defaultPrefix
-        const volume = defaultVolume
+        const prefix = DEFAULT_PREFIX
+        const volume = DEFAULT_VOLUME
 
         const registrateGuildQuery =
             'INSERT INTO guild (id, command_prefix, volume) VALUES ($1, $2, $3)'

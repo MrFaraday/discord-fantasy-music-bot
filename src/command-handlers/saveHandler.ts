@@ -25,7 +25,7 @@ export default async function saveHandler (
     } else if (!url) {
         return await message.reply('No URL provided')
     } else if (url.length > 500) {
-        return await message.reply('Too long URL, maximum 255 of characters')
+        return await message.reply('Too long URL, maximum 500 of characters')
     } else if (!urlRegEx.test(url)) {
         return await message.reply('It\'s not an URL, maybe')
     } else if (slotName.length > 80) {

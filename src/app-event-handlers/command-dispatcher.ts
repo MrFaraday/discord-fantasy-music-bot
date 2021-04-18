@@ -1,4 +1,4 @@
-import { Client, Constants, DiscordAPIError, Message } from 'discord.js'
+import { Client, Constants, DiscordAPIError, Message, MessageMentions } from 'discord.js'
 import { getGuildSession } from '../guild-sessions'
 import commandHandlers from '../command-handlers'
 
@@ -11,7 +11,7 @@ export default async function commandDispatcher (
     if (message.channel.type !== 'text' || message.author.id === this.user.id) return
 
     const guild = await getGuildSession(this, message.guild)
-    const args = getCommandArgs(this.user.username, message.content.trim(), guild.prefix)
+    const args = getCommandArgs(this.user.id, message, guild.prefix)
 
     try {
         await getCommandHandler(args).call(this, { message, guild, args })
@@ -82,19 +82,33 @@ const getCommandHandler = (args: string[]) => {
     }
 }
 
-const getCommandArgs = (clientName: string, message: string, prefix: string) => {
-    const universalPrefix = `${clientName}!`
-    const parts = message
+const mentionRegExs = [
+    new RegExp(MessageMentions.USERS_PATTERN.source),
+    new RegExp(MessageMentions.CHANNELS_PATTERN.source),
+    new RegExp(MessageMentions.EVERYONE_PATTERN.source),
+    new RegExp(MessageMentions.ROLES_PATTERN.source)
+]
+const getCommandArgs = (clientId: string, message: Message, prefix: string) => {
+    const messageContent = message.content.trim()
+
+    const isStartsWithPrefix = messageContent.startsWith(prefix)
+    const { mentions } = message
+    const isMentioned =
+        mentions.users.has(clientId) &&
+        mentions.users.size === 1 &&
+        !mentions.everyone &&
+        mentions.channels.size === 0 &&
+        mentions.crosspostedChannels.size === 0 &&
+        mentions.roles.size === 0
+
+    if (!isStartsWithPrefix && !isMentioned && !!prefix) return []
+
+    const parts = messageContent
+        .slice(isStartsWithPrefix ? prefix.length : 0)
         .split(' ')
         .map((arg) => arg.trim())
         .filter((arg) => arg)
+        .filter((arg) => !mentionRegExs.some((regex) => regex.test(arg)))
 
-    if (parts[0] === universalPrefix) {
-        return parts.slice(1)
-    } else if (parts[0] && parts[0].startsWith(prefix)) {
-        parts[0] = parts[0].substr(prefix.length)
-        return parts
-    } else {
-        return []
-    }
+    return parts
 }

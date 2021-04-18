@@ -13,11 +13,11 @@ If you interested to use it but have questions or suggestions for better experie
 
 Bot invite link: [Shyrlonay - Fantasy Music Bot](https://discord.com/api/oauth2/authorize?client_id=667765780863254558&permissions=3164224&scope=bot)
 
-Open link in a browser and choose the guild. When bot get command to play it automatically join to your voice channel. If you set prefix, add it right before command, e.g. `!help`, `#s`
+Open link in a browser and choose the guild. When bot get command to play it automatically join to your voice channel. Defaul prefix: `-`, add it right before command, e.g. `-help`, `-s`
 
 #### Commands
 
--   `p [url]` play track(playlist) from URL or add to queue
+-   `p [url]` play track(playlist) from URL or add to queue, max queue size is 50 items
 -   `fp [url]` clear queue and play track(playlist) immediately, if it's playlist — shuffle it before
 -   `[0..9]` play saved tracks immediately, equal to ***fp [saved url]***
 -   `help` list of commands
@@ -29,8 +29,7 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 -   `slots` show saved URLs
 -   `prefix [value]` set prefix for commands, enter ***none*** to remove it
 
-> If you lost your prefix just use universal `Shyrlonay! [command]`<br>
-> Max queue size is 50 items
+> Mention bot to call command without prefix: `@Shyrlonay [command]`
 
 #### Supported sources
 
