@@ -32,6 +32,7 @@ app.on('ready', async () => {
             'ADD_REACTIONS',
             'SEND_MESSAGES',
             'SPEAK',
+            'EMBED_LINKS',
             'ADD_REACTIONS',
             'CONNECT'
         ]
