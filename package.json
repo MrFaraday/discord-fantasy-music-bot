@@ -4,7 +4,7 @@
     "description": "Music bot fo fantasy board gaming",
     "main": "./build/index.js",
     "scripts": {
-        "build": "rimraf ./build && tsc && cpy **/* !**/*.ts ../build --cwd=src --no-overwrite --parents",
+        "build": "rimraf ./build && tsc && cpy '**/*' '!**/*.ts' ../lib/ --cwd=src/ --no-overwrite --parents",
         "start": "node build/index.js",
         "dev": "ts-node-dev --respawn --transpile-only src",
         "lint": "eslint . --ext .ts"
