@@ -12,3 +12,4 @@ export const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY
 export const DATABASE_URL = process.env.DATABASE_URL
 
 export const EMBED_COLOR = '#f26d53'
+export const MAX_QUEUE_LENGTH = 50

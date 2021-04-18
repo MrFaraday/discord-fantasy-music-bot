@@ -7,7 +7,7 @@ This music bot designed for playing along with tabletop RPG (such as DnD or Path
 - Quick slots for tracks and playlists
 - ¯\\\_(ツ)_/¯
 
-If you interested to use it but have questions or suggestions for better experience leave an [issue](https://github.com/mr-faraday/discord-fantasy-music-bot/issues) at this repository.
+If you interested to use it but have questions or suggestions for better experience leave an [issue](https://github.com/mr-faraday/discord-fantasy-music-bot/issues).
 
 ## Usage
 
@@ -18,8 +18,8 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 #### Commands
 
 -   `p [url]` play track(playlist) from URL or add to queue
--   `fp [url]` same but clear queue before
--   `[0..9]` play saved tracks immediately, if it's list — shuffle it
+-   `fp [url]` clear queue and play track(playlist) immediately, if it's playlist — shuffle it before
+-   `[0..9]` play saved tracks immediately, equal to ***fp [saved url]***
 -   `help` list of commands
 -   `n` skip curent track
 -   `s` stop playing and clear queue
@@ -27,26 +27,25 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 -   `d` disconnect from a voice channel, during idle it will disconnect after 5 minutes automatically
 -   `save [0..9] [url] [name?]` bind url to slot, rest of input will be name but it optional
 -   `slots` show saved URLs
--   `prefix [value]` set prefix for commands, enter *none* to remove it
+-   `prefix [value]` set prefix for commands, enter ***none*** to remove it
 
-###### Upcoming
-
--   `queue` show queue
--   `shuffle` shuffle queue
--   `now` show playing track
--   `summon` attract bot to your voice channel
-
-In plans pausing and control by reactions.
-
+> If you lost your prefix just use universal `Shyrlonay! [command]`<br>
+> Max queue size is 50 items
 
 #### Supported sources
 
 -   Playlists from YouTube
 -   Video from YouTube
 
-> Make sure playlists are unlisted or public. There is possibility that playing may stuck if it bump into deleted video or video with limitations.
+> Make sure playlists are unlisted or public. There is slightest chance that playing may stuck if it bump into deleted video or video with limitations.
 
-> If you lost your prefix just use universal `Shyrlonay! [command]`
+#### Upcoming
+
+-   `queue` show queue
+-   `shuffle` shuffle queue
+-   `now` show playing track
+-   `summon` attract bot to your voice channel
+-   pausing and control by reactions
 
 ## Contributing
 
@@ -73,4 +72,4 @@ node run dev
 
 ## Credits
 
-Thanks to [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](www.flaticon.com) for bot avatar!
+Thanks to [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) for bot avatar!
