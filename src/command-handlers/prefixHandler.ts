@@ -14,8 +14,8 @@ export default async function prefixHandler (
         return await message.reply(`Current prefix: **${currentPrefix}**`)
     } else if (!newPrefix && !currentPrefix) {
         return await message.reply('There is no prefix')
-    } else if (newPrefix.length > 3 && newPrefix !== 'none') {
-        return await message.reply('Too long, maximum 3 of characters')
+    } else if (newPrefix.length > 10 && newPrefix !== 'none') {
+        return await message.reply('Too long, maximum 10 of characters')
     }
 
     const setPrefixQuery = 'UPDATE guild SET command_prefix = $1 WHERE id = $2'
