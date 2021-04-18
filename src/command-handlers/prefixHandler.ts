@@ -1,6 +1,8 @@
 import { Client, Message } from 'discord.js'
 import db from '../db'
 
+const setPrefixQuery = 'UPDATE guild SET command_prefix = $1 WHERE id = $2'
+
 export default async function prefixHandler (
     this: Client,
     { guild, args, message }: CommadHandlerParams
@@ -14,11 +16,9 @@ export default async function prefixHandler (
         return await message.reply(`Current prefix: **${currentPrefix}**`)
     } else if (!newPrefix && !currentPrefix) {
         return await message.reply('There is no prefix')
-    } else if (newPrefix.length > 10 && newPrefix !== 'none') {
+    } else if (newPrefix.length > 10) {
         return await message.reply('Too long, maximum 10 of characters')
     }
-
-    const setPrefixQuery = 'UPDATE guild SET command_prefix = $1 WHERE id = $2'
 
     if (newPrefix === 'none') {
         guild.prefix = ''
