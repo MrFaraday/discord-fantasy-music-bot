@@ -24,7 +24,7 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 -   `n` skip curent track
 -   `s` stop playing and clear queue
 -   `v [0..200?]` display or set volume
--   `d` disconnect from a voice channel, during idle it disconnect after 5 minutes automatically
+-   `d` disconnect from a voice channel, during idle it will disconnect after 5 minutes automatically
 -   `save [0..9] [url] [name?]` bind url to slot, rest of input will be name but it optional
 -   `slots` show saved URLs
 -   `prefix [value]` set prefix for commands, enter *none* to remove it
