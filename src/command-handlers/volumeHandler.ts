@@ -1,6 +1,8 @@
 import { Client, Message } from 'discord.js'
 import db from '../db'
 
+const updateVolumeQuery = 'UPDATE guild SET volume = $1 WHERE id = $2'
+
 export default async function volumeHandler (
     this: Client,
     { message, guild, args }: CommadHandlerParams
@@ -22,10 +24,7 @@ export default async function volumeHandler (
         return await message.reply('Must be from 0 to 200')
     }
 
-    await db.query('UPDATE guild SET volume = $1 WHERE id = $2', [
-        volume,
-        String(message.guild.id)
-    ])
+    await db.query(updateVolumeQuery, [volume, message.guild.id])
     guild.changeVolume(Number(volume))
 
     return await message.reply(`Volume set to **${volume}%**`)
