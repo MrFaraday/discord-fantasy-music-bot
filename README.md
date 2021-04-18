@@ -29,10 +29,20 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 -   `slots` show saved URLs
 -   `prefix [value]` set prefix for commands, enter *none* to remove it
 
+###### Upcoming
+
+-   `queue` show queue
+-   `shuffle` shuffle queue
+-   `now` show playing track
+-   `summon` attract bot to your voice channel
+
+In plans pausing and control by reactions.
+
+
 #### Supported sources
 
--   Playlists from youtube
--   Video from youtube
+-   Playlists from YouTube
+-   Video from YouTube
 
 > Make sure playlists are unlisted or public. There is possibility that playing may stuck if it bump into deleted video or video with limitations.
 
