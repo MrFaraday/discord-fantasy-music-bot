@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const ncp = require('ncp').ncp
 
 const options = {

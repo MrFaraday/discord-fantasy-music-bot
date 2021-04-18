@@ -41,11 +41,8 @@
         "semi": ["error", "never"],
         "comma-dangle": ["error", "never"],
         "space-before-function-paren": ["warn", "always"],
-        "arrow-parens": "off",
-        "no-unused-expressions": "off",
-        "no-unused-vars": "warn",
-
-        "@typescript-eslint/no-misused-promises": "off",
-        "@typescript-eslint/no-var-requires": "off"
+        "arrow-parens": "warn",
+        "no-unused-expressions": "warn",
+        "no-unused-vars": "warn"
     }
 }

@@ -4,8 +4,10 @@ import { YOUTUBE_API_KEY } from '../config'
 import ytdl from 'ytdl-core-discord'
 
 if (!YOUTUBE_API_KEY) {
-    throw new Error('YOUTUBE_API_KEY not provided')
+    throw new Error('Environment variable YOUTUBE_API_KEY not found')
 }
+
+
 
 const videoIdRegEx = /[?&]v=([^&?#/]+)/i
 const listIdRegEx = /[?&]list=([^&?#/]+)/
