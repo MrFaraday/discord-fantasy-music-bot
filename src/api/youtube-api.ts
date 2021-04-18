@@ -7,8 +7,6 @@ if (!YOUTUBE_API_KEY) {
     throw new Error('Environment variable YOUTUBE_API_KEY not found')
 }
 
-
-
 const videoIdRegEx = /[?&]v=([^&?#/]+)/i
 const listIdRegEx = /[?&]list=([^&?#/]+)/
 
