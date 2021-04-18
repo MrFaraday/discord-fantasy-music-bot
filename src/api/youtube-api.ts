@@ -1,6 +1,6 @@
 import { URL } from 'url'
 import axios from 'axios'
-import { YOUTUBE_API_KEY } from '../config'
+import { MAX_QUEUE_LENGTH, YOUTUBE_API_KEY } from '../config'
 import ytdl from 'ytdl-core-discord'
 
 if (!YOUTUBE_API_KEY) {
@@ -31,7 +31,7 @@ class YoutubeApi {
                 params: {
                     part: 'snippet',
                     playlistId: listId,
-                    maxResults: 50
+                    maxResults: MAX_QUEUE_LENGTH
                 }
             })
 
