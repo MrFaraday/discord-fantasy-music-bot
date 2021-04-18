@@ -72,4 +72,4 @@ node run dev
 
 ## Credits
 
-Thanks to [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](www.flaticon.com) for bot avatar!
+Thanks to [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) for bot avatar!
