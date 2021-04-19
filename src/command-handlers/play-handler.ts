@@ -11,7 +11,7 @@ export default async function playHandler (
     const [mode, link] = args
 
     if (!message.member.voice.channel) {
-        return await message.channel.send('You are not connected to a voice channel...')
+        return await message.channel.send('You are not connected to a voice channel')
     } else if (!link) {
         return await message.channel.send('What to play?')
     }
@@ -28,7 +28,7 @@ export default async function playHandler (
         if (error instanceof SourceError) {
             return await message.channel.send(error.message)
         } else {
-            return await message.channel.send('It\'s hidden or something get wrong')
+            return await message.channel.send('It\'s hidden or something went wrong')
         }
     }
 }

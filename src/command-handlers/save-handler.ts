@@ -69,7 +69,7 @@ export default async function saveHandler (
         return await message.channel.send('Saved!')
     } catch (error) {
         // update error
-        return await message.channel.send('Something went wrong. I\'ll find that soon')
+        return await message.channel.send('Something went wrong, I\'ll find that soon')
     } finally {
         client.release()
     }

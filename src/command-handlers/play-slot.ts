@@ -15,7 +15,7 @@ export default async function playSlotHandler (
     if (!saved) return
 
     if (!message.member.voice.channel) {
-        return await message.channel.send('I need you to connected to a voice channel')
+        return await message.channel.send('You are not connected to a voice channel')
     }
 
     try {
@@ -25,7 +25,7 @@ export default async function playSlotHandler (
         if (error instanceof SourceError) {
             return await message.channel.send(error.message)
         } else {
-            return await message.channel.send('It\'s hidden or something get wrong')
+            return await message.channel.send('It\'s hidden or something went wrong')
         }
     }
 }
