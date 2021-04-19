@@ -13,20 +13,20 @@ export default async function prefixHandler (
     const [, newPrefix] = args
 
     if (!newPrefix && currentPrefix) {
-        return await message.reply(`Current prefix: **${currentPrefix}**`)
+        return await message.channel.send(`Current prefix: **${currentPrefix}**`)
     } else if (!newPrefix && !currentPrefix) {
-        return await message.reply('There is no prefix')
+        return await message.channel.send('There is no prefix')
     } else if (newPrefix.length > 10) {
-        return await message.reply('Too long, maximum 10 of characters')
+        return await message.channel.send('Too long, maximum 10 of characters')
     }
 
     if (newPrefix === 'none') {
         guild.prefix = ''
         await db.query(setPrefixQuery, ['', message.guild.id])
-        return await message.reply('Prefix removed')
+        return await message.channel.send('Prefix removed')
     } else {
         guild.prefix = newPrefix
         await db.query(setPrefixQuery, [newPrefix, message.guild.id])
-        return await message.reply(`New prefix: **${newPrefix}**`)
+        return await message.channel.send(`New prefix: **${newPrefix}**`)
     }
 }

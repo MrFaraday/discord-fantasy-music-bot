@@ -7,6 +7,6 @@ export default async function nextHandler (
     if (guild.isPlaying()) {
         return guild.skip()
     } else {
-        return await message.reply('Nothing to skip')
+        return await message.channel.send('Nothing to skip')
     }
 }

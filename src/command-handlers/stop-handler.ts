@@ -7,6 +7,6 @@ export default async function stopHandler (
     if (guild.isPlaying()) {
         return guild.stop()
     } else {
-        return await message.reply('Nothing to stop')
+        return await message.channel.send('Nothing to stop')
     }
 }

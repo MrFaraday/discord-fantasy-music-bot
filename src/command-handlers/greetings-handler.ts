@@ -7,5 +7,5 @@ export default async function greetingsHandler (
     this: Client,
     { message }: CommadHandlerParams
 ): Promise<Message> {
-    return await message.reply('Hello :)')
+    return await message.channel.send('Hello :)')
 }
