@@ -21,7 +21,7 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 -   `fp [url]` clear queue and play track(playlist) immediately, if it's playlist — shuffle it before
 -   `[0..9]` play saved tracks immediately, equal to ***fp [saved url]***
 -   `help` list of commands
--   `n` skip curent track
+-   `n` skip current track
 -   `s` stop playing and clear queue
 -   `v [0..200?]` display or set volume
 -   `d` disconnect from a voice channel, during idle it will disconnect after 5 minutes automatically
