@@ -1,4 +1,4 @@
-import { fireApp } from './app'
+import { fireClient } from './client'
 import db from './db'
 import queries from './db/queries'
 
@@ -9,7 +9,7 @@ process.on('unhandledRejection', (error) => {
 async function startup () {
     try {
         await db.query(queries.init)
-        await fireApp()
+        await fireClient()
     } catch (error) {
         console.error('Stratup error')
         console.error(error)

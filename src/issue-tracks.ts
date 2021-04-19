@@ -16,7 +16,7 @@ export default async function issueTracks (url: string): Promise<Track[]> {
             throw new SourceError('It\'s empty')
         }
     } else {
-        throw new SourceError('I can\'t resolve link or something else...')
+        throw new SourceError('I can\'t resolve link or something else')
     }
 
     return tracks

@@ -4,11 +4,11 @@ import GuildSessionFactory from './guild-session-factory'
 
 const guildSessions = new Map<string, GuildSession>()
 
-export async function getGuildSession (app: Client, guild: Guild): Promise<GuildSession> {
+export async function getGuildSession (client: Client, guild: Guild): Promise<GuildSession> {
     const session = guildSessions.get(guild.id)
 
     if (!session) {
-        const guildSession = await createGuildSession(app, guild)
+        const guildSession = await createGuildSession(client, guild)
 
         if (!guildSession) {
             throw new Error('Failed to create guild session')
@@ -26,11 +26,11 @@ export function deleteGuildSession (guildId: string): void {
 }
 
 async function createGuildSession (
-    app: Client,
+    client: Client,
     guild: Guild
 ): Promise<GuildSession | undefined> {
     try {
-        const sessionFactory = new GuildSessionFactory(app, guild)
+        const sessionFactory = new GuildSessionFactory(client, guild)
         return await sessionFactory.createSession()
     } catch (error) {
         console.error('Connecting guild error:', error)
