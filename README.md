@@ -29,9 +29,9 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 -   `slots` show saved URLs
 -   `prefix [value]` set prefix for commands, enter ***none*** to remove it
 
-> Max queue size is 50 items<br>
-> during idle it will leave voice channel after 5 minutes automatically<br>
-> Mention bot to use command without prefix: `@Shyrlonay [command]`
+> Max queue size is 50 items.<br>
+> During idle it will leave voice channel after 5 minutes automatically.<br>
+> Mention bot to use command without prefix: `@Shyrlonay [command]`.
 
 #### Supported sources
 
