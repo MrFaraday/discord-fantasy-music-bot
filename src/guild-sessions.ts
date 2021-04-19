@@ -21,6 +21,10 @@ export async function getGuildSession (app: Client, guild: Guild): Promise<Guild
     return session
 }
 
+export function deleteGuildSession (guildId: string): void {
+    guildSessions.delete(guildId)
+}
+
 async function createGuildSession (
     app: Client,
     guild: Guild

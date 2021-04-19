@@ -18,7 +18,7 @@ export default async function helpHandler (
             \`fp [url]\` clear queue and play track(playlist) immediately, if it's playlist — shuffle it before\n\
             \`[0..9]\` play saved tracks immediately, equal to ***fp [saved url]***\n\
             \`help\` list of commands\n\
-            \`n\` skip curent track\n\
+            \`n\` skip current track\n\
             \`s\` stop playing and clear queue\n\
             \`v [0..200?]\` display or set volume\n\
             \`d\` disconnect from a voice channel, during idle it will disconnect after 5 minutes automatically\n\
