@@ -5,7 +5,7 @@ export default async function helpHandler (
     this: Client,
     { message, guild }: CommadHandlerParams
 ): Promise<Message> {
-    const withPrefix = `Current prefix: \`${guild.prefix}\`. Add prefix right before each command: \`${guild.prefix}p\` \`${guild.prefix}v\``
+    const withPrefix = `Current prefix: \`${guild.prefix}\`. Add prefix right before each command, e.g. \`${guild.prefix}p\` \`${guild.prefix}v\``
 
     const prefixPart = guild.prefix ? withPrefix : 'There is currently no prefix.'
 
@@ -27,12 +27,12 @@ export default async function helpHandler (
             \`prefix [value]\` set prefix for commands, enter ***none*** to remove it\n\
             \n\
             Command prefix:\n\
-            Mention me to call command without prefix: <@${
+            Mention me to use command without prefix: <@${
     this.user?.id ?? 'Unknown'
 }> \`[command]\`\n\
             ${prefixPart}\n\
             \n\
-            [***Support***](https://github.com/mr-faraday/discord-fantasy-music-bot/issues)\n\
+            [Support Server](https://discord.gg/a68EqssbfT)
         `
         )
 

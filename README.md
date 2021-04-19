@@ -7,7 +7,7 @@ This music bot designed for playing along with tabletop RPG (such as DnD or Path
 - Quick slots for tracks and playlists
 - ¯\\\_(ツ)_/¯
 
-If you interested to use it but have questions or suggestions for better experience leave an [issue](https://github.com/mr-faraday/discord-fantasy-music-bot/issues).
+If you interested to use it but have questions or suggestions for better experience leave an issue at this repository or go to the [Discord Support Server](https://discord.gg/a68EqssbfT).
 
 ## Usage
 
@@ -29,7 +29,7 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 -   `slots` show saved URLs
 -   `prefix [value]` set prefix for commands, enter ***none*** to remove it
 
-> Mention bot to call command without prefix: `@Shyrlonay [command]`
+> Mention bot to use command without prefix: `@Shyrlonay [command]`
 
 #### Supported sources
 
