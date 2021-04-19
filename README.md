@@ -2,25 +2,25 @@
 
 This music bot designed for playing along with tabletop RPG (such as DnD or Pathfinder) or other board games. I make it especially for using by GM(DM) to quick switching between differnt playlists or tracks. But you can use it as regular music bot.
 
-#### Features
+Bot invite link: [Shyrlonay - Fantasy Music Bot](https://discord.com/api/oauth2/authorize?client_id=667765780863254558&permissions=3164224&scope=bot)
+
+If you interested to use it but have questions or suggestions for better experience leave an issue at this repository or follow to [Discord Support Server](https://discord.gg/a68EqssbfT).
+
+### Features
 
 - Quick slots for tracks and playlists
 - ¯\\\_(ツ)_/¯
 
-If you interested to use it but have questions or suggestions for better experience leave an [issue](https://github.com/mr-faraday/discord-fantasy-music-bot/issues).
+### Usage
 
-## Usage
-
-Bot invite link: [Shyrlonay - Fantasy Music Bot](https://discord.com/api/oauth2/authorize?client_id=667765780863254558&permissions=3164224&scope=bot)
-
-Open link in a browser and choose the guild. When bot get command to play it automatically join to your voice channel. Default prefix: `-`, add it right before each command, e.g. `-help`, `-s`.
+Invite bot to a guild. When bot get command to play it automatically join to your voice channel. Default prefix: `-`, add it right before each command, e.g. `-help`, `-s`.
 
 #### Commands
 
--   `p [url]` play track(playlist) from URL or add to queue, max queue size is 50 items
--   `fp [url]` clear queue and play track(playlist) immediately, if it's playlist — shuffle it before
+-   `help [v?]` show list of commands, add ***v*** for more info
+-   `p [url]` play track(playlist) from URL or add to queue
+-   `fp [url]` clear queue and play shuffled playlist or track immediately
 -   `[0..9]` play saved tracks immediately, equal to ***fp [saved url]***
--   `help` list of commands
 -   `n` skip current track
 -   `s` stop playing and clear queue
 -   `v [0..200?]` display or set volume
@@ -29,7 +29,9 @@ Open link in a browser and choose the guild. When bot get command to play it aut
 -   `slots` show saved URLs
 -   `prefix [value]` set prefix for commands, enter ***none*** to remove it
 
-> Mention bot to call command without prefix: `@Shyrlonay [command]`
+> Max queue size is 50 items<br>
+> during idle it will leave voice channel after 5 minutes automatically<br>
+> Mention bot to use command without prefix: `@Shyrlonay [command]`
 
 #### Supported sources
 

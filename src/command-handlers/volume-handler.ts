@@ -15,17 +15,17 @@ export default async function volumeHandler (
     const currentVolume = guild.volume
 
     if (!volumeParam) {
-        return await message.reply(`Current volume: **${currentVolume}%**`)
+        return await message.channel.send(`Current volume: **${currentVolume}%**`)
     } else if (Number.isNaN(volumeParam)) {
-        return await message.reply('Must be a number')
+        return await message.channel.send('Must be a number')
     } else if (!Number.isInteger(volume)) {
-        return await message.reply('Must be integer')
+        return await message.channel.send('Must be integer')
     } else if (volume < 0 || volume > 200) {
-        return await message.reply('Must be from 0 to 200')
+        return await message.channel.send('Must be from 0 to 200')
     }
 
     await db.query(updateVolumeQuery, [volume, message.guild.id])
     guild.changeVolume(Number(volume))
 
-    return await message.reply(`Volume set to **${volume}%**`)
+    return await message.channel.send(`Volume set to **${volume}%**`)
 }
