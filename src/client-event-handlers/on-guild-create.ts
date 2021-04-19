@@ -63,6 +63,6 @@ const saluteEmbed = new MessageEmbed()
         'Now you can call me to play music at any time!\n\
          Join a voice channel and type `-p [link]` to play a song or playlist from YouTube.\n\
          \n\
-         Type `-help` to discover commands.\n\
+         Type `-help` or `-help v` to discover commands.\n\
          If you have questions or suggestions follow to [Support Server](https://discord.gg/a68EqssbfT).'
     )

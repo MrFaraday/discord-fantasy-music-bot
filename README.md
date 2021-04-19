@@ -17,10 +17,10 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 
 #### Commands
 
--   `p [url]` play track(playlist) from URL or add to queue, max queue size is 50 items
--   `fp [url]` clear queue and play track(playlist) immediately, if it's playlist — shuffle it before
+-   `help [v?]` show list of commands, add ***v*** for more info
+-   `p [url]` play track(playlist) from URL or add to queue
+-   `fp [url]` clear queue and play shuffled playlist or track immediately
 -   `[0..9]` play saved tracks immediately, equal to ***fp [saved url]***
--   `help` list of commands
 -   `n` skip current track
 -   `s` stop playing and clear queue
 -   `v [0..200?]` display or set volume
@@ -29,6 +29,8 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 -   `slots` show saved URLs
 -   `prefix [value]` set prefix for commands, enter ***none*** to remove it
 
+> Max queue size is 50 items<br>
+> during idle it will leave voice channel after 5 minutes automatically<br>
 > Mention bot to use command without prefix: `@Shyrlonay [command]`
 
 #### Supported sources
