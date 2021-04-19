@@ -2,18 +2,18 @@
 
 This music bot designed for playing along with tabletop RPG (such as DnD or Pathfinder) or other board games. I make it especially for using by GM(DM) to quick switching between differnt playlists or tracks. But you can use it as regular music bot.
 
-#### Features
+Bot invite link: [Shyrlonay - Fantasy Music Bot](https://discord.com/api/oauth2/authorize?client_id=667765780863254558&permissions=3164224&scope=bot)
+
+If you interested to use it but have questions or suggestions for better experience leave an issue at this repository or follow to [Discord Support Server](https://discord.gg/a68EqssbfT).
+
+### Features
 
 - Quick slots for tracks and playlists
 - ¯\\\_(ツ)_/¯
 
-If you interested to use it but have questions or suggestions for better experience leave an issue at this repository or go to the [Discord Support Server](https://discord.gg/a68EqssbfT).
+### Usage
 
-## Usage
-
-Bot invite link: [Shyrlonay - Fantasy Music Bot](https://discord.com/api/oauth2/authorize?client_id=667765780863254558&permissions=3164224&scope=bot)
-
-Open link in a browser and choose the guild. When bot get command to play it automatically join to your voice channel. Default prefix: `-`, add it right before each command, e.g. `-help`, `-s`.
+Invite bot to a guild. When bot get command to play it automatically join to your voice channel. Default prefix: `-`, add it right before each command, e.g. `-help`, `-s`.
 
 #### Commands
 
