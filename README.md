@@ -24,7 +24,7 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 -   `n` skip current track
 -   `s` stop playing and clear queue
 -   `v [0..200?]` display or set volume
--   `d` disconnect from a voice channel, during idle it will disconnect after 5 minutes automatically
+-   `d` disconnect from a voice channel
 -   `save [0..9] [url] [name?]` bind url to slot, rest of input will be name but it optional
 -   `slots` show saved URLs
 -   `prefix [value]` set prefix for commands, enter ***none*** to remove it
@@ -40,7 +40,7 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 
 > Make sure playlists are unlisted or public. There is slightest chance that playing may stuck if it bump into deleted video or video with limitations.
 
-#### Upcoming
+### Upcoming
 
 -   `queue` show queue
 -   `shuffle` shuffle queue
