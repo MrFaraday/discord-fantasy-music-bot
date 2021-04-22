@@ -1,5 +1,6 @@
 import { Client, Guild, MessageEmbed } from 'discord.js'
 import { EMBED_COLOR } from '../config'
+import { concat } from '../utils/string'
 
 export default async function onGuildCreate (
     this: Client,
@@ -60,9 +61,11 @@ const saluteEmbed = new MessageEmbed()
     .setColor(EMBED_COLOR)
     .setTitle('Hello and thanks for adding me!')
     .setDescription(
-        'Now you can call me to play music at any time!\n\
-         Join a voice channel and type `-p [link]` to play a song or playlist from YouTube.\n\
-         \n\
-         Type `-help` or `-help v` to discover commands.\n\
-         If you have questions or suggestions follow to [Support Server](https://discord.gg/a68EqssbfT).'
+        concat([
+            'Now you can call me to play music at any time!',
+            'Join a voice channel and type `-p [link]` to play a song or playlist from YouTube.',
+            '',
+            'Type `-help` or `-help v` to discover commands.',
+            'If you have questions or suggestions follow to [Support Server](https://discord.gg/a68EqssbfT).'
+        ])
     )
