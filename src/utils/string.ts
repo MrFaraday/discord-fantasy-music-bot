@@ -5,3 +5,6 @@ export const shortString = (str: string, maxLength = 40): string => {
         return str
     }
 }
+
+export const concat = (text: (string | false)[]): string =>
+    text.filter((s) => typeof s === 'string').join('\n')
