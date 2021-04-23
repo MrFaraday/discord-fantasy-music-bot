@@ -1,5 +1,7 @@
 import { Client, Message } from 'discord.js'
+import youtubeApi from '../api/youtube-api'
 import db from '../db'
+import { isValidInteger } from '../utils/number'
 
 const urlRegEx = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_+.~#?&//=]*)/
 
@@ -10,24 +12,24 @@ export default async function saveHandler (
     if (!message.guild) return
 
     const [, slotParam, url] = args
-    const slotName = args.slice(3).join(' ')
 
+    const slotName = args.slice(3).join(' ')
     const slot = Number(slotParam)
 
     if (!slotParam) {
         return await message.channel.send('No params provided')
-    } else if (Number.isNaN(slotParam)) {
-        return await message.channel.send('Slot must be a number')
-    } else if (!Number.isInteger(slot)) {
-        return await message.channel.send('Slot number must be integer')
-    } else if (slot < 0 || slot > 9) {
-        return await message.channel.send('Slot number must be from 0 to 9')
+    } else if (!isValidInteger(slot, 0, 9)) {
+        return await message.channel.send('Slot must be an integer from 0 to 9')
     } else if (!url) {
-        return await message.channel.send('No URL provided')
+        return await message.channel.send('No link provided')
     } else if (url.length > 500) {
-        return await message.channel.send('Too long URL, maximum 500 of characters')
+        return await message.channel.send('Link is too long, maximum 500 of characters')
     } else if (!urlRegEx.test(url)) {
-        return await message.channel.send('It\'s not an URL, maybe')
+        return await message.channel.send('It\'s not a link, maybe')
+    } else if (!(await youtubeApi.isSourceExist(url))) {
+        return await message.channel.send(
+            'Sorry, I followed a link and have found nothing'
+        )
     } else if (slotName.length > 80) {
         return await message.channel.send('Name is too long, maximum 80 of characters')
     }
