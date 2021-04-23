@@ -4,7 +4,10 @@ import GuildSessionFactory from './guild-session-factory'
 
 const guildSessions = new Map<string, GuildSession>()
 
-export async function getGuildSession (client: Client, guild: Guild): Promise<GuildSession> {
+export async function getGuildSession (
+    client: Client,
+    guild: Guild
+): Promise<GuildSession> {
     const session = guildSessions.get(guild.id)
 
     if (!session) {

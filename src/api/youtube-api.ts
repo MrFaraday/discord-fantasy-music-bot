@@ -8,6 +8,7 @@ if (!YOUTUBE_API_KEY) {
 }
 
 const videoIdRegEx = /[?&]v=([^&?#/]+)/
+const shortVideoIdRegEx = /^https?:\/\/youtu\.be\/([^&?#/]+)$/
 const listIdRegEx = /[?&]list=([^&?#/]+)/
 
 interface ListItem {
@@ -16,7 +17,7 @@ interface ListItem {
 }
 
 class YoutubeApi {
-    key: string
+    private key: string
 
     constructor (apiKey: string) {
         this.key = apiKey
@@ -40,7 +41,11 @@ class YoutubeApi {
                 videoId: snippet.resourceId.videoId
             }))
         } catch (error) {
-            assert(error)
+            if (axios.isAxiosError(error) && error.response?.status === 404) {
+                throw new YoutubeApiError('Playlist not found', YoutubeApiError.NOT_FOUND)
+            } else {
+                assert(error)
+            }
         }
     }
 
@@ -54,7 +59,7 @@ class YoutubeApi {
             })
 
             if (data.items.length === 0) {
-                throw new Error('Video not found')
+                throw new YoutubeApiError('Video not found', YoutubeApiError.NOT_FOUND)
             }
 
             return data.items[0].snippet.title
@@ -65,9 +70,10 @@ class YoutubeApi {
 
     parseUrl (url: string) {
         const [, videoId] = videoIdRegEx.exec(url) ?? []
+        const [, shortVideoId] = shortVideoIdRegEx.exec(url) ?? []
         const [, listId] = listIdRegEx.exec(url) ?? []
 
-        return { videoId, listId }
+        return { videoId: videoId ?? shortVideoId, listId }
     }
 
     /**
@@ -106,6 +112,32 @@ class YoutubeApi {
             }
         })
     }
+
+    async isSourceExist (url: string) {
+        try {
+            const parseData = this.parseUrl(url)
+
+            if (parseData.videoId) {
+                await this.issueTrack(parseData.videoId)
+            } else if (parseData.listId) {
+                await this.issueTracks(parseData.listId)
+            } else {
+                throw new YoutubeApiError('Invalid URL', YoutubeApiError.BAD)
+            }
+
+            return true
+        } catch (error) {
+            if (
+                error instanceof YoutubeApiError &&
+                (error.code === YoutubeApiError.NOT_FOUND ||
+                    error.code === YoutubeApiError.BAD)
+            ) {
+                return false
+            } else {
+                throw error
+            }
+        }
+    }
 }
 
 function assert (error: Error): never {
@@ -121,6 +153,19 @@ function assert (error: Error): never {
 const youtubeApi = new YoutubeApi(YOUTUBE_API_KEY)
 
 export default youtubeApi
+
+export class YoutubeApiError {
+    static NOT_FOUND = 404
+    static BAD = 400
+
+    message: string
+    code: number
+
+    constructor (message: string, code: number) {
+        this.message = message
+        this.code = code
+    }
+}
 
 // Responses
 

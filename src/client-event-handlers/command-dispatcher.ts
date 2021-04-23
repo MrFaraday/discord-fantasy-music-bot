@@ -28,7 +28,7 @@ export default async function commandDispatcher (
 }
 
 const getCommandHandler = (args: string[]) => {
-    switch (args[0]) {
+    switch (args[0]?.toLocaleLowerCase()) {
         case 'help':
             return commandHandlers.helpHandler
         case 'hello':
