@@ -34,8 +34,6 @@ export default async function saveHandler (
         return await message.channel.send('Name is too long, maximum 80 of characters')
     }
 
-    guild.slots.set(slot, { name: slotName, value: url })
-
     const client = await db.getClient()
     const guildId = message.guild.id
 
@@ -68,9 +66,11 @@ export default async function saveHandler (
             )
         }
 
+        guild.slots.set(slot, { name: slotName, value: url })
+
         return await message.channel.send('Saved!')
     } catch (error) {
-        // update error
+        console.log(error)
         return await message.channel.send('Something went wrong, I\'ll find that soon')
     } finally {
         client.release()

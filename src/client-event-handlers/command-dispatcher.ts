@@ -61,6 +61,9 @@ const getCommandHandler = (args: string[]) => {
         case 'save':
             return commandHandlers.saveHandler
 
+        case 'drop':
+            return commandHandlers.dropHandler
+
         // Next song
         case 'n':
             return commandHandlers.nextHandler

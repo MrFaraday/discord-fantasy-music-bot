@@ -9,6 +9,7 @@ import saveHandler from './save-handler'
 import slotsHandler from './slots-handler'
 import stopHandler from './stop-handler'
 import volumeHandler from './volume-handler'
+import dropHandler from './drop-handler'
 
 export default {
     disconnectHandler,
@@ -21,5 +22,6 @@ export default {
     volumeHandler,
     playHandler,
     playSlotHandler,
-    slotsHandler
+    slotsHandler,
+    dropHandler
 }

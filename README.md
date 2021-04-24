@@ -25,8 +25,9 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 -   `s` stop playing and clear queue
 -   `v [0..200?]` display or set volume
 -   `d` disconnect from a voice channel
--   `save [0..9] [url] [name?]` bind url to slot, rest of input will be name but it optional
 -   `slots` show saved URLs
+-   `save [0..9] [url] [name?]` bind url to slot, rest of input will be name but it optional
+-   `drop [0..9]` delete binded link
 -   `prefix [value]` set prefix for commands, enter ***none*** to remove it
 
 > Max queue size is 50 items.<br>
