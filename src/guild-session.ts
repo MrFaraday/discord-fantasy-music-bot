@@ -1,4 +1,4 @@
-import { Guild, StreamDispatcher, VoiceChannel, VoiceConnection } from 'discord.js'
+import { Guild, VoiceChannel, VoiceConnection } from 'discord.js'
 import shuffle from 'lodash.shuffle'
 import { MAX_QUEUE_LENGTH } from './config'
 import fadeOut from './easing/fade-out'
@@ -18,7 +18,6 @@ export default class GuildSession {
     queue: Track[] = []
 
     private connection: VoiceConnection | null = null
-    private dispatcher: StreamDispatcher | null = null
     private disconnectTimeout: NodeJS.Timeout | null = null
 
     constructor ({ guild, slots, prefix, volume }: SessionConstructorParams) {
@@ -90,6 +89,16 @@ export default class GuildSession {
         return !!this.dispatcher
     }
 
+    async switchChannel (channel: VoiceChannel): Promise<boolean> {
+        if (this.connection) {
+            this.connection = await channel.join()
+            this.registerConnectionListeners()
+            return true
+        } else {
+            return false
+        }
+    }
+
     disconnect (): void {
         this.queue = []
 
@@ -102,9 +111,15 @@ export default class GuildSession {
         }
     }
 
+    get channel (): VoiceChannel | null {
+        return this.connection?.channel ?? null
+    }
+
+    private get dispatcher () {
+        return this.connection?.dispatcher
+    }
     private get dispatcherVolume () {
-        const v = 0.005 * this.volume
-        return v
+        return 0.005 * this.volume
     }
 
     /**
@@ -112,17 +127,9 @@ export default class GuildSession {
      */
     private async connect (channel: VoiceChannel) {
         this.connection = await channel.join()
+        this.registerConnectionListeners()
         await this.connection.voice?.setSelfDeaf(true)
         await this.createDispatcher()
-
-        this.connection.on('disconnect', () => {
-            this.queue = []
-            this.connection = null
-
-            if (this.dispatcher) {
-                this.dispatcher.end()
-            }
-        })
     }
 
     /**
@@ -135,14 +142,13 @@ export default class GuildSession {
 
         if (!track) {
             this.scheduleDisconnect()
-            this.dispatcher = null
             return
         }
 
         try {
             const stream = await track.getStream()
 
-            this.dispatcher = this.connection.play(stream, {
+            const dispatcher = this.connection.play(stream, {
                 volume: this.dispatcherVolume,
                 type: 'opus'
             })
@@ -151,11 +157,12 @@ export default class GuildSession {
                 clearTimeout(this.disconnectTimeout)
             }
 
-            // End of track
-            this.dispatcher.on('end', () => void this.createDispatcher())
-            this.dispatcher.on('finish', () => void this.createDispatcher())
+            const next = () => void this.createDispatcher()
 
-            this.dispatcher.on('error', () => void this.createDispatcher())
+            // End of track
+            dispatcher.on('end', next)
+            dispatcher.on('finish', next)
+            dispatcher.on('error', next)
         } catch (error) {
             if (
                 error instanceof Error &&
@@ -164,8 +171,21 @@ export default class GuildSession {
                 this.queue.unshift(track)
             }
 
+            console.warn('createDispatcher:', error)
+
             await this.createDispatcher()
         }
+    }
+
+    private registerConnectionListeners () {
+        this.connection?.on('disconnect', () => {
+            this.queue = []
+            this.connection = null
+
+            if (this.dispatcher) {
+                this.dispatcher.end()
+            }
+        })
     }
 
     private scheduleDisconnect () {

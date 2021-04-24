@@ -80,6 +80,9 @@ const getCommandHandler = (args: string[]) => {
         case 'd':
             return commandHandlers.disconnectHandler
 
+        case 'summon':
+            return commandHandlers.summonHandler
+
         default:
             return () => void 0
     }
