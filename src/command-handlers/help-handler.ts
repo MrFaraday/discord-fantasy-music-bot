@@ -7,7 +7,7 @@ export default async function helpHandler (
     { message, args }: CommadHandlerParams
 ): Promise<void | Message> {
     if (!this.user) return
-    const isVerbose = 'v' === args[1]
+    const isVerbose = 'v' === args[1].toLowerCase()
 
     const verbosePart = concat([
         '',

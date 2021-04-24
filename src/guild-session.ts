@@ -112,6 +112,7 @@ export default class GuildSession {
      */
     private async connect (channel: VoiceChannel) {
         this.connection = await channel.join()
+        await this.connection.voice?.setSelfDeaf(true)
         await this.createDispatcher()
 
         this.connection.on('disconnect', () => {
