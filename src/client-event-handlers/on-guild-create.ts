@@ -1,5 +1,6 @@
 import { Client, Guild, MessageEmbed } from 'discord.js'
 import { EMBED_COLOR } from '../config'
+import { isGuildText } from '../utils/channel'
 import { concat } from '../utils/string'
 
 export default async function onGuildCreate (
@@ -12,8 +13,7 @@ export default async function onGuildCreate (
 
     return (
         (await tryToSaluteOnSystemChannel(guild)) ||
-        (await tryToSaluteOnRandomChannel(guild)) ||
-        (await tryToSaluteOwner(guild))
+        (await tryToSaluteOnRandomChannel(guild))
     )
 }
 
@@ -22,39 +22,27 @@ const tryToSaluteOnSystemChannel = async (guild: Guild) => {
         if (guild.systemChannel) {
             await guild.systemChannel.send(saluteEmbed)
             return true
+        } else {
+            return false
         }
-
-        return false
     } catch (error) {
         return false
     }
 }
 
 const tryToSaluteOnRandomChannel = async (guild: Guild) => {
-    const channels = guild.channels.cache.array()
+    const channels = guild.channels.cache.array().filter(isGuildText)
 
     for (const guildChannel of channels) {
-        if (guildChannel.type === 'text' && guildChannel.isText()) {
-            try {
-                await guildChannel.send(saluteEmbed)
-                return true
-            } catch (error) {
-                // wrong channel -> next
-            }
+        try {
+            await guildChannel.send(saluteEmbed)
+            return true
+        } catch (error) {
+            // wrong channel -> next
         }
     }
 
     return false
-}
-
-const tryToSaluteOwner = async (guild: Guild) => {
-    try {
-        const owner = await guild.members.fetch(guild.ownerID)
-        await owner.send(saluteEmbed)
-        return true
-    } catch (error) {
-        return false
-    }
 }
 
 const saluteEmbed = new MessageEmbed()

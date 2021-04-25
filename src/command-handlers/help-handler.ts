@@ -7,7 +7,7 @@ export default async function helpHandler (
     { message, args }: CommadHandlerParams
 ): Promise<void | Message> {
     if (!this.user) return
-    const isVerbose = 'v' === args[1]
+    const isVerbose = 'v' === args[1]?.toLowerCase()
 
     const verbosePart = concat([
         '',
@@ -28,15 +28,17 @@ export default async function helpHandler (
         .setDescription(
             concat([
                 '`help [v?]` show list of commands, add ***v*** for more info',
-                '`p [url]` play track(playlist) from URL or add to queue',
-                '`fp [url]` clear queue and play shuffled playlist or track immediately',
-                '`[0..9]` play saved tracks immediately, equal to ***fp [saved url]***',
+                '`p [link]` play track(playlist) from link or add to queue',
+                '`fp [link]` clear queue and play shuffled playlist or track immediately',
+                '`[0..9]` play saved tracks immediately, equal to ***fp [saved link]***',
                 '`n` skip current track',
                 '`s` stop playing and clear queue',
                 '`v [0..200?]` display or set volume',
                 '`d` disconnect from a voice channel',
-                '`save [0..9] [url] [name?]` bind url to number, rest of input will be name but it optional',
-                '`slots` show saved URLs',
+                '`slots` show saved links',
+                '`save [0..9] [link] [name?]` bind link to number, rest of input will be name but it optional',
+                '`drop [0..9]` delete binded link',
+                '`summon` attract bot to your voice channel while playing or idle',
                 '`prefix [value]` set prefix for commands, enter ***none*** to remove it',
                 isVerbose && verbosePart
             ])

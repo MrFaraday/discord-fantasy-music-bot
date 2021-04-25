@@ -21,6 +21,9 @@ export default class GuildSession {
     private dispatcher: StreamDispatcher | null = null
     private disconnectTimeout: NodeJS.Timeout | null = null
 
+    private isRepeatLocked = false
+    private terminationPromise: Promise<void> | null = null
+
     constructor ({ guild, slots, prefix, volume }: SessionConstructorParams) {
         this.guild = guild
         this.volume = volume
@@ -33,128 +36,104 @@ export default class GuildSession {
 
         if (!this.connection) {
             await this.connect(channel)
+            await this.createDispatcher()
         } else if (!this.dispatcher) {
             await this.createDispatcher()
         }
     }
 
-    /**
-     * Force playing
-     */
     async forcePlay (channel: VoiceChannel, tracks: Track[]): Promise<void> {
         this.queue = shuffle(tracks)
 
         if (!this.connection) {
             await this.connect(channel)
-        } else if (this.dispatcher) {
-            fadeOut(this.dispatcher)
-        } else {
             await this.createDispatcher()
+        } else {
+            await this.createDispatcher({ endCurrent: true })
         }
     }
 
-    /**
-     * Volume changing
-     */
+    async connect (channel: VoiceChannel): Promise<void> {
+        this.connection = await channel.join()
+        await this.connection?.voice?.setSelfDeaf(true)
+        this.connection?.on('disconnect', () => {
+            this.queue = []
+            this.connection = null
+            void this.requestDispatcherTermination()
+        })
+    }
+
+    disconnect (): void {
+        this.connection?.disconnect()
+    }
+
     changeVolume (volume: number): void {
         this.volume = volume
+        this.dispatcher?.setVolume(this.dispatcherVolume)
+    }
 
+    async skip (): Promise<void> {
         if (this.dispatcher) {
-            this.dispatcher.setVolume(this.dispatcherVolume)
+            await this.createDispatcher({ endCurrent: true })
         }
     }
 
-    /**
-     * Skipping
-     */
-    skip (): void {
-        if (this.dispatcher) {
-            fadeOut(this.dispatcher)
-        }
+    async stop (): Promise<void> {
+        this.queue = []
+        await this.skip()
     }
 
-    /**
-     * Stopping
-     */
-    stop (): void {
-        if (this.dispatcher) {
-            this.queue = []
-            fadeOut(this.dispatcher)
-        }
-    }
-
-    /**
-     * Checking playing status
-     */
     isPlaying (): boolean {
         return !!this.dispatcher
     }
 
-    disconnect (): void {
-        this.queue = []
-
-        if (this.dispatcher) {
-            this.dispatcher.end()
-        }
-
-        if (this.connection) {
-            this.connection.disconnect()
-        }
+    get channel (): VoiceChannel | null {
+        return this.connection?.channel ?? null
     }
 
     private get dispatcherVolume () {
-        const v = 0.005 * this.volume
-        return v
+        return 0.005 * this.volume
     }
 
-    /**
-     * Connecting to a voice channel
-     */
-    private async connect (channel: VoiceChannel) {
-        this.connection = await channel.join()
-        await this.createDispatcher()
-
-        this.connection.on('disconnect', () => {
-            this.queue = []
-            this.connection = null
-
-            if (this.dispatcher) {
-                this.dispatcher.end()
-            }
-        })
-    }
-
-    /**
-     * Creating dispatcher and event listeners
-     */
-    private async createDispatcher () {
+    private async createDispatcher ({ endCurrent = false } = {}) {
         if (!this.connection) return
 
         const track = this.queue.shift()
 
         if (!track) {
             this.scheduleDisconnect()
-            this.dispatcher = null
+            if (endCurrent) await this.requestDispatcherTermination()
+
             return
         }
 
         try {
+            if (endCurrent) {
+                this.isRepeatLocked = true
+                void this.requestDispatcherTermination()
+            }
+
             const stream = await track.getStream()
 
-            this.dispatcher = this.connection.play(stream, {
-                volume: this.dispatcherVolume,
-                type: 'opus'
-            })
+            await this.terminationPromise
+            this.isRepeatLocked = false
+
+            this.dispatcher = this.connection
+                .play(stream, {
+                    volume: this.dispatcherVolume,
+                    type: 'opus',
+                    bitrate: 96
+                })
+                .on('finish', () => this.onDispatcherFinish())
+                .on('error', (err) => {
+                    console.error('Dispatcher error:', err)
+                    this.onDispatcherFinish()
+                })
 
             if (this.disconnectTimeout) {
                 clearTimeout(this.disconnectTimeout)
+                this.disconnectTimeout = null
             }
-
-            // End of track
-            this.dispatcher.on('end', () => void this.createDispatcher())
-            this.dispatcher.on('finish', () => void this.createDispatcher())
-
-            this.dispatcher.on('error', () => void this.createDispatcher())
         } catch (error) {
             if (
                 error instanceof Error &&
@@ -163,7 +142,35 @@ export default class GuildSession {
                 this.queue.unshift(track)
             }
 
+            console.warn('createDispatcher:', error)
+
             await this.createDispatcher()
+        }
+    }
+
+    private onDispatcherFinish () {
+        if (!this.isRepeatLocked) {
+            this.dispatcher = null
+            void this.createDispatcher()
+        }
+    }
+
+    private async requestDispatcherTermination () {
+        await (this.terminationPromise = this.terminateDispatcher())
+    }
+    private async terminateDispatcher () {
+        if (this.dispatcher) {
+            await fadeOut(this.dispatcher)
+            await new Promise((res) => {
+                if (!this.dispatcher) {
+                    res(void 0)
+                } else {
+                    this.dispatcher.end(() => {
+                        this.dispatcher = null
+                        res(void 0)
+                    })
+                }
+            })
         }
     }
 

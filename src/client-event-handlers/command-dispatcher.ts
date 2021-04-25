@@ -61,6 +61,9 @@ const getCommandHandler = (args: string[]) => {
         case 'save':
             return commandHandlers.saveHandler
 
+        case 'drop':
+            return commandHandlers.dropHandler
+
         // Next song
         case 'n':
             return commandHandlers.nextHandler
@@ -76,6 +79,9 @@ const getCommandHandler = (args: string[]) => {
         // Disconnect
         case 'd':
             return commandHandlers.disconnectHandler
+
+        case 'summon':
+            return commandHandlers.summonHandler
 
         default:
             return () => void 0
