@@ -38,6 +38,7 @@ export default async function helpHandler (
                 '`slots` show saved links',
                 '`save [0..9] [link] [name?]` bind link to number, rest of input will be name but it optional',
                 '`drop [0..9]` delete binded link',
+                '`summon` attract bot to your voice channel while playing or idle',
                 '`prefix [value]` set prefix for commands, enter ***none*** to remove it',
                 isVerbose && verbosePart
             ])

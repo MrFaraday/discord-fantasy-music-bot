@@ -28,6 +28,7 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 -   `slots` show saved URLs
 -   `save [0..9] [url] [name?]` bind url to slot, rest of input will be name but it optional
 -   `drop [0..9]` delete binded link
+-   `summon` attract bot to your voice channel while playing or idle
 -   `prefix [value]` set prefix for commands, enter ***none*** to remove it
 
 > Max queue size is 50 items.<br>
@@ -46,7 +47,6 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 -   `queue` show queue
 -   `shuffle` shuffle queue
 -   `now` show playing track
--   `summon` attract bot to your voice channel
 -   pausing and control via reactions
 
 ## Contributing
