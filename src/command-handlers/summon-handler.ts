@@ -13,7 +13,7 @@ export default async function summonHandler (
     }
 
     if (channel.id !== guild.channel?.id) {
-        return await guild.switchChannel(channel)
+        return await guild.connect(channel)
     } else {
         return await message.channel.send('I\'m here')
     }

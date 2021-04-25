@@ -19,7 +19,7 @@ export default async function saveHandler (
     if (!slotParam) {
         return await message.channel.send('No params provided')
     } else if (!isValidInteger(slot, 0, 9)) {
-        return await message.channel.send('Slot must be an integer from 0 to 9')
+        return await message.channel.send('Slot number must be an integer from 0 to 9')
     } else if (!url) {
         return await message.channel.send('No link provided')
     } else if (url.length > 500) {
