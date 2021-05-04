@@ -2,6 +2,7 @@ import { Client, Message } from 'discord.js'
 import youtubeApi from '../api/youtube-api'
 import db from '../db'
 import { isValidInteger } from '../utils/number'
+import { shortString } from '../utils/string'
 
 const urlRegEx = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_+.~#?&//=]*)/
 
@@ -66,7 +67,7 @@ export default async function saveHandler (
             )
         }
 
-        guild.slots.set(slot, { name: slotName, value: url })
+        guild.slots.set(slot, { name: slotName || shortString(url), value: url })
 
         return await message.channel.send('Saved!')
     } catch (error) {

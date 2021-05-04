@@ -9,6 +9,7 @@ export default async function slotsHandler (
     const slots = Array.from(guild.slots)
 
     const slotRecords = slots
+        .sort(([a], [b]) => a - b)
         .map(
             ([slot, { name, value }]) =>
                 `${slot}: [${name ?? shortString(value)}](${value})`
