@@ -101,7 +101,6 @@ export default class GuildSession {
         const track = this.queue.shift()
 
         if (!track) {
-            this.scheduleDisconnect()
             if (endCurrent) await this.requestDispatcherTermination()
 
             return
@@ -130,10 +129,7 @@ export default class GuildSession {
                     this.onDispatcherFinish()
                 })
 
-            if (this.disconnectTimeout) {
-                clearTimeout(this.disconnectTimeout)
-                this.disconnectTimeout = null
-            }
+            this.cancelScheduleDisconnect()
         } catch (error) {
             if (
                 error instanceof Error &&
@@ -149,6 +145,8 @@ export default class GuildSession {
     }
 
     private onDispatcherFinish () {
+        this.scheduleDisconnect()
+
         if (!this.isRepeatLocked) {
             this.dispatcher = null
             void this.createDispatcher()
@@ -171,6 +169,13 @@ export default class GuildSession {
                     })
                 }
             })
+        }
+    }
+
+    private cancelScheduleDisconnect () {
+        if (this.disconnectTimeout) {
+            clearTimeout(this.disconnectTimeout)
+            this.disconnectTimeout = null
         }
     }
 
