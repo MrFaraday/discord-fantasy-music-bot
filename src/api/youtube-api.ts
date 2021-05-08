@@ -1,7 +1,7 @@
 import { URL } from 'url'
 import axios from 'axios'
 import { MAX_QUEUE_LENGTH, YOUTUBE_API_KEY } from '../config'
-import ytdl from 'ytdl-core-discord'
+import ytdl from 'discord-ytdl-core'
 
 if (!YOUTUBE_API_KEY) {
     throw new Error('Environment variable YOUTUBE_API_KEY not found')
@@ -91,7 +91,14 @@ class YoutubeApi {
 
         return {
             title: await this.getVideoTitle(videoId),
-            getStream: () => ytdl(url),
+            getStream: () =>
+                Promise.resolve(
+                    ytdl(url, {
+                        filter: 'audioonly',
+                        opusEncoded: true,
+                        encoderArgs: ['-af', 'bass=g=10,dynaudnorm=f=200']
+                    })
+                ),
             meta: [['url', url]]
         }
     }
@@ -107,7 +114,14 @@ class YoutubeApi {
 
             return {
                 title,
-                getStream: () => ytdl(url),
+                getStream: () =>
+                    Promise.resolve(
+                        ytdl(url, {
+                            filter: 'audioonly',
+                            opusEncoded: true,
+                            encoderArgs: ['-af', 'bass=g=10,dynaudnorm=f=200']
+                        })
+                    ),
                 meta: [['url', url]]
             }
         })
