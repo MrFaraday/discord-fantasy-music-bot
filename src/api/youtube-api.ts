@@ -2,13 +2,19 @@ import { URL } from 'url'
 import axios from 'axios'
 import { MAX_QUEUE_LENGTH, YOUTUBE_API_KEY } from '../config'
 import ytdl from 'ytdl-core-discord'
+import urlParser from 'js-video-url-parser'
+import { VideoInfo } from 'js-video-url-parser/lib/urlParser'
+
+interface ParseResult extends VideoInfo {
+    list?: string
+}
 
 if (!YOUTUBE_API_KEY) {
     throw new Error('Environment variable YOUTUBE_API_KEY not found')
 }
 
 const videoIdRegEx = /[?&]v=([^&?#/]+)/
-const shortVideoIdRegEx = /^https?:\/\/youtu\.be\/([^&?#/]+)$/
+const shortVideoIdRegEx = /^https?:\/\/youtu\.be\/([^&?#/]+).*(?:[?&]t=([^&?#/]+))?/
 const listIdRegEx = /[?&]list=([^&?#/]+)/
 
 interface ListItem {
@@ -68,12 +74,8 @@ class YoutubeApi {
         }
     }
 
-    parseUrl (url: string) {
-        const [, videoId] = videoIdRegEx.exec(url) ?? []
-        const [, shortVideoId] = shortVideoIdRegEx.exec(url) ?? []
-        const [, listId] = listIdRegEx.exec(url) ?? []
-
-        return { videoId: videoId ?? shortVideoId, listId }
+    parseUrl (url: string): ParseResult | undefined {
+        return urlParser.parse(url)
     }
 
     /**
@@ -91,7 +93,7 @@ class YoutubeApi {
 
         return {
             title: await this.getVideoTitle(videoId),
-            getStream: () => ytdl(url),
+            getStream: () => ytdl(url, { begin: 30 * 1000 }),
             meta: [['url', url]]
         }
     }
@@ -117,10 +119,14 @@ class YoutubeApi {
         try {
             const parseData = this.parseUrl(url)
 
-            if (parseData.videoId) {
-                await this.issueTrack(parseData.videoId)
-            } else if (parseData.listId) {
-                await this.issueTracks(parseData.listId)
+            if (!parseData) {
+                throw new YoutubeApiError('URL parse error', YoutubeApiError.BAD)
+            }
+
+            if (parseData.id) {
+                await this.issueTrack(parseData.id)
+            } else if (parseData.list) {
+                await this.issueTracks(parseData.list)
             } else {
                 throw new YoutubeApiError('Invalid URL', YoutubeApiError.BAD)
             }
