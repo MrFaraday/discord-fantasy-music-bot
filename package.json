@@ -1,6 +1,5 @@
 {
     "name": "discord-fantasy-music-bot",
-    "version": "1.6.1",
     "engines": {
         "node": "14.x"
     },
