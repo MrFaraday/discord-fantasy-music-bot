@@ -140,7 +140,7 @@ class YoutubeApi {
     }
 }
 
-function assert (error: Error): never {
+function assert (error: unknown): never {
     if (axios.isAxiosError(error) && error.response) {
         throw new Error(`request failed, status: ${error.response.status}`)
     } else if (axios.isAxiosError(error) && error.request) {
