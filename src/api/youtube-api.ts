@@ -49,6 +49,43 @@ class YoutubeApi {
         }
     }
 
+    async search (query: string): Promise<Track> {
+        let data: YoutubeSearchListResponse
+
+        try {
+            const url = new URL('https://www.googleapis.com/youtube/v3/search')
+            url.searchParams.append('key', this.key)
+
+            const response = await axios.get<YoutubeSearchListResponse>(url.href, {
+                params: {
+                    part: 'snippet',
+                    maxResults: 1,
+                    type: 'video',
+                    safeSearch: 'moderate',
+                    order: 'relevance',
+                    q: query
+                }
+            })
+
+            data = response.data
+        } catch (error) {
+            assert(error)
+        }
+
+        if (data.items.length === 0) {
+            throw new YoutubeApiError('Not fonund', YoutubeApiError.NOT_FOUND)
+        }
+
+        const result = data.items[0]
+        const url = this.buildPlayLink(result.id.videoId)
+
+        return {
+            title: result.snippet.title,
+            getStream: () => ytdl(url),
+            meta: [['url', url]]
+        }
+    }
+
     async getVideoTitle (id: string): Promise<string> {
         try {
             const url = new URL('https://www.googleapis.com/youtube/v3/videos')
@@ -189,20 +226,35 @@ interface YoutubeVideoListResponse extends YoutubeResponse {
     items: YoutubeVideoListResponseItem[]
 }
 
+interface YoutubeSearchListResponse extends YoutubeResponse {
+    kind: 'youtube#searchListResponse'
+    items: YoutubeSearchResponseItem[]
+}
+
 // Items
 
 interface ResponseItem {
     etag: unknown
-    id: string
 }
 
 interface YoutubePlaylistItemListResponseItem extends ResponseItem {
+    id: string
     kind: 'youtube#playlistItem'
     snippet: PlaylistItemSnippet
 }
 
 interface YoutubeVideoListResponseItem extends ResponseItem {
+    id: string
     kind: 'youtube#video'
+    snippet: VideoSnippet
+}
+
+interface YoutubeSearchResponseItem extends ResponseItem {
+    id: {
+        kind: 'youtube#video' | string
+        videoId: string
+    }
+    kind: 'youtube#searchResult'
     snippet: VideoSnippet
 }
 

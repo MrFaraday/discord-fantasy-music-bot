@@ -8,16 +8,16 @@ export default async function playHandler (
 ): Promise<void | Message> {
     if (!message.member) return
 
-    const [mode, link] = args
+    const [mode, ...query] = args
 
-    if (!message.member.voice.channel) {
-        return await message.channel.send('You are not connected to a voice channel')
-    } else if (!link) {
+    if (query.length === 0) {
         return await message.channel.send('What to play?')
+    } else if (!message.member.voice.channel) {
+        return await message.channel.send('You are not connected to a voice channel')
     }
 
     try {
-        const tracks = await issueTracks(link)
+        const tracks = await issueTracks(query.join(' '))
 
         if (mode === 'p') {
             return await guild.play(message.member.voice.channel, tracks)

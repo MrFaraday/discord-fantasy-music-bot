@@ -2,7 +2,7 @@ import { Pool, PoolClient, QueryResult } from 'pg'
 import { DATABASE_URL } from '../config'
 
 if (!DATABASE_URL) {
-    throw new Error('Environment variable TOKEN not found')
+    throw new Error('Environment variable DATABASE_URL not found')
 }
 
 const pool = new Pool({
