@@ -17,7 +17,7 @@ export default async function playHandler (
     }
 
     try {
-        const tracks = await issueTracks(query.join(' '))
+        const tracks = await issueTracks(query.join(' '), message.channel)
 
         if (mode === 'p') {
             return await guild.play(message.member.voice.channel, tracks)

@@ -1,7 +1,11 @@
+import { DMChannel, NewsChannel, TextChannel } from 'discord.js'
 import youtubeApi from './api/youtube-api'
 import SourceError from './source-error'
 
-export default async function issueTracks (query: string): Promise<Track[]> {
+export default async function issueTracks (
+    query: string,
+    channel: TextChannel | DMChannel | NewsChannel
+): Promise<Track[]> {
     let tracks: Track[] = []
 
     const urlData = youtubeApi.parseUrl(query)
@@ -19,9 +23,11 @@ export default async function issueTracks (query: string): Promise<Track[]> {
         throw new SourceError('Query is too short')
     } else {
         const track = await youtubeApi.search(query)
-        console.log(track.meta?.find(([tag]) => tag === 'url'))
-
         tracks = [track]
+    }
+
+    for (const track of tracks) {
+        track.dispatchetFrom = channel
     }
 
     return tracks

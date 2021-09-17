@@ -2,6 +2,7 @@ import { URL } from 'url'
 import axios from 'axios'
 import { MAX_QUEUE_LENGTH, YOUTUBE_API_KEY } from '../config'
 import ytdl from 'ytdl-core-discord'
+import yts from 'yt-search'
 
 if (!YOUTUBE_API_KEY) {
     throw new Error('Environment variable YOUTUBE_API_KEY not found')
@@ -50,39 +51,28 @@ class YoutubeApi {
     }
 
     async search (query: string): Promise<Track> {
-        let data: YoutubeSearchListResponse
+        let data: yts.SearchResult
 
         try {
             const url = new URL('https://www.googleapis.com/youtube/v3/search')
             url.searchParams.append('key', this.key)
 
-            const response = await axios.get<YoutubeSearchListResponse>(url.href, {
-                params: {
-                    part: 'snippet',
-                    maxResults: 1,
-                    type: 'video',
-                    safeSearch: 'moderate',
-                    order: 'relevance',
-                    q: query
-                }
-            })
-
-            data = response.data
+            data = await yts({ query, pages: 1 })
         } catch (error) {
             assert(error)
         }
 
-        if (data.items.length === 0) {
+        if (data.videos.length === 0) {
             throw new YoutubeApiError('Not fonund', YoutubeApiError.NOT_FOUND)
         }
 
-        const result = data.items[0]
-        const url = this.buildPlayLink(result.id.videoId)
+        const result = data.videos[0]
+        const url = this.buildPlayLink(result.videoId)
 
         return {
-            title: result.snippet.title,
+            title: result.title,
             getStream: () => ytdl(url),
-            meta: [['url', url]]
+            meta: [['url', url], ['thumbnail', result.thumbnail]]
         }
     }
 

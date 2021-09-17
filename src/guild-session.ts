@@ -1,6 +1,12 @@
-import { Guild, StreamDispatcher, VoiceChannel, VoiceConnection } from 'discord.js'
+import {
+    Guild,
+    MessageEmbed,
+    StreamDispatcher,
+    VoiceChannel,
+    VoiceConnection
+} from 'discord.js'
 import shuffle from 'lodash.shuffle'
-import { MAX_QUEUE_LENGTH } from './config'
+import { EMBED_COLOR, MAX_QUEUE_LENGTH } from './config'
 import fadeOut from './easing/fade-out'
 
 interface SessionConstructorParams {
@@ -122,6 +128,26 @@ export default class GuildSession {
                     volume: this.dispatcherVolume,
                     type: 'opus',
                     bitrate: 96
+                })
+                .on('start', () => {
+                    if (track.dispatchetFrom) {
+                        const embed = new MessageEmbed({
+                            title: track.title,
+                            color: EMBED_COLOR
+                        })
+
+                        const imageUrl = track.meta?.find(([t]) => t === 'thumbnail')
+                        if (imageUrl) {
+                            embed.setThumbnail(imageUrl[1])
+                        }
+
+                        const link = track.meta?.find(([t]) => t === 'url')
+                        if (link) {
+                            embed.setURL(link[1])
+                        }
+
+                        void track.dispatchetFrom.send(embed)
+                    }
                 })
                 .on('finish', () => this.onDispatcherFinish())
                 .on('error', (err) => {
