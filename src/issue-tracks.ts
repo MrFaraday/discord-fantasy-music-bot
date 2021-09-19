@@ -21,6 +21,8 @@ export default async function issueTracks (
         }
     } else if (query.length < 3) {
         throw new SourceError('Query is too short')
+    } else if (query.length > 500) {
+        throw new SourceError('Query is too long')
     } else {
         const track = await youtubeApi.search(query)
         tracks = [track]
