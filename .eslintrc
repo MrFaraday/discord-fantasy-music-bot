@@ -43,6 +43,8 @@
         "space-before-function-paren": ["warn", "always"],
         "arrow-parens": "warn",
         "no-unused-expressions": "warn",
-        "no-unused-vars": "warn"
+        "no-unused-vars": "warn",
+
+        "@typescript-eslint/no-misused-promises": "off"
     }
 }

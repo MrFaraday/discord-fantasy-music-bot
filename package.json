@@ -26,6 +26,7 @@
         "@discordjs/opus": "^0.5.3",
         "axios": "^0.21.1",
         "discord.js": "^12.5.3",
+        "express": "^4.17.1",
         "js-video-url-parser": "^0.4.3",
         "lodash.shuffle": "^4.2.0",
         "pg": "^8.6.0",
@@ -37,6 +38,7 @@
     },
     "devDependencies": {
         "@types/dotenv": "^8.2.0",
+        "@types/express": "^4.17.13",
         "@types/lodash.shuffle": "^4.2.6",
         "@types/node": "^14.14.44",
         "@types/pg": "^7.14.11",

@@ -54,10 +54,11 @@ class YoutubeApi {
         let data: yts.SearchResult
 
         try {
-            const url = new URL('https://www.googleapis.com/youtube/v3/search')
-            url.searchParams.append('key', this.key)
+            const url = new URL('http://localhost:3333/search')
+            url.searchParams.append('q', query)
 
-            data = await yts({ query, pages: 1 })
+            const res = await axios.get<yts.SearchResult>(url.href)
+            data = res.data
         } catch (error) {
             assert(error)
         }
@@ -72,7 +73,10 @@ class YoutubeApi {
         return {
             title: result.title,
             getStream: () => ytdl(url),
-            meta: [['url', url], ['thumbnail', result.thumbnail]]
+            meta: [
+                ['url', url],
+                ['thumbnail', result.thumbnail]
+            ]
         }
     }
 
