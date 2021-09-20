@@ -1,4 +1,5 @@
-import { Guild, StreamDispatcher, VoiceChannel, VoiceConnection } from 'discord.js'
+import { joinVoiceChannel } from '@discordjs/voice'
+import { Guild, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
 import { MAX_QUEUE_LENGTH } from './config'
 import fadeOut from './easing/fade-out'
@@ -54,7 +55,15 @@ export default class GuildSession {
     }
 
     async connect (channel: VoiceChannel): Promise<void> {
-        this.connection = await channel.join()
+        if (!channel.guild) return
+        if (!channel.guild.voiceAdapterCreator) return
+
+        this.connection = joinVoiceChannel({
+            channelId: channel.id,
+            guildId: channel.guild.id,
+            adapterCreator: channel.guild.voiceAdapterCreator
+        })
+
         await this.connection?.voice?.setSelfDeaf(true)
         this.connection?.on('disconnect', () => {
             this.queue = []
