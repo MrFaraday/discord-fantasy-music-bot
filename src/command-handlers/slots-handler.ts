@@ -21,5 +21,5 @@ export default async function slotsHandler (
         .setTitle('Slots')
         .setDescription(`${slotRecords || '***Empty***'}`)
 
-    return await message.channel.send(slotsEmbed)
+    return await message.channel.send({ embeds: [slotsEmbed] })
 }

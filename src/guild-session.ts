@@ -1,4 +1,16 @@
-import { joinVoiceChannel } from '@discordjs/voice'
+import {
+    createAudioPlayer,
+    entersState,
+    getVoiceConnection,
+    joinVoiceChannel,
+    VoiceConnection,
+    VoiceConnectionStatus,
+    AudioPlayer,
+    AudioPlayerStatus,
+    demuxProbe,
+    createAudioResource,
+    AudioResource
+} from '@discordjs/voice'
 import { Guild, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
 import { MAX_QUEUE_LENGTH } from './config'
@@ -18,8 +30,9 @@ export default class GuildSession {
     volume: number
     queue: Track[] = []
 
-    private connection: VoiceConnection | null = null
-    private dispatcher: StreamDispatcher | null = null
+    // private connection: VoiceConnection | null = null
+    // private dispatcher: StreamDispatcher | null = null
+    private audioPlayer: AudioPlayer | null = null
     private disconnectTimeout: NodeJS.Timeout | null = null
 
     private isRepeatLocked = false
@@ -32,14 +45,18 @@ export default class GuildSession {
         this.slots = slots
     }
 
+    get connection (): VoiceConnection | undefined {
+        return getVoiceConnection(this.guild.id)
+    }
+
     async play (channel: VoiceChannel, tracks: Track[]): Promise<void> {
         this.queue = [...this.queue, ...tracks].slice(0, MAX_QUEUE_LENGTH)
 
         if (!this.connection) {
             await this.connect(channel)
-            await this.createDispatcher()
-        } else if (!this.dispatcher) {
-            await this.createDispatcher()
+            await this.createPlayer()
+        } else if (!this.audioPlayer) {
+            await this.createPlayer()
         }
     }
 
@@ -48,9 +65,9 @@ export default class GuildSession {
 
         if (!this.connection) {
             await this.connect(channel)
-            await this.createDispatcher()
+            await this.createPlayer()
         } else {
-            await this.createDispatcher({ endCurrent: true })
+            await this.createPlayer({ endCurrent: true })
         }
     }
 
@@ -58,17 +75,27 @@ export default class GuildSession {
         if (!channel.guild) return
         if (!channel.guild.voiceAdapterCreator) return
 
-        this.connection = joinVoiceChannel({
+        const connection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guild.id,
             adapterCreator: channel.guild.voiceAdapterCreator
         })
 
-        await this.connection?.voice?.setSelfDeaf(true)
-        this.connection?.on('disconnect', () => {
-            this.queue = []
-            this.connection = null
-            void this.requestDispatcherTermination()
+        await this.guild.me?.voice.setDeaf(true)
+
+        connection.on(VoiceConnectionStatus.Disconnected, async () => {
+            try {
+                await Promise.race([
+                    entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
+                    entersState(connection, VoiceConnectionStatus.Connecting, 5_000)
+                ])
+                // Seems to be reconnecting to a new channel - ignore disconnect
+            } catch (error) {
+                // Seems to be a real disconnect which SHOULDN'T be recovered from
+                this.queue = []
+                connection.destroy()
+                void this.requestDispatcherTermination()
+            }
         })
     }
 
@@ -78,12 +105,12 @@ export default class GuildSession {
 
     changeVolume (volume: number): void {
         this.volume = volume
-        this.dispatcher?.setVolume(this.dispatcherVolume)
+        // this.dispatcher?.setVolume(this.dispatcherVolume)
     }
 
     async skip (): Promise<void> {
-        if (this.dispatcher) {
-            await this.createDispatcher({ endCurrent: true })
+        if (this.audioPlayer) {
+            await this.createPlayer({ endCurrent: true })
         }
     }
 
@@ -93,18 +120,18 @@ export default class GuildSession {
     }
 
     isPlaying (): boolean {
-        return !!this.dispatcher
+        return !!this.audioPlayer
     }
 
     get channel (): VoiceChannel | null {
-        return this.connection?.channel ?? null
+        return /* this.connection?.channel ?? */ null
     }
 
     private get dispatcherVolume () {
         return 0.005 * this.volume
     }
 
-    private async createDispatcher ({ endCurrent = false } = {}) {
+    private async createPlayer ({ endCurrent = false } = {}) {
         if (!this.connection) return
 
         const track = this.queue.shift()
@@ -121,22 +148,31 @@ export default class GuildSession {
                 void this.requestDispatcherTermination()
             }
 
-            const stream = await track.getStream()
+            const stream: any = await track.getStream()
+            const resource = await probeAndCreateResource(stream)
+
+            resource.volume?.setVolume(this.dispatcherVolume)
+            // resource.
 
             await this.terminationPromise
             this.isRepeatLocked = false
 
-            this.dispatcher = this.connection
-                .play(stream, {
-                    volume: this.dispatcherVolume,
-                    type: 'opus',
-                    bitrate: 96
-                })
-                .on('finish', () => this.onDispatcherFinish())
-                .on('error', (err) => {
-                    console.error('Dispatcher error:', err)
-                    this.onDispatcherFinish()
-                })
+            this.audioPlayer = createAudioPlayer()
+
+            this.audioPlayer.on('error', (err) => {
+                console.error('Dispatcher error:', err)
+                this.onDispatcherFinish()
+            })
+
+            this.audioPlayer.on(AudioPlayerStatus.Idle, () => this.onDispatcherFinish())
+
+            this.audioPlayer.play(stream)
+
+            /* this.dispatcher = this.connection.play(stream, {
+                volume: this.dispatcherVolume,
+                type: 'opus',
+                bitrate: 96
+            }) */
 
             this.cancelScheduleDisconnect()
         } catch (error) {
@@ -149,7 +185,7 @@ export default class GuildSession {
 
             console.warn('createDispatcher:', error)
 
-            await this.createDispatcher()
+            await this.createPlayer()
         }
     }
 
@@ -157,17 +193,18 @@ export default class GuildSession {
         this.scheduleDisconnect()
 
         if (!this.isRepeatLocked) {
-            this.dispatcher = null
-            void this.createDispatcher()
+            this.audioPlayer = null
+            void this.createPlayer()
         }
     }
 
     private async requestDispatcherTermination () {
-        await (this.terminationPromise = this.terminateDispatcher())
+        await (this.terminationPromise = this.terminateAudioPlayer())
     }
-    private async terminateDispatcher () {
-        if (this.dispatcher) {
-            await fadeOut(this.dispatcher)
+    private async terminateAudioPlayer () {
+        if (this.audioPlayer) {
+            return Promise.resolve()
+            /* await fadeOut(this.dispatcher)
             await new Promise((res) => {
                 if (!this.dispatcher) {
                     res(void 0)
@@ -177,7 +214,7 @@ export default class GuildSession {
                         res(void 0)
                     })
                 }
-            })
+            }) */
         }
     }
 
@@ -191,4 +228,9 @@ export default class GuildSession {
     private scheduleDisconnect () {
         this.disconnectTimeout = setTimeout(() => this.disconnect(), 5 * 60 * 1000)
     }
+}
+
+async function probeAndCreateResource (readableStream: Stream): Promise<AudioResource> {
+    const { stream, type } = await demuxProbe(readableStream)
+    return createAudioResource(stream, { inputType: type, inlineVolume: true })
 }

@@ -1,4 +1,4 @@
-import Discord from 'discord.js'
+import Discord, { Intents, Permissions } from 'discord.js'
 import { TOKEN } from './config'
 
 import commandDispatcher from './client-event-handlers/command-dispatcher'
@@ -9,10 +9,10 @@ if (!TOKEN) {
     throw new Error('Environment variable TOKEN not found')
 }
 
-const client = new Discord.Client()
+const client = new Discord.Client({ intents: [Intents.FLAGS.GUILD_MESSAGES] })
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-client.on('message', commandDispatcher)
+client.on('messageCreate', commandDispatcher)
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 client.on('guildCreate', onGuildCreate)
@@ -25,16 +25,16 @@ client.on('shardError', (error) => {
 })
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-client.on('ready', async () => {
+client.on('ready', () => {
     console.log(`\nBot ${client.user?.username ?? 'Unknown'} has lauched!`)
-    const link = await client.generateInvite({
+    const link = client.generateInvite({
+        scopes: ['bot'],
         permissions: [
-            'ADD_REACTIONS',
-            'SEND_MESSAGES',
-            'SPEAK',
-            'EMBED_LINKS',
-            'ADD_REACTIONS',
-            'CONNECT'
+            Permissions.FLAGS.ADD_REACTIONS,
+            Permissions.FLAGS.SEND_MESSAGES,
+            Permissions.FLAGS.SPEAK,
+            Permissions.FLAGS.EMBED_LINKS,
+            Permissions.FLAGS.CONNECT
         ]
     })
     console.log('Link to invite bot to your guild:')

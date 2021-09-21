@@ -14,7 +14,7 @@ export default async function playSlotHandler (
     const saved = guild.slots.get(slot)
     if (!saved) return
 
-    if (!message.member.voice.channel) {
+    if (message.member.voice.channel?.type !== 'GUILD_VOICE') {
         return await message.channel.send('You are not connected to a voice channel')
     }
 

@@ -10,7 +10,7 @@ export default async function playHandler (
 
     const [mode, link] = args
 
-    if (!message.member.voice.channel) {
+    if (message.member.voice.channel?.type !== 'GUILD_VOICE') {
         return await message.channel.send('You are not connected to a voice channel')
     } else if (!link) {
         return await message.channel.send('What to play?')

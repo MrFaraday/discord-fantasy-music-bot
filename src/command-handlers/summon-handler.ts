@@ -4,11 +4,9 @@ export default async function summonHandler (
     this: Client,
     { guild, message }: CommadHandlerParams
 ): Promise<void | boolean | Message> {
-    if (!guild.channel) return
-
     const channel = message.member?.voice?.channel
 
-    if (!channel) {
+    if (channel?.type !== 'GUILD_VOICE') {
         return await message.channel.send('You are not connected to a voice channel')
     }
 

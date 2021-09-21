@@ -44,5 +44,5 @@ export default async function helpHandler (
             ])
         )
 
-    return await message.channel.send(helpEmbed)
+    return await message.channel.send({ embeds: [helpEmbed] })
 }

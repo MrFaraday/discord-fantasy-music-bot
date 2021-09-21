@@ -8,7 +8,7 @@ export default async function commandDispatcher (
 ): Promise<void> {
     if (!message.guild) return
     if (!this.user) return
-    if (message.channel.type !== 'text' || message.author.id === this.user.id) return
+    if (message.channel.type !== 'GUILD_TEXT' || message.author.id === this.user.id) return
 
     const guild = await getGuildSession(this, message.guild)
     const args = getCommandArgs(this.user.id, message, guild.prefix)
