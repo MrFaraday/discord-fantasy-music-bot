@@ -14,6 +14,10 @@ interface Track {
     title: string
     getStream(): Promise<Stream>
     meta?: [string, string][]
+    dispatchetFrom?:
+        | import('discord.js').TextChannel
+        | import('discord.js').NewsChannel
+        | import('discord.js').DMChannel
 }
 
 interface Slot {

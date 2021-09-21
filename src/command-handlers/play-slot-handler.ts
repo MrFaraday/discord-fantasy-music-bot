@@ -19,7 +19,7 @@ export default async function playSlotHandler (
     }
 
     try {
-        const tracks = await issueTracks(saved.value)
+        const tracks = await issueTracks(saved.value, message.channel)
         return await guild.forcePlay(message.member.voice.channel, tracks)
     } catch (error) {
         if (error instanceof SourceError) {
