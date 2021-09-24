@@ -1,7 +1,7 @@
 {
     "name": "discord-fantasy-music-bot",
     "engines": {
-        "node": "14.x"
+        "node": "^16.6.x"
     },
     "description": "Music bot fo fantasy board gaming",
     "main": "./build/index.js",
