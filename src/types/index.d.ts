@@ -10,12 +10,12 @@ interface CommadHandlerParams {
 
 type Stream = any // import('discord.js').AudioResource
 
-interface Track {
-    title: string
-    getStream(): Promise<Stream>
-    meta?: [string, string][]
-    dispatchetFrom?: import('discord.js').TextBasedChannel
-}
+// interface Track {
+//     title: string
+//     getStream(): Promise<Stream>
+//     meta?: [string, string][]
+//     dispatchetFrom?: import('discord.js').TextBasedChannel
+// }
 
 interface Slot {
     name?: string

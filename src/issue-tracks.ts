@@ -1,6 +1,7 @@
 import { TextBasedChannels } from 'discord.js'
 import youtubeApi from './api/youtube-api'
 import SourceError from './source-error'
+import { Track } from './track'
 
 export default async function issueTracks (
     query: string,
@@ -11,10 +12,10 @@ export default async function issueTracks (
     const urlData = youtubeApi.parseUrl(query)
 
     if (urlData.videoId) {
-        const track = await youtubeApi.issueTrack(urlData.videoId)
+        const track = await youtubeApi.issueTrack(urlData.videoId, channel)
         tracks = [track]
     } else if (urlData.listId) {
-        tracks = await youtubeApi.issueTracks(urlData.listId)
+        tracks = await youtubeApi.issueTracks(urlData.listId, channel)
 
         if (tracks.length === 0) {
             throw new SourceError('It\'s empty')
@@ -24,12 +25,8 @@ export default async function issueTracks (
     } else if (query.length > 500) {
         throw new SourceError('Query is too long')
     } else {
-        const track = await youtubeApi.search(query)
+        const track = await youtubeApi.search(query, channel)
         tracks = [track]
-    }
-
-    for (const track of tracks) {
-        track.dispatchetFrom = channel
     }
 
     return tracks

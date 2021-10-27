@@ -9,7 +9,13 @@ if (!TOKEN) {
     throw new Error('Environment variable TOKEN not found')
 }
 
-const client = new Discord.Client({ intents: [Intents.FLAGS.GUILD_MESSAGES] })
+const client = new Discord.Client({
+    intents: [
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+    ]
+})
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 client.on('messageCreate', commandDispatcher)

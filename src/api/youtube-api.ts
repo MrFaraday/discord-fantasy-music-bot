@@ -3,6 +3,8 @@ import axios from 'axios'
 import { MAX_QUEUE_LENGTH, YOUTUBE_API_KEY } from '../config'
 import ytdl from 'ytdl-core-discord'
 import yts from 'yt-search'
+import { Track } from '../track'
+import { TextBasedChannels } from 'discord.js'
 
 if (!YOUTUBE_API_KEY) {
     throw new Error('Environment variable YOUTUBE_API_KEY not found')
@@ -15,6 +17,7 @@ const listIdRegEx = /[?&]list=([^&?#/]+)/
 interface ListItem {
     title: string
     videoId: string
+    thumbnail: string
 }
 
 class YoutubeApi {
@@ -38,8 +41,9 @@ class YoutubeApi {
             })
 
             return data.items.map(({ snippet }) => ({
+                videoId: snippet.resourceId.videoId,
                 title: snippet.title,
-                videoId: snippet.resourceId.videoId
+                thumbnail: snippet.thumbnails.default.url
             }))
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
@@ -50,7 +54,7 @@ class YoutubeApi {
         }
     }
 
-    async search (query: string): Promise<Track> {
+    async search (query: string, channel: TextBasedChannels): Promise<Track> {
         let data: yts.SearchResult
 
         try {
@@ -70,17 +74,16 @@ class YoutubeApi {
         const result = data.videos[0]
         const url = this.buildPlayLink(result.videoId)
 
-        return {
+        return new Track({
+            url,
             title: result.title,
-            getStream: () => ytdl(url),
-            meta: [
-                ['url', url],
-                ['thumbnail', result.thumbnail]
-            ]
-        }
+            thumbnail: result.thumbnail,
+            textChannel: channel,
+            getStream: () => ytdl(url)
+        })
     }
 
-    async getVideoTitle (id: string): Promise<string> {
+    async getVideoSnippet (id: string): Promise<Snippet> {
         try {
             const url = new URL('https://www.googleapis.com/youtube/v3/videos')
             url.searchParams.append('key', this.key)
@@ -93,7 +96,7 @@ class YoutubeApi {
                 throw new YoutubeApiError('Video not found', YoutubeApiError.NOT_FOUND)
             }
 
-            return data.items[0].snippet.title
+            return data.items[0].snippet
         } catch (error) {
             assert(error)
         }
@@ -117,41 +120,46 @@ class YoutubeApi {
     /**
      * Get Track from video id
      */
-    async issueTrack (videoId: string): Promise<Track> {
+    async issueTrack (videoId: string, channel: TextBasedChannels): Promise<Track> {
         const url = this.buildPlayLink(videoId)
+        const snippet = await this.getVideoSnippet(videoId)
 
-        return {
-            title: await this.getVideoTitle(videoId),
-            getStream: () => ytdl(url),
-            meta: [['url', url]]
-        }
+        return new Track({
+            url,
+            title: snippet.title,
+            thumbnail: snippet.thumbnails.default.url,
+            textChannel: channel,
+            getStream: () => ytdl(url)
+        })
     }
 
     /**
      * Get Tracks from listId
      */
-    async issueTracks (listId: string): Promise<Track[]> {
+    async issueTracks (listId: string, channel: TextBasedChannels): Promise<Track[]> {
         const listContent = await this.getListContent(listId)
 
-        return listContent.map(({ title, videoId }) => {
+        return listContent.map(({ title, videoId, thumbnail }) => {
             const url = this.buildPlayLink(videoId)
 
-            return {
+            return new Track({
+                url,
                 title,
-                getStream: () => ytdl(url),
-                meta: [['url', url]]
-            }
+                thumbnail,
+                textChannel: channel,
+                getStream: () => ytdl(url)
+            })
         })
     }
 
-    async isSourceExist (url: string) {
+    async isSourceExist (url: string, channel: TextBasedChannels) {
         try {
             const parseData = this.parseUrl(url)
 
             if (parseData.videoId) {
-                await this.issueTrack(parseData.videoId)
+                await this.issueTrack(parseData.videoId, channel)
             } else if (parseData.listId) {
-                await this.issueTracks(parseData.listId)
+                await this.issueTracks(parseData.listId, channel)
             } else {
                 throw new YoutubeApiError('Invalid URL', YoutubeApiError.BAD)
             }
