@@ -1,7 +1,6 @@
 import { URL } from 'url'
 import axios from 'axios'
 import { MAX_QUEUE_LENGTH, YOUTUBE_API_KEY } from '../config'
-import ytdl from 'ytdl-core-discord'
 import yts from 'yt-search'
 import { Track } from '../track'
 import { TextBasedChannels } from 'discord.js'
@@ -78,8 +77,7 @@ class YoutubeApi {
             url,
             title: result.title,
             thumbnail: result.thumbnail,
-            textChannel: channel,
-            getStream: () => ytdl(url)
+            textChannel: channel
         })
     }
 
@@ -114,7 +112,7 @@ class YoutubeApi {
      * @param id video id
      */
     buildPlayLink (id: string) {
-        return 'http://www.youtube.com/watch?v=' + id
+        return 'https://www.youtube.com/watch?v=' + id
     }
 
     /**
@@ -128,8 +126,7 @@ class YoutubeApi {
             url,
             title: snippet.title,
             thumbnail: snippet.thumbnails.default.url,
-            textChannel: channel,
-            getStream: () => ytdl(url)
+            textChannel: channel
         })
     }
 
@@ -146,8 +143,7 @@ class YoutubeApi {
                 url,
                 title,
                 thumbnail,
-                textChannel: channel,
-                getStream: () => ytdl(url)
+                textChannel: channel
             })
         })
     }

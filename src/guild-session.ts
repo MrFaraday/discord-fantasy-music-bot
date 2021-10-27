@@ -6,15 +6,13 @@ import {
     VoiceConnection,
     VoiceConnectionStatus,
     AudioPlayer,
-    AudioPlayerStatus,
-    demuxProbe,
-    createAudioResource,
-    AudioResource
+    AudioPlayerStatus
 } from '@discordjs/voice'
-import { Guild, MessageEmbed, VoiceChannel } from 'discord.js'
+import { Guild, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
-import { EMBED_COLOR, MAX_QUEUE_LENGTH } from './config'
+import { MAX_QUEUE_LENGTH } from './config'
 import fadeOut from './easing/fade-out'
+import { Track } from './track'
 
 interface SessionConstructorParams {
     guild: Guild
@@ -54,10 +52,9 @@ export default class GuildSession {
 
         if (!this.connection) {
             await this.connect(channel)
-            await this.createPlayer()
-        } else if (!this.audioPlayer) {
-            await this.createPlayer()
         }
+
+        await this.playNext()
     }
 
     async forcePlay (channel: VoiceChannel, tracks: Track[]): Promise<void> {
@@ -65,9 +62,9 @@ export default class GuildSession {
 
         if (!this.connection) {
             await this.connect(channel)
-            await this.createPlayer()
+            await this.playNext()
         } else {
-            await this.createPlayer({ endCurrent: true })
+            await this.playNext({ endCurrent: true })
         }
     }
 
@@ -80,8 +77,12 @@ export default class GuildSession {
             guildId: channel.guild.id,
             adapterCreator: channel.guild.voiceAdapterCreator
         })
+        await entersState(connection, VoiceConnectionStatus.Ready, 20e3)
 
-        await this.guild.me?.voice.setDeaf(true)
+        this.audioPlayer = createAudioPlayer()
+
+        // await this.guild.me?.voice.setDeaf(false).catch(() => 0)
+        await this.guild.me?.voice.setDeaf(false).catch(console.warn)
 
         connection.on(VoiceConnectionStatus.Disconnected, async () => {
             try {
@@ -93,14 +94,16 @@ export default class GuildSession {
             } catch (error) {
                 // Seems to be a real disconnect which SHOULDN'T be recovered from
                 this.queue = []
-                connection.destroy()
+                this.disconnect()
                 void this.requestDispatcherTermination()
             }
         })
+
+        connection.subscribe(this.audioPlayer)
     }
 
     disconnect (): void {
-        this.connection?.disconnect()
+        this.connection?.destroy()
     }
 
     changeVolume (volume: number): void {
@@ -110,7 +113,7 @@ export default class GuildSession {
 
     async skip (): Promise<void> {
         if (this.audioPlayer) {
-            await this.createPlayer({ endCurrent: true })
+            await this.playNext({ endCurrent: true })
         }
     }
 
@@ -127,12 +130,13 @@ export default class GuildSession {
         return /* this.connection?.channel ?? */ null
     }
 
-    private get dispatcherVolume () {
+    private get playerVolume () {
         return 0.005 * this.volume
     }
 
-    private async createPlayer ({ endCurrent = false } = {}) {
+    private async playNext ({ endCurrent = false } = {}) {
         if (!this.connection) return
+        if (!this.audioPlayer) return
 
         const track = this.queue.shift()
 
@@ -148,16 +152,19 @@ export default class GuildSession {
                 void this.requestDispatcherTermination()
             }
 
-            const stream: any = await track.getStream()
-            const resource = await probeAndCreateResource(stream)
+            const resource = await track.createAudioResource()
 
-            resource.volume?.setVolume(this.dispatcherVolume)
+            console.log(resource.volume?.volume)
+
+            resource.volume?.setVolume(this.playerVolume)
+
+            console.log('resource created')
+
+            // resource.volume?.setVolume(this.dispatcherVolume)
             // resource.
 
-            await this.terminationPromise
+            // await this.terminationPromise
             this.isRepeatLocked = false
-
-            this.audioPlayer = createAudioPlayer()
 
             this.audioPlayer.on('error', (err) => {
                 console.error('Dispatcher error:', err)
@@ -166,27 +173,11 @@ export default class GuildSession {
 
             this.audioPlayer.on(AudioPlayerStatus.Idle, () => this.onDispatcherFinish())
             this.audioPlayer.on(AudioPlayerStatus.Playing, () => {
-                if (track.dispatchetFrom) {
-                    const embed = new MessageEmbed({
-                        title: track.title,
-                        color: EMBED_COLOR
-                    })
-
-                    const imageUrl = track.meta?.find(([t]) => t === 'thumbnail')
-                    if (imageUrl) {
-                        embed.setThumbnail(imageUrl[1])
-                    }
-
-                    const link = track.meta?.find(([t]) => t === 'url')
-                    if (link) {
-                        embed.setURL(link[1])
-                    }
-
-                    void track.dispatchetFrom.send({ embeds: [embed] })
-                }
+                void track.onStart()
             })
 
-            this.audioPlayer.play(stream)
+            console.log('before start playing')
+            this.audioPlayer.play(resource)
 
             /* this.dispatcher = this.connection.play(stream, {
                 volume: this.dispatcherVolume,
@@ -205,7 +196,7 @@ export default class GuildSession {
 
             console.warn('createDispatcher:', error)
 
-            await this.createPlayer()
+            await this.playNext()
         }
     }
 
@@ -214,7 +205,7 @@ export default class GuildSession {
 
         if (!this.isRepeatLocked) {
             this.audioPlayer = null
-            void this.createPlayer()
+            void this.playNext()
         }
     }
 
@@ -248,9 +239,4 @@ export default class GuildSession {
     private scheduleDisconnect () {
         this.disconnectTimeout = setTimeout(() => this.disconnect(), 5 * 60 * 1000)
     }
-}
-
-async function probeAndCreateResource (readableStream: Stream): Promise<AudioResource> {
-    const { stream, type } = await demuxProbe(readableStream)
-    return createAudioResource(stream, { inputType: type, inlineVolume: true })
 }

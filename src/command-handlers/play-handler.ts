@@ -30,6 +30,7 @@ export default async function playHandler (
         if (error instanceof SourceError) {
             return await message.channel.send(error.message)
         } else {
+            console.warn('playHandler', error)
             return await message.channel.send('It\'s hidden or something went wrong')
         }
     }

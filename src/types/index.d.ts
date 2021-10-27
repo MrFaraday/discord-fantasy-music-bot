@@ -8,7 +8,7 @@ interface CommadHandlerParams {
     args: string[]
 }
 
-type Stream = any // import('discord.js').AudioResource
+type Stream = import('stream').Readable // import('discord.js').AudioResource
 
 // interface Track {
 //     title: string
