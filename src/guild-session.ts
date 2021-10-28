@@ -161,6 +161,7 @@ export default class GuildSession extends PlayingStateMixin {
         const track = this.queue.shift()
 
         if (!track) {
+            this.state = PlayingState.PENDING
             await this.stopCurrentTrack()
             this.state = PlayingState.IDLE
             return
