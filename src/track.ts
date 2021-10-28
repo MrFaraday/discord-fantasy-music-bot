@@ -1,7 +1,7 @@
-import { AudioResource, createAudioResource, demuxProbe } from '@discordjs/voice'
+import { AudioResource, createAudioResource } from '@discordjs/voice'
 import { MessageEmbed, TextBasedChannels } from 'discord.js'
 import { EMBED_COLOR } from './config'
-import { stream as playStream } from 'play-dl'
+import ytdl from 'ytdl-core-discord'
 
 interface TrackData {
     url: string
@@ -40,11 +40,16 @@ export class Track implements TrackData {
     }
 
     public async createAudioResource (): Promise<AudioResource<Track>> {
-        const stream = await playStream(this.url)
-        return createAudioResource(stream.stream, {
-            inputType: stream.type,
-            inlineVolume: true,
-            metadata: this
-        })
+        try {
+            const stream: Stream = await ytdl(this.url)
+
+            return createAudioResource(stream, {
+                metadata: this,
+                inlineVolume: true
+            })
+        } catch (error) {
+            console.error('createAudioResource |', error)
+            throw error
+        }
     }
 }

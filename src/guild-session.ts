@@ -6,7 +6,9 @@ import {
     VoiceConnection,
     VoiceConnectionStatus,
     AudioPlayer,
-    AudioPlayerStatus
+    AudioPlayerStatus,
+    DiscordGatewayAdapterCreator,
+    AudioResource
 } from '@discordjs/voice'
 import { Guild, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
@@ -21,20 +23,28 @@ interface SessionConstructorParams {
     volume: number
 }
 
+enum SessionState {
+    IDLE,
+    PENDING,
+    PLAYING
+}
+
 export default class GuildSession {
-    guild: Guild
+    readonly guild: Guild
     slots: Slots
     prefix: string
     volume: number
     queue: Track[] = []
 
-    // private connection: VoiceConnection | null = null
-    // private dispatcher: StreamDispatcher | null = null
     private audioPlayer: AudioPlayer | null = null
+    private playingResource: AudioResource<Track> | null = null
+
     private disconnectTimeout: NodeJS.Timeout | null = null
 
     private isRepeatLocked = false
     private terminationPromise: Promise<void> | null = null
+
+    private state: SessionState = SessionState.IDLE
 
     constructor ({ guild, slots, prefix, volume }: SessionConstructorParams) {
         this.guild = guild
@@ -43,14 +53,14 @@ export default class GuildSession {
         this.slots = slots
     }
 
-    get connection (): VoiceConnection | undefined {
+    get voiceConnection (): VoiceConnection | undefined {
         return getVoiceConnection(this.guild.id)
     }
 
     async play (channel: VoiceChannel, tracks: Track[]): Promise<void> {
         this.queue = [...this.queue, ...tracks].slice(0, MAX_QUEUE_LENGTH)
 
-        if (!this.connection) {
+        if (!this.voiceConnection) {
             await this.connect(channel)
         }
 
@@ -58,9 +68,9 @@ export default class GuildSession {
     }
 
     async forcePlay (channel: VoiceChannel, tracks: Track[]): Promise<void> {
-        this.queue = shuffle(tracks)
+        this.queue = shuffle(tracks).slice(0, MAX_QUEUE_LENGTH)
 
-        if (!this.connection) {
+        if (!this.voiceConnection) {
             await this.connect(channel)
             await this.playNext()
         } else {
@@ -75,40 +85,53 @@ export default class GuildSession {
         const connection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guild.id,
-            adapterCreator: channel.guild.voiceAdapterCreator
+            adapterCreator: channel.guild
+                .voiceAdapterCreator as DiscordGatewayAdapterCreator
         })
-        await entersState(connection, VoiceConnectionStatus.Ready, 20e3)
 
-        this.audioPlayer = createAudioPlayer()
-
-        // await this.guild.me?.voice.setDeaf(false).catch(() => 0)
-        await this.guild.me?.voice.setDeaf(false).catch(console.warn)
-
+        connection.removeAllListeners()
         connection.on(VoiceConnectionStatus.Disconnected, async () => {
             try {
                 await Promise.race([
-                    entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
-                    entersState(connection, VoiceConnectionStatus.Connecting, 5_000)
+                    entersState(connection, VoiceConnectionStatus.Signalling, 2_000),
+                    entersState(connection, VoiceConnectionStatus.Connecting, 2_000)
                 ])
-                // Seems to be reconnecting to a new channel - ignore disconnect
             } catch (error) {
-                // Seems to be a real disconnect which SHOULDN'T be recovered from
-                this.queue = []
                 this.disconnect()
-                void this.requestDispatcherTermination()
             }
         })
 
-        connection.subscribe(this.audioPlayer)
+        if (!this.audioPlayer) {
+            this.audioPlayer = createAudioPlayer()
+            this.audioPlayer.on('error', (err) => {
+                console.error('Dispatcher error:', err)
+                console.warn(Object.keys(err))
+
+                this.onDispatcherFinish()
+            })
+
+            this.audioPlayer.on(AudioPlayerStatus.Idle, () => this.onDispatcherFinish())
+            this.audioPlayer.on(AudioPlayerStatus.Playing, () => {
+                if (this.playingResource) {
+                    void this.playingResource.metadata.onStart()
+                }
+            })
+
+            await entersState(connection, VoiceConnectionStatus.Ready, 20e3)
+            connection.subscribe(this.audioPlayer)
+        }
     }
 
     disconnect (): void {
-        this.connection?.destroy()
+        this.voiceConnection?.destroy()
+        this.queue = []
+        this.audioPlayer = null
+        this.playingResource = null
     }
 
     changeVolume (volume: number): void {
         this.volume = volume
-        // this.dispatcher?.setVolume(this.dispatcherVolume)
+        this.playingResource?.volume?.setVolume(this.playerVolume)
     }
 
     async skip (): Promise<void> {
@@ -126,16 +149,12 @@ export default class GuildSession {
         return !!this.audioPlayer
     }
 
-    get channel (): VoiceChannel | null {
-        return /* this.connection?.channel ?? */ null
-    }
-
     private get playerVolume () {
         return 0.005 * this.volume
     }
 
     private async playNext ({ endCurrent = false } = {}) {
-        if (!this.connection) return
+        if (!this.voiceConnection) return
         if (!this.audioPlayer) return
 
         const track = this.queue.shift()
@@ -153,28 +172,14 @@ export default class GuildSession {
             }
 
             const resource = await track.createAudioResource()
-
-            console.log(resource.volume?.volume)
-
+            this.playingResource = resource
             resource.volume?.setVolume(this.playerVolume)
-
-            console.log('resource created')
 
             // resource.volume?.setVolume(this.dispatcherVolume)
             // resource.
 
             // await this.terminationPromise
             this.isRepeatLocked = false
-
-            this.audioPlayer.on('error', (err) => {
-                console.error('Dispatcher error:', err)
-                this.onDispatcherFinish()
-            })
-
-            this.audioPlayer.on(AudioPlayerStatus.Idle, () => this.onDispatcherFinish())
-            this.audioPlayer.on(AudioPlayerStatus.Playing, () => {
-                void track.onStart()
-            })
 
             console.log('before start playing')
             this.audioPlayer.play(resource)
@@ -213,19 +218,19 @@ export default class GuildSession {
         await (this.terminationPromise = this.terminateAudioPlayer())
     }
     private async terminateAudioPlayer () {
-        if (this.audioPlayer) {
-            return Promise.resolve()
-            /* await fadeOut(this.dispatcher)
-            await new Promise((res) => {
-                if (!this.dispatcher) {
-                    res(void 0)
-                } else {
-                    this.dispatcher.end(() => {
-                        this.dispatcher = null
-                        res(void 0)
-                    })
-                }
-            }) */
+        if (this.audioPlayer && this.playingResource) {
+            // return Promise.resolve()
+            await fadeOut(this.audioPlayer, this.playingResource)
+            // await new Promise((res) => {
+            //     if (!this.playingTrack) {
+            //         res(void 0)
+            //     } else {
+            //         this.playingTrack.end(() => {
+            //             this.dispatcher = null
+            //             res(void 0)
+            //         })
+            //     }
+            // })
         }
     }
 

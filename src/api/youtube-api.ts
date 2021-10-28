@@ -42,7 +42,7 @@ class YoutubeApi {
             return data.items.map(({ snippet }) => ({
                 videoId: snippet.resourceId.videoId,
                 title: snippet.title,
-                thumbnail: snippet.thumbnails.default.url
+                thumbnail: snippet.thumbnails.standard.url
             }))
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
@@ -125,7 +125,7 @@ class YoutubeApi {
         return new Track({
             url,
             title: snippet.title,
-            thumbnail: snippet.thumbnails.default.url,
+            thumbnail: snippet.thumbnails.standard.url,
             textChannel: channel
         })
     }

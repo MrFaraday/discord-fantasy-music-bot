@@ -10,7 +10,7 @@ export default async function summonHandler (
         return await message.channel.send('You are not connected to a voice channel')
     }
 
-    if (channel.id !== guild.channel?.id) {
+    if (channel.id !== message.guild?.me?.voice.channel?.id) {
         return await guild.connect(channel)
     } else {
         return await message.channel.send('I\'m here')

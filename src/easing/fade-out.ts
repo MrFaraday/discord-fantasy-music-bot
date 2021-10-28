@@ -1,12 +1,20 @@
-// import { StreamDispatcher } from 'discord.js'
+import { AudioPlayer, AudioResource } from '@discordjs/voice'
 import { easeInExpo } from './ease-functions'
 
 const fadeDuration = 1500
 const interval = 20
 
-export default function fadeOut (dispatcher: /* StreamDispatcher */ any): Promise<void> {
+export default async function fadeOut (
+    audioPlayer: AudioPlayer,
+    resource: AudioResource
+): Promise<void> {
     return new Promise((resolve) => {
-        // const leaveVolume = dispatcher.volume
+        if (!resource.volume) {
+            audioPlayer.stop()
+            return resolve()
+        }
+
+        const leaveVolume = resource.volume?.volume
 
         const reduce = (rest: number) => {
             if (rest < 0) {
@@ -15,11 +23,12 @@ export default function fadeOut (dispatcher: /* StreamDispatcher */ any): Promis
 
             const next = rest - interval
             const factor = easeInExpo(next / fadeDuration)
-            // dispatcher.setVolume(factor * leaveVolume)
+
+            resource.volume?.setVolume(factor * leaveVolume)
 
             setTimeout(reduce, interval, next)
         }
 
-        reduce(fadeDuration)
+        void reduce(fadeDuration)
     })
 }
