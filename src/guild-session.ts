@@ -14,6 +14,7 @@ import { Guild, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
 import { MAX_QUEUE_LENGTH } from './config'
 import fadeOut from './easing/fade-out'
+import PlayingStateMixin, { PlayingState } from './playing-state-mixin'
 import { Track } from './track'
 
 interface SessionConstructorParams {
@@ -23,13 +24,7 @@ interface SessionConstructorParams {
     volume: number
 }
 
-enum SessionState {
-    IDLE,
-    PENDING,
-    PLAYING
-}
-
-export default class GuildSession {
+export default class GuildSession extends PlayingStateMixin {
     readonly guild: Guild
     slots: Slots
     prefix: string
@@ -42,11 +37,10 @@ export default class GuildSession {
     private disconnectTimeout: NodeJS.Timeout | null = null
 
     private isRepeatLocked = false
-    private terminationPromise: Promise<void> | null = null
-
-    private state: SessionState = SessionState.IDLE
 
     constructor ({ guild, slots, prefix, volume }: SessionConstructorParams) {
+        super()
+
         this.guild = guild
         this.volume = volume
         this.prefix = prefix
@@ -74,7 +68,7 @@ export default class GuildSession {
             await this.connect(channel)
             await this.playNext()
         } else {
-            await this.playNext({ endCurrent: true })
+            await this.playNext()
         }
     }
 
@@ -107,11 +101,17 @@ export default class GuildSession {
                 console.error('Dispatcher error:', err)
                 console.warn(Object.keys(err))
 
-                this.onDispatcherFinish()
+                void this.playNext()
             })
 
-            this.audioPlayer.on(AudioPlayerStatus.Idle, () => this.onDispatcherFinish())
+            this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
+                this.scheduleDisconnect()
+                void this.playNext()
+            })
             this.audioPlayer.on(AudioPlayerStatus.Playing, () => {
+                this.cancelScheduleDisconnect()
+                this.state = PlayingState.PLAYING
+
                 if (this.playingResource) {
                     void this.playingResource.metadata.onStart()
                 }
@@ -136,7 +136,7 @@ export default class GuildSession {
 
     async skip (): Promise<void> {
         if (this.audioPlayer) {
-            await this.playNext({ endCurrent: true })
+            await this.playNext()
         }
     }
 
@@ -146,51 +146,37 @@ export default class GuildSession {
     }
 
     isPlaying (): boolean {
-        return !!this.audioPlayer
+        return !!this.playingResource
     }
 
     private get playerVolume () {
         return 0.005 * this.volume
     }
 
-    private async playNext ({ endCurrent = false } = {}) {
+    private async playNext () {
         if (!this.voiceConnection) return
         if (!this.audioPlayer) return
+        if (this.state === PlayingState.PENDING) return
 
         const track = this.queue.shift()
 
         if (!track) {
-            if (endCurrent) await this.requestDispatcherTermination()
-
+            await this.stopCurrentTrack()
+            this.state = PlayingState.IDLE
             return
         }
 
         try {
-            if (endCurrent) {
-                this.isRepeatLocked = true
-                void this.requestDispatcherTermination()
-            }
+            this.state = PlayingState.PENDING
 
-            const resource = await track.createAudioResource()
+            const [resource] = await Promise.all([
+                track.createAudioResource(),
+                this.stopCurrentTrack()
+            ])
+
             this.playingResource = resource
             resource.volume?.setVolume(this.playerVolume)
-
-            // resource.volume?.setVolume(this.dispatcherVolume)
-            // resource.
-
-            // await this.terminationPromise
-            this.isRepeatLocked = false
-
-            console.log('before start playing')
             this.audioPlayer.play(resource)
-
-            /* this.dispatcher = this.connection.play(stream, {
-                volume: this.dispatcherVolume,
-                type: 'opus',
-                bitrate: 96
-            }) */
-
-            this.cancelScheduleDisconnect()
         } catch (error) {
             if (
                 error instanceof Error &&
@@ -201,36 +187,14 @@ export default class GuildSession {
 
             console.warn('createDispatcher:', error)
 
+            this.state = PlayingState.IDLE
             await this.playNext()
         }
     }
 
-    private onDispatcherFinish () {
-        this.scheduleDisconnect()
-
-        if (!this.isRepeatLocked) {
-            this.audioPlayer = null
-            void this.playNext()
-        }
-    }
-
-    private async requestDispatcherTermination () {
-        await (this.terminationPromise = this.terminateAudioPlayer())
-    }
-    private async terminateAudioPlayer () {
+    private async stopCurrentTrack () {
         if (this.audioPlayer && this.playingResource) {
-            // return Promise.resolve()
             await fadeOut(this.audioPlayer, this.playingResource)
-            // await new Promise((res) => {
-            //     if (!this.playingTrack) {
-            //         res(void 0)
-            //     } else {
-            //         this.playingTrack.end(() => {
-            //             this.dispatcher = null
-            //             res(void 0)
-            //         })
-            //     }
-            // })
         }
     }
 
