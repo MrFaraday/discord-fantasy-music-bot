@@ -1,18 +1,19 @@
-export enum PlayingState {
-    IDLE,
-    PENDING,
-    PLAYING
+export enum PlaybackState {
+    IDLE = 0,
+    PLAYING = 1,
+    STOPPING = 2,
+    LODAING = 4
 }
 
 export default class PlayingStateMixin {
-    private _state: PlayingState = PlayingState.IDLE
-    private stateEnterListeners: { state: PlayingState; callback: () => void }[] = []
+    private _state: PlaybackState = PlaybackState.IDLE
+    private stateEnterListeners: { state: PlaybackState; callback: () => void }[] = []
 
-    get state (): PlayingState {
+    get state (): PlaybackState {
         return this._state
     }
 
-    set state (state: PlayingState) {
+    set state (state: PlaybackState) {
         this._state = state
 
         console.log('Playing state changed to: ', state)
@@ -25,7 +26,7 @@ export default class PlayingStateMixin {
         forResolve.forEach((l) => l.callback())
     }
 
-    public entersState (state: PlayingState, timeout = 5000): Promise<void> {
+    public entersState (state: PlaybackState, timeout = 5000): Promise<void> {
         if (this.state === state) {
             return Promise.resolve(void 0)
         }

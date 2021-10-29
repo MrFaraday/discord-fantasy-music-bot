@@ -14,7 +14,7 @@ import { Guild, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
 import { MAX_QUEUE_LENGTH } from './config'
 import fadeOut from './easing/fade-out'
-import PlayingStateMixin, { PlayingState } from './playing-state-mixin'
+import PlayingStateMixin, { PlaybackState } from './playing-state-mixin'
 import { Track } from './track'
 
 interface SessionConstructorParams {
@@ -35,8 +35,6 @@ export default class GuildSession extends PlayingStateMixin {
     private playingResource: AudioResource<Track> | null = null
 
     private disconnectTimeout: NodeJS.Timeout | null = null
-
-    private isRepeatLocked = false
 
     constructor ({ guild, slots, prefix, volume }: SessionConstructorParams) {
         super()
@@ -62,14 +60,8 @@ export default class GuildSession extends PlayingStateMixin {
     }
 
     async forcePlay (channel: VoiceChannel, tracks: Track[]): Promise<void> {
-        this.queue = shuffle(tracks).slice(0, MAX_QUEUE_LENGTH)
-
-        if (!this.voiceConnection) {
-            await this.connect(channel)
-            await this.playNext()
-        } else {
-            await this.playNext()
-        }
+        this.queue = []        
+        await this.play(channel, shuffle(tracks))
     }
 
     async connect (channel: VoiceChannel): Promise<void> {
@@ -98,19 +90,28 @@ export default class GuildSession extends PlayingStateMixin {
         if (!this.audioPlayer) {
             this.audioPlayer = createAudioPlayer()
             this.audioPlayer.on('error', (err) => {
-                console.error('Dispatcher error:', err)
+                console.error('audioPlayer | ERROR:', err)
                 console.warn(Object.keys(err))
+
+                this.state = PlaybackState.IDLE
 
                 void this.playNext()
             })
 
             this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
                 this.scheduleDisconnect()
+                this.playingResource = null
+
+                if (this.state !== PlaybackState.LODAING) {
+                    this.state = PlaybackState.IDLE
+                }
+
+
                 void this.playNext()
             })
             this.audioPlayer.on(AudioPlayerStatus.Playing, () => {
-                this.cancelScheduleDisconnect()
-                this.state = PlayingState.PLAYING
+                this.deleteScheduleDisconnect()
+                this.state = PlaybackState.PLAYING
 
                 if (this.playingResource) {
                     void this.playingResource.metadata.onStart()
@@ -156,23 +157,17 @@ export default class GuildSession extends PlayingStateMixin {
     private async playNext () {
         if (!this.voiceConnection) return
         if (!this.audioPlayer) return
-        if (this.state === PlayingState.PENDING) return
+        if (this.state === PlaybackState.LODAING) return
 
         const track = this.queue.shift()
 
-        /**
-         * @todo
-         */
-
         if (!track) {
-            this.state = PlayingState.PENDING
-            await this.stopCurrentTrack()
-            this.state = PlayingState.IDLE
-            return
+            this.state = PlaybackState.STOPPING
+            return void this.stopCurrentTrack()
         }
 
         try {
-            this.state = PlayingState.PENDING
+            this.state = PlaybackState.LODAING
 
             const [resource] = await Promise.all([
                 track.createAudioResource(),
@@ -187,12 +182,13 @@ export default class GuildSession extends PlayingStateMixin {
                 error instanceof Error &&
                 error.message.includes('Unable to retrieve video metadata')
             ) {
+                console.warn('Unable to retrieve video metadata | RETRYING');
                 this.queue.unshift(track)
             }
 
-            console.warn('createDispatcher:', error)
+            console.warn('playNext | ERROR:', error)
 
-            this.state = PlayingState.IDLE
+            this.state = PlaybackState.IDLE
             await this.playNext()
         }
     }
@@ -203,7 +199,7 @@ export default class GuildSession extends PlayingStateMixin {
         }
     }
 
-    private cancelScheduleDisconnect () {
+    private deleteScheduleDisconnect () {
         if (this.disconnectTimeout) {
             clearTimeout(this.disconnectTimeout)
             this.disconnectTimeout = null
