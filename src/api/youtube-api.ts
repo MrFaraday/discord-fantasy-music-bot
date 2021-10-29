@@ -1,6 +1,6 @@
 import { URL } from 'url'
 import axios from 'axios'
-import { MAX_QUEUE_LENGTH, YOUTUBE_API_KEY } from '../config'
+import { QUEUE_MAX_LENGTH, YOUTUBE_API_KEY } from '../config'
 import yts from 'yt-search'
 import { Track } from '../track'
 import { TextBasedChannels } from 'discord.js'
@@ -35,7 +35,7 @@ class YoutubeApi {
                 params: {
                     part: 'snippet',
                     playlistId: listId,
-                    maxResults: MAX_QUEUE_LENGTH
+                    maxResults: QUEUE_MAX_LENGTH
                 }
             })
 
