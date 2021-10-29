@@ -12,7 +12,7 @@ import {
 } from '@discordjs/voice'
 import { Guild, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
-import { MAX_QUEUE_LENGTH } from './config'
+import { QUEUE_MAX_LENGTH } from './config'
 import fadeOut from './easing/fade-out'
 import PlayingStateMixin, { PlaybackState } from './playing-state-mixin'
 import { Track } from './track'
@@ -50,13 +50,15 @@ export default class GuildSession extends PlayingStateMixin {
     }
 
     async play (channel: VoiceChannel, tracks: Track[]): Promise<void> {
-        this.queue = [...this.queue, ...tracks].slice(0, MAX_QUEUE_LENGTH)
+        this.queue = [...this.queue, ...tracks].slice(0, QUEUE_MAX_LENGTH)
 
         if (!this.voiceConnection) {
             await this.connect(channel)
         }
 
-        await this.playNext()
+        if (this.state !== PlaybackState.PLAYING) {
+            await this.playNext()
+        }
     }
 
     async forcePlay (channel: VoiceChannel, tracks: Track[]): Promise<void> {
@@ -86,6 +88,11 @@ export default class GuildSession extends PlayingStateMixin {
                 this.disconnect()
             }
         })
+        connection.on(VoiceConnectionStatus.Destroyed, () => {
+            this.queue = []
+            this.audioPlayer = null
+            this.playingResource = null
+        })
 
         if (!this.audioPlayer) {
             this.audioPlayer = createAudioPlayer()
@@ -110,7 +117,7 @@ export default class GuildSession extends PlayingStateMixin {
                 void this.playNext()
             })
             this.audioPlayer.on(AudioPlayerStatus.Playing, () => {
-                this.deleteScheduleDisconnect()
+                this.unscheduleSDisconnect()
                 this.state = PlaybackState.PLAYING
 
                 if (this.playingResource) {
@@ -125,9 +132,6 @@ export default class GuildSession extends PlayingStateMixin {
 
     disconnect (): void {
         this.voiceConnection?.destroy()
-        this.queue = []
-        this.audioPlayer = null
-        this.playingResource = null
     }
 
     changeVolume (volume: number): void {
@@ -163,7 +167,13 @@ export default class GuildSession extends PlayingStateMixin {
 
         if (!track) {
             this.state = PlaybackState.STOPPING
-            return void this.stopCurrentTrack()
+            const stopped = await this.stopCurrentTrack()
+
+            if (!stopped) {
+                this.state = PlaybackState.IDLE
+            }
+
+            return
         }
 
         try {
@@ -196,10 +206,13 @@ export default class GuildSession extends PlayingStateMixin {
     private async stopCurrentTrack () {
         if (this.audioPlayer && this.playingResource) {
             await fadeOut(this.audioPlayer, this.playingResource)
+            return true
+        } else {
+            return false
         }
     }
 
-    private deleteScheduleDisconnect () {
+    private unscheduleSDisconnect () {
         if (this.disconnectTimeout) {
             clearTimeout(this.disconnectTimeout)
             this.disconnectTimeout = null
