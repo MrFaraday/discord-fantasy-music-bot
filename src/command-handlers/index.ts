@@ -11,6 +11,7 @@ import stopHandler from './stop-handler'
 import volumeHandler from './volume-handler'
 import dropHandler from './drop-handler'
 import summonHandler from './summon-handler'
+import nowHandler from './now-handler'
 
 export default {
     disconnectHandler,
@@ -25,5 +26,6 @@ export default {
     playSlotHandler,
     slotsHandler,
     dropHandler,
-    summonHandler
+    summonHandler,
+    nowHandler
 }

@@ -83,6 +83,9 @@ const getCommandHandler = (args: string[]) => {
         case 'summon':
             return commandHandlers.summonHandler
 
+        case 'now':
+            return commandHandlers.nowHandler
+
         default:
             return () => void 0
     }

@@ -10,7 +10,7 @@ import {
     DiscordGatewayAdapterCreator,
     AudioResource
 } from '@discordjs/voice'
-import { Guild, VoiceChannel } from 'discord.js'
+import { Guild, Message, MessageEmbed, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
 import { QUEUE_MAX_LENGTH } from './config'
 import fadeOut from './easing/fade-out'
@@ -161,8 +161,14 @@ export default class GuildSession {
         await this.skip()
     }
 
-    isPlaying (): boolean {
+    get isPlaying (): boolean {
         return this.state !== PlaybackState.IDLE
+    }
+
+    get trackEmbed (): MessageEmbed | undefined {
+        if (this.playingResource) {
+            return this.playingResource.metadata.getMessageEmbed()
+        }
     }
 
     private get playerVolume () {

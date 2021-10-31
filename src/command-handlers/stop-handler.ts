@@ -4,7 +4,7 @@ export default async function stopHandler (
     this: Client,
     { guild }: CommadHandlerParams
 ): Promise<void | Message> {
-    if (guild.isPlaying()) {
+    if (guild.isPlaying) {
         return guild.stop()
     }
 

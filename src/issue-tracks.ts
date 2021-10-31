@@ -26,6 +26,11 @@ export default async function issueTracks (
         throw new SourceError('Query is too long')
     } else {
         const track = await youtubeApi.search(query)
+
+        channel
+            .send({ embeds: [track.getMessageEmbed().setAuthor('Enqueued')] })
+            .catch(() => 0)
+
         tracks = [track]
     }
 
