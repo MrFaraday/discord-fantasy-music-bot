@@ -6,5 +6,5 @@ export const shortString = (str: string, maxLength = 40): string => {
     }
 }
 
-export const concat = (text: (string | false)[]): string =>
+export const concat = (text: (string | false | undefined)[]): string =>
     text.filter((s) => typeof s === 'string').join('\n')
