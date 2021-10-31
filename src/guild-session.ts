@@ -10,7 +10,7 @@ import {
     DiscordGatewayAdapterCreator,
     AudioResource
 } from '@discordjs/voice'
-import { Guild, Message, MessageEmbed, VoiceChannel } from 'discord.js'
+import { Guild, MessageEmbed, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
 import { QUEUE_MAX_LENGTH } from './config'
 import fadeOut from './easing/fade-out'
