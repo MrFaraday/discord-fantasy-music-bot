@@ -13,7 +13,7 @@ async function handler (
 
 export default {
     aliases: ['s'],
-    sort: 11,
-    helpInfo: '`drop [0..9]` delete binded link',
+    helpSort: 4,
+    helpInfo: '`s` stop playing and clear queue',
     handler
 }

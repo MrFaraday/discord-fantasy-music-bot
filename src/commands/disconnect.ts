@@ -8,7 +8,7 @@ async function handler (this: Client, { guild }: CommadHandlerParams): Promise<v
 
 export default {
     aliases: ['d'],
-    sort: 11,
-    helpInfo: '`drop [0..9]` delete binded link',
+    helpSort: 7,
+    helpInfo: '`d` disconnect from a voice channel',
     handler
 }

@@ -32,7 +32,7 @@ async function handler (
 
 export default {
     aliases: ['v'],
-    sort: 11,
-    helpInfo: '`drop [0..9]` delete binded link',
+    helpSort: 5,
+    helpInfo: '`v [0..200?]` display or set volume',
     handler
 }

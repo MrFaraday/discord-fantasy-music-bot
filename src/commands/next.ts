@@ -13,7 +13,7 @@ async function handler (
 
 export default {
     aliases: ['n'],
-    sort: 11,
-    helpInfo: '`drop [0..9]` delete binded link',
+    helpSort: 3,
+    helpInfo: '`n` skip current track',
     handler
 }

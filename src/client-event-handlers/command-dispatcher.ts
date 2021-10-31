@@ -6,7 +6,7 @@ const commands: Command[] = []
 Object.values(Commands).map((cmd) => {
     commands.push(cmd)
 })
-commands.sort((a, b) => a.sort - b.sort)
+commands.sort((a, b) => a.helpSort - b.helpSort)
 
 export default async function commandDispatcher (
     this: Client,
@@ -26,7 +26,7 @@ export default async function commandDispatcher (
         )
 
         if (command) {
-            await command.handler.call(this, { message, guild, args })
+            await command.handler.call(this, { message, guild, args, commands })
         }
     } catch (error) {
         if (

@@ -6,7 +6,7 @@ async function handler (this: Client, { message }: CommadHandlerParams): Promise
 
 export default {
     aliases: ['hello'],
-    sort: 11,
+    helpSort: 11,
     helpInfo: '`drop [0..9]` delete binded link',
     handler
 }

@@ -33,7 +33,7 @@ async function handler (
 
 export default {
     aliases: ['prefix'],
-    sort: 11,
-    helpInfo: '`drop [0..9]` delete binded link',
+    helpSort: 12,
+    helpInfo: '`prefix [value]` set prefix for commands, enter ***none*** to remove it',
     handler
 }

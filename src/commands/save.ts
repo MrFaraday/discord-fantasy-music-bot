@@ -81,7 +81,7 @@ async function handler (
 
 export default {
     aliases: ['save'],
-    sort: 11,
-    helpInfo: '`drop [0..9]` delete binded link',
+    helpSort: 9,
+    helpInfo: '`save [0..9] [link] [name?]` bind link to number, rest of input will be name but it optional',
     handler
 }

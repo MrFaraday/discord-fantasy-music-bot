@@ -38,7 +38,8 @@ async function handler (
 
 export default {
     aliases: ['p', 'fp'],
-    sort: 11,
-    helpInfo: '`drop [0..9]` delete binded link',
+    helpSort: 1,
+    helpInfo:
+        '`p [link]` play track(playlist) from link or add to queue\n`fp [link]` clear queue and play shuffled playlist or track immediately',
     handler
 }

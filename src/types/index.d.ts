@@ -6,6 +6,7 @@ interface CommadHandlerParams {
     message: import('discord.js').Message
     guild: import('../guild-session').default
     args: string[]
+    commands: Command[]
 }
 
 type Stream = import('stream').Readable // import('discord.js').AudioResource
@@ -19,7 +20,7 @@ type Slots = Map<number, Slot>
 
 interface Command {
     aliases: string[]
-    sort: number
+    helpSort: number
     helpInfo?: string
     handler(this: import('discord.js').Client, params: CommadHandlerParams): any
 }
