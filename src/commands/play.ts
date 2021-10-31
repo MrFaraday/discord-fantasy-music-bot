@@ -22,9 +22,9 @@ async function handler (
         const tracks = await issueTracks(query.join(' '), message.channel)
 
         if (mode === 'p') {
-            return await guild.play(message.member.voice.channel, tracks)
+            return await guild.play(message.member.voice.channel, tracks, message.channel)
         } else if (mode === 'fp') {
-            return await guild.forcePlay(message.member.voice.channel, tracks)
+            return await guild.forcePlay(message.member.voice.channel, tracks, message.channel)
         }
     } catch (error) {
         if (error instanceof SourceError) {

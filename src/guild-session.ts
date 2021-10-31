@@ -10,7 +10,7 @@ import {
     DiscordGatewayAdapterCreator,
     AudioResource
 } from '@discordjs/voice'
-import { Guild, MessageEmbed, VoiceChannel } from 'discord.js'
+import { Guild, MessageEmbed, TextBasedChannels, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
 import { QUEUE_MAX_LENGTH } from './config'
 import fadeOut from './easing/fade-out'
@@ -54,7 +54,11 @@ export default class GuildSession {
         return getVoiceConnection(this.guild.id)
     }
 
-    async play (channel: VoiceChannel, tracks: Track[]): Promise<void> {
+    async play (
+        channel: VoiceChannel,
+        tracks: Track[],
+        textChannel?: TextBasedChannels
+    ): Promise<void> {
         this.queue = [...this.queue, ...tracks].slice(0, QUEUE_MAX_LENGTH)
 
         if (!this.voiceConnection) {
@@ -62,18 +66,22 @@ export default class GuildSession {
         }
 
         if (this.state !== PlaybackState.PLAYING) {
-            await this.playNext()
+            await this.playNext(textChannel)
         }
     }
 
-    async forcePlay (channel: VoiceChannel, tracks: Track[]): Promise<void> {
+    async forcePlay (
+        channel: VoiceChannel,
+        tracks: Track[],
+        textChannel?: TextBasedChannels
+    ): Promise<void> {
         this.queue = shuffle(tracks.slice(0, QUEUE_MAX_LENGTH))
 
         if (!this.voiceConnection) {
             await this.connect(channel)
         }
 
-        await this.playNext()
+        await this.playNext(textChannel)
     }
 
     async connect (channel: VoiceChannel): Promise<void> {
@@ -175,7 +183,7 @@ export default class GuildSession {
         return 0.005 * this.volume
     }
 
-    private async playNext () {
+    private async playNext (textChannel?: TextBasedChannels) {
         if (!this.voiceConnection) return
         if (!this.audioPlayer) return
         if (this.state === PlaybackState.LODAING) return
@@ -209,7 +217,14 @@ export default class GuildSession {
             this.playingResource = resource
             this.audioPlayer.play(resource)
         } catch (error) {
-            if (error instanceof CreateResourceError) {
+            if (
+                error instanceof CreateResourceError &&
+                error.code === CreateResourceError.RESTRICTED &&
+                textChannel &&
+                this.queue.length === 0
+            ) {
+                textChannel.send('I can\'t play it, sory').catch(() => 0)
+            } else if (error instanceof CreateResourceError) {
                 // next track
             } else if (
                 error instanceof Error &&

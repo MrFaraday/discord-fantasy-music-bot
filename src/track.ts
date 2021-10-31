@@ -53,6 +53,8 @@ export class Track implements TrackData {
                     CreateResourceError.UNAVAILABLE,
                     'Video unavailable'
                 )
+            } else if (error instanceof Error && error.message === 'Status code: 410') {
+                throw new CreateResourceError(CreateResourceError.RESTRICTED)
             } else {
                 console.error('>> UNHANDLED createAudioResource error')
                 console.error(this)
@@ -67,6 +69,7 @@ export class CreateResourceError extends Error {
     public static UNAVAILABLE = 0
     public static MAX_ATTEMPTS_EXCEEDED = 1
     public static UNKNOWN = 2
+    public static RESTRICTED = 3
 
     public code: number | null = null
 

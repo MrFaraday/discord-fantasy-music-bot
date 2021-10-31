@@ -20,7 +20,7 @@ async function handler (
 
     try {
         const tracks = await issueTracks(saved.value, message.channel)
-        return await guild.forcePlay(message.member.voice.channel, tracks)
+        return await guild.forcePlay(message.member.voice.channel, tracks, message.channel)
     } catch (error) {
         if (error instanceof SourceError) {
             return await message.channel.send(error.message)
