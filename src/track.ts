@@ -8,13 +8,13 @@ const maxAttempts = 3
 interface TrackData {
     url: string
     title: string
-    thumbnail: string
+    thumbnail?: string
 }
 
 export class Track implements TrackData {
     public readonly url: string
     public readonly title: string
-    public readonly thumbnail: string
+    public readonly thumbnail?: string
     public attempts = 0
 
     constructor (trackData: TrackData) {
@@ -24,13 +24,16 @@ export class Track implements TrackData {
     }
 
     getMessageEmbed (): MessageEmbed {
-        return new MessageEmbed({
+        const embed = new MessageEmbed({
             title: this.title,
             color: EMBED_COLOR
-        })
-            .setThumbnail(this.thumbnail)
-            .setURL(this.url)
-        // .setAuthor('Playing')
+        }).setURL(this.url)
+
+        if (this.thumbnail) {
+            embed.setThumbnail(this.thumbnail)
+        }
+
+        return embed
     }
 
     public async createAudioResource (): Promise<AudioResource<Track>> {

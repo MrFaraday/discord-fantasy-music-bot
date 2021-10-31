@@ -15,7 +15,7 @@ const listIdRegEx = /[?&]list=([^&?#/]+)/
 interface ListItem {
     title: string
     videoId: string
-    thumbnail: string
+    thumbnail?: string
 }
 
 class YoutubeApi {
@@ -41,7 +41,7 @@ class YoutubeApi {
             return data.items.map(({ snippet }) => ({
                 videoId: snippet.resourceId.videoId,
                 title: snippet.title,
-                thumbnail: snippet.thumbnails.maxres?.url ?? null
+                thumbnail: getThumbnailUrl(snippet)
             }))
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
@@ -118,7 +118,7 @@ class YoutubeApi {
         return new Track({
             url,
             title: snippet.title,
-            thumbnail: snippet.thumbnails.maxres.url
+            thumbnail: getThumbnailUrl(snippet)
         })
     }
 
@@ -174,6 +174,11 @@ function assert (error: unknown): never {
     } else {
         throw error
     }
+}
+
+const getThumbnailUrl = (snippet: Snippet): string | undefined => {
+    const { default: def, high, maxres, medium, standard } = snippet.thumbnails
+    return maxres?.url ?? standard?.url ?? high?.url ?? medium?.url ?? def?.url
 }
 
 const youtubeApi = new YoutubeApi(YOUTUBE_API_KEY)
@@ -255,11 +260,11 @@ interface Snippet {
     title: string
     description: string
     thumbnails: {
-        default: Thumbnail<120, 90>
-        medium: Thumbnail<320, 180>
-        high: Thumbnail<480, 360>
-        standard: Thumbnail<640, 480>
-        maxres: Thumbnail<1280, 720>
+        default?: Thumbnail<120, 90>
+        medium?: Thumbnail<320, 180>
+        high?: Thumbnail<480, 360>
+        standard?: Thumbnail<640, 480>
+        maxres?: Thumbnail<1280, 720>
     }
     channelTitle: string
     localized: {
