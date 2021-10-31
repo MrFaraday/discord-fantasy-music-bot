@@ -115,6 +115,10 @@ export default class GuildSession {
 
         if (!this.audioPlayer) {
             this.audioPlayer = createAudioPlayer()
+
+            /**
+             * @todo catch `abort` error
+             */
             this.audioPlayer.on('error', (error) => {
                 this.state = PlaybackState.IDLE
 
