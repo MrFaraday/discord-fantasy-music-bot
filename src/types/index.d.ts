@@ -11,12 +11,12 @@ interface CommadHandlerParams {
 
 type Stream = import('stream').Readable // import('discord.js').AudioResource
 
-interface Slot {
+interface Bind {
     name?: string
     value: string
 }
 
-type Slots = Map<number, Slot>
+type Binds = Map<number, Bind>
 
 interface Command {
     aliases: string[]

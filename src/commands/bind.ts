@@ -13,15 +13,15 @@ async function handler (
 ): Promise<void | Message> {
     if (!message.guild) return
 
-    const [, slotParam, url] = args
+    const [, bindParam, url] = args
 
-    const slotName = args.slice(3).join(' ')
-    const slot = Number(slotParam)
+    const bindName = args.slice(3).join(' ')
+    const bindKey = Number(bindParam)
 
-    if (!slotParam) {
+    if (!bindParam) {
         return await message.channel.send('No params provided')
-    } else if (!isValidInteger(slot, 0, 9)) {
-        return await message.channel.send('Slot number must be an integer from 0 to 9')
+    } else if (!isValidInteger(bindKey, 0, 9)) {
+        return await message.channel.send('Bind key must be an integer from 0 to 9')
     } else if (!url) {
         return await message.channel.send('No link provided')
     } else if (url.length > 500) {
@@ -32,7 +32,7 @@ async function handler (
         return await message.channel.send(
             'Sorry, I followed a link and have found nothing'
         )
-    } else if (slotName.length > 80) {
+    } else if (bindName.length > 80) {
         return await message.channel.send('Name is too long, maximum 80 of characters')
     }
 
@@ -46,7 +46,7 @@ async function handler (
                 SELECT slot_number FROM slot
                 WHERE guild_id = $1 AND slot_number = $2
                 `,
-                [guildId, slot]
+                [guildId, bindKey]
             )
         ).rows
 
@@ -56,7 +56,7 @@ async function handler (
                 UPDATE slot SET slot_number = $2, value = $3, name = $4
                 WHERE guild_id = $1 AND slot_number = $2
                 `,
-                [guildId, slot, url, slotName || null]
+                [guildId, bindKey, url, bindName || null]
             )
         } else {
             await client.query(
@@ -64,11 +64,11 @@ async function handler (
                 INSERT INTO slot (guild_id, slot_number, value, name)
                 VALUES ($1, $2, $3, $4)
                 `,
-                [guildId, slot, url, slotName || null]
+                [guildId, bindKey, url, bindName || null]
             )
         }
 
-        guild.slots.set(slot, { name: slotName || shortString(url), value: url })
+        guild.binds.set(bindKey, { name: bindName || shortString(url), value: url })
 
         return await message.channel.send('Saved!')
     } catch (error) {
@@ -80,9 +80,9 @@ async function handler (
 }
 
 export default {
-    aliases: ['save'],
+    aliases: ['bind'],
     helpSort: 9,
     helpInfo:
-        '`save [0..9] [link] [name?]` bind link to number, rest of input will be name but it optional',
+        '`bind [0..9] [link] [name?]` bind link to number, rest of input will be name but it optional',
     handler
 }

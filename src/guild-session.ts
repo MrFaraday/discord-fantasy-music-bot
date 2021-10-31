@@ -25,14 +25,14 @@ enum PlaybackState {
 
 interface SessionConstructorParams {
     guild: Guild
-    slots: Slots
+    binds: Binds
     prefix: string
     volume: number
 }
 
 export default class GuildSession {
     readonly guild: Guild
-    slots: Slots
+    binds: Binds
     prefix: string
     volume: number
     queue: Track[] = []
@@ -43,11 +43,11 @@ export default class GuildSession {
 
     private disconnectTimeout: NodeJS.Timeout | null = null
 
-    constructor ({ guild, slots, prefix, volume }: SessionConstructorParams) {
+    constructor ({ guild, binds, prefix, volume }: SessionConstructorParams) {
         this.guild = guild
         this.volume = volume
         this.prefix = prefix
-        this.slots = slots
+        this.binds = binds
     }
 
     get voiceConnection (): VoiceConnection | undefined {

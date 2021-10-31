@@ -6,12 +6,12 @@ async function handler (
     this: Client,
     { message, guild, args }: CommadHandlerParams
 ): Promise<Message | void> {
-    const slot = Number(args[0])
+    const bind = Number(args[0])
 
     if (args[1]) return
     if (!message.member) return
 
-    const saved = guild.slots.get(slot)
+    const saved = guild.binds.get(bind)
     if (!saved) return
 
     if (message.member.voice.channel?.type !== 'GUILD_VOICE') {
