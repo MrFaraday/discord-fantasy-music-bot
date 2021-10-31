@@ -1,9 +1,8 @@
 import { URL } from 'url'
 import axios from 'axios'
 import { QUEUE_MAX_LENGTH, YOUTUBE_API_KEY } from '../config'
-import yts from 'yt-search'
 import { Track } from '../track'
-import { TextBasedChannels } from 'discord.js'
+import YtSearchService, { YtVideoSearchResult } from '../services/yt-search-service'
 
 if (!YOUTUBE_API_KEY) {
     throw new Error('Environment variable YOUTUBE_API_KEY not found')
@@ -42,7 +41,7 @@ class YoutubeApi {
             return data.items.map(({ snippet }) => ({
                 videoId: snippet.resourceId.videoId,
                 title: snippet.title,
-                thumbnail: snippet.thumbnails.standard?.url ?? null
+                thumbnail: snippet.thumbnails.maxres?.url ?? null
             }))
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
@@ -54,23 +53,18 @@ class YoutubeApi {
     }
 
     async search (query: string): Promise<Track> {
-        let data: yts.SearchResult
+        let result: YtVideoSearchResult | null = null
 
         try {
-            const url = new URL('http://localhost:3333/search')
-            url.searchParams.append('q', query)
-
-            const res = await axios.get<yts.SearchResult>(url.href)
-            data = res.data
+            result = await YtSearchService.search(query)
         } catch (error) {
             assert(error)
         }
 
-        if (data.videos.length === 0) {
+        if (!result) {
             throw new YoutubeApiError('Not fonund', YoutubeApiError.NOT_FOUND)
         }
 
-        const result = data.videos[0]
         const url = this.buildPlayLink(result.videoId)
 
         return new Track({
@@ -124,7 +118,7 @@ class YoutubeApi {
         return new Track({
             url,
             title: snippet.title,
-            thumbnail: snippet.thumbnails.standard.url
+            thumbnail: snippet.thumbnails.maxres.url
         })
     }
 
