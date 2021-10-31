@@ -115,17 +115,26 @@ export default class GuildSession {
 
         if (!this.audioPlayer) {
             this.audioPlayer = createAudioPlayer()
-            this.audioPlayer.on('error', (err) => {
+            this.audioPlayer.on('error', (error) => {
                 this.state = PlaybackState.IDLE
 
-                console.error('>> MESSAGE')
-                console.error(err.message)
-                console.error('>> NAME')
-                console.error(err.name)
-                console.error('>> RESOURCE')
-                console.error(err.resource)
-                console.error('<< END')
+                if (
+                    error.message === 'Status code: 403' &&
+                    this.playingResource?.metadata
+                ) {
+                    console.log('>> RETRYING |', error.message)
+                    this.queue.unshift(this.playingResource?.metadata)
+                } else {
+                    console.error('>> UNHANLDED audioPlayer error')
+                    console.error(error.message)
+                    console.error('>> NAME')
+                    console.error(error.name)
+                    console.error('>> RESOURCE')
+                    console.error(error.resource)
+                    console.error('<< END')
+                }
 
+                this.playingResource = null
                 void this.playNext()
             })
 
