@@ -1,6 +1,9 @@
 import { Worker } from 'worker_threads'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
+import assert from 'assert'
+
+type Uuid = string
 
 export interface YtVideoSearchResult {
     videoId: string
@@ -8,26 +11,23 @@ export interface YtVideoSearchResult {
     thumbnail: string
 }
 
-interface PromiseController {
-    uuid: string
+interface ServiceRequest {
+    uuid: Uuid
     query: string
     resolve(result: YtVideoSearchResult): void
-    reject(): void
+    reject(error: string | Error): void
 }
 
-interface ServiceResultSuccess {
-    uuid: string
-    payload: YtVideoSearchResult
-    success: true
+interface ServiceResult {
+    success: boolean
+    result: {
+        uuid?: Uuid
+        searchResult?: YtVideoSearchResult
+        message?: string
+    }
 }
 
-interface ServiceResultFail {
-    uuid: string
-    message: string
-    success: false
-}
-
-const serviceRequests = new Map<string, PromiseController>()
+const serviceRequests = new Map<Uuid, ServiceRequest>()
 let isOnline = false
 let worker: Worker
 
@@ -43,30 +43,39 @@ function spawnWorker () {
         }
     })
 
-    worker.on('message', (m) => {
-        const result: ServiceResultSuccess | ServiceResultFail = JSON.parse(m)
+    worker.on('message', (message) => {
+        const response: unknown = JSON.parse(message)
 
-        const uuid: string = result?.uuid ?? ''
-        const success: boolean = result?.success ?? false
-        const data: YtVideoSearchResult | undefined = result?.payload
-        const message: string | undefined = result?.message
-
-        const request = serviceRequests.get(uuid)
-
-        if (!request) {
+        if (!validateServiceResult(response)) {
             return console.error(
-                '>> YtSearchService | onMessage: request not found',
+                '>> YtSearchService | onMessage: message parse error, payload:',
                 '\n',
                 message
             )
         }
 
+        if (typeof response.result.uuid !== 'string') {
+            return console.error(
+                '>> YtSearchService | onMessage: service error',
+                '\n',
+                response.result.message
+            )
+        }
+
+        const uuid = response.result.uuid
+        const request = serviceRequests.get(uuid)
+
+        if (!request) {
+            return console.error('>> YtSearchService | onMessage: request not found')
+        }
+
         try {
-            if (success) {
-                assert(uuid, data)
-                request.resolve(data)
-            } else {
-                request.reject(message)
+            assert(response.result.searchResult || response.result.message)
+
+            if (response.success && response.result.searchResult) {
+                request.resolve(response.result.searchResult)
+            } else if (response.result.message) {
+                request.reject(response.result.message)
             }
         } catch (error) {
             console.error('>> YtSearchService | onWorkerMessage:', error)
@@ -98,13 +107,13 @@ function search (query: string): Promise<YtVideoSearchResult> {
     })
 }
 
-function assert (uuid: string, data: YtVideoSearchResult): void {
-    if (typeof uuid !== 'string') {
-        throw new TypeError('Invalide uuid type')
-    }
-    if (!data || !data.videoId || !data.title || !data.thumbnail) {
-        throw new TypeError('Invalide YtVideoSearchResult data format')
-    }
+function validateServiceResult (result: unknown): result is ServiceResult {
+    return (
+        typeof result === 'object' &&
+        result !== null &&
+        'success' in result &&
+        'result' in result
+    )
 }
 
 spawnWorker()

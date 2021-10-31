@@ -18,7 +18,10 @@ parentPort.on('message', async (message) => {
     } catch (error) {
         return JSON.stringify({
             success: false,
-            message: error?.message ?? 'YtServiceWorker | Parsing message unknown error'
+            result: {
+                message:
+                    error?.message ?? 'YtServiceWorker | Parsing message unknown error'
+            }
         })
     }
 
@@ -32,21 +35,25 @@ parentPort.on('message', async (message) => {
 
         parentPort.postMessage(
             JSON.stringify({
-                uuid,
                 success: true,
-                payload: {
-                    videoId: video.videoId,
-                    title: video.title,
-                    thumbnail: video.thumbnail
+                result: {
+                    uuid,
+                    searchResult: {
+                        videoId: video.videoId,
+                        title: video.title,
+                        thumbnail: video.thumbnail
+                    }
                 }
             })
         )
     } catch (error) {
         parentPort.postMessage(
             JSON.stringify({
-                uuid,
                 success: false,
-                message: error?.message ?? 'YtServiceWorker | Unknown error'
+                result: {
+                    uuid,
+                    message: error?.message ?? 'YtServiceWorker | Unknown error'
+                }
             })
         )
     }
