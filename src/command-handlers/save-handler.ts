@@ -27,7 +27,7 @@ export default async function saveHandler (
         return await message.channel.send('Link is too long, maximum 500 of characters')
     } else if (!urlRegEx.test(url)) {
         return await message.channel.send('It\'s not a link, maybe')
-    } else if (!(await youtubeApi.isSourceExist(url, message.channel))) {
+    } else if (!(await youtubeApi.isSourceExist(url))) {
         return await message.channel.send(
             'Sorry, I followed a link and have found nothing'
         )

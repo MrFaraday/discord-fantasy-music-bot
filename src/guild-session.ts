@@ -14,8 +14,14 @@ import { Guild, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
 import { QUEUE_MAX_LENGTH } from './config'
 import fadeOut from './easing/fade-out'
-import PlayingStateMixin, { PlaybackState } from './playing-state-mixin'
-import { Track } from './track'
+import { CreateResourceError, Track } from './track'
+
+enum PlaybackState {
+    IDLE = 0,
+    PLAYING = 1,
+    STOPPING = 2,
+    LODAING = 3
+}
 
 interface SessionConstructorParams {
     guild: Guild
@@ -24,21 +30,20 @@ interface SessionConstructorParams {
     volume: number
 }
 
-export default class GuildSession extends PlayingStateMixin {
+export default class GuildSession {
     readonly guild: Guild
     slots: Slots
     prefix: string
     volume: number
     queue: Track[] = []
 
+    private state: PlaybackState = PlaybackState.IDLE
     private audioPlayer: AudioPlayer | null = null
     private playingResource: AudioResource<Track> | null = null
 
     private disconnectTimeout: NodeJS.Timeout | null = null
 
     constructor ({ guild, slots, prefix, volume }: SessionConstructorParams) {
-        super()
-
         this.guild = guild
         this.volume = volume
         this.prefix = prefix
@@ -62,8 +67,13 @@ export default class GuildSession extends PlayingStateMixin {
     }
 
     async forcePlay (channel: VoiceChannel, tracks: Track[]): Promise<void> {
-        this.queue = []        
-        await this.play(channel, shuffle(tracks))
+        this.queue = shuffle(tracks.slice(0, QUEUE_MAX_LENGTH))
+
+        if (!this.voiceConnection) {
+            await this.connect(channel)
+        }
+
+        await this.playNext()
     }
 
     async connect (channel: VoiceChannel): Promise<void> {
@@ -92,15 +102,21 @@ export default class GuildSession extends PlayingStateMixin {
             this.queue = []
             this.audioPlayer = null
             this.playingResource = null
+            this.state = PlaybackState.IDLE
         })
 
         if (!this.audioPlayer) {
             this.audioPlayer = createAudioPlayer()
             this.audioPlayer.on('error', (err) => {
-                console.error('audioPlayer | ERROR:', err)
-                console.warn(Object.keys(err))
-
                 this.state = PlaybackState.IDLE
+
+                console.error('>> MESSAGE')
+                console.error(err.message)
+                console.error('>> NAME')
+                console.error(err.name)
+                console.error('>> RESOURCE')
+                console.error(err.resource)
+                console.error('<< END')
 
                 void this.playNext()
             })
@@ -113,16 +129,11 @@ export default class GuildSession extends PlayingStateMixin {
                     this.state = PlaybackState.IDLE
                 }
 
-
                 void this.playNext()
             })
             this.audioPlayer.on(AudioPlayerStatus.Playing, () => {
                 this.unscheduleSDisconnect()
                 this.state = PlaybackState.PLAYING
-
-                if (this.playingResource) {
-                    void this.playingResource.metadata.onStart()
-                }
             })
 
             await entersState(connection, VoiceConnectionStatus.Ready, 20e3)
@@ -151,7 +162,7 @@ export default class GuildSession extends PlayingStateMixin {
     }
 
     isPlaying (): boolean {
-        return !!this.playingResource
+        return this.state !== PlaybackState.IDLE
     }
 
     private get playerVolume () {
@@ -165,7 +176,7 @@ export default class GuildSession extends PlayingStateMixin {
 
         const track = this.queue.shift()
 
-        if (!track) {
+        if (!track && this.state === PlaybackState.PLAYING) {
             this.state = PlaybackState.STOPPING
             const stopped = await this.stopCurrentTrack()
 
@@ -174,29 +185,37 @@ export default class GuildSession extends PlayingStateMixin {
             }
 
             return
+        } else if (!track) {
+            return
         }
 
         try {
             this.state = PlaybackState.LODAING
 
             const [resource] = await Promise.all([
-                track.createAudioResource(),
+                track.createAudioResource().then((res) => {
+                    res.volume?.setVolume(this.playerVolume)
+                    return res
+                }),
                 this.stopCurrentTrack()
             ])
 
             this.playingResource = resource
-            resource.volume?.setVolume(this.playerVolume)
             this.audioPlayer.play(resource)
         } catch (error) {
-            if (
+            if (error instanceof CreateResourceError) {
+                // next track
+            } else if (
                 error instanceof Error &&
-                error.message.includes('Unable to retrieve video metadata')
+                error.message.includes('Cannot play a resource that has already ended')
             ) {
-                console.warn('Unable to retrieve video metadata | RETRYING');
+                console.log('>> RETRYING |', error.message)
                 this.queue.unshift(track)
+            } else {
+                console.error('>> UNHANDLED playNext error')
+                console.error(track)
+                console.error(error)
             }
-
-            console.warn('playNext | ERROR:', error)
 
             this.state = PlaybackState.IDLE
             await this.playNext()

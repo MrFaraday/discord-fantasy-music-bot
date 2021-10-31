@@ -12,10 +12,10 @@ export default async function issueTracks (
     const urlData = youtubeApi.parseUrl(query)
 
     if (urlData.videoId) {
-        const track = await youtubeApi.issueTrack(urlData.videoId, channel)
+        const track = await youtubeApi.issueTrack(urlData.videoId)
         tracks = [track]
     } else if (urlData.listId) {
-        tracks = await youtubeApi.issueTracks(urlData.listId, channel)
+        tracks = await youtubeApi.issueTracks(urlData.listId)
 
         if (tracks.length === 0) {
             throw new SourceError('It\'s empty')
@@ -25,7 +25,7 @@ export default async function issueTracks (
     } else if (query.length > 500) {
         throw new SourceError('Query is too long')
     } else {
-        const track = await youtubeApi.search(query, channel)
+        const track = await youtubeApi.search(query)
         tracks = [track]
     }
 

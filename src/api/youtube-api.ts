@@ -42,7 +42,7 @@ class YoutubeApi {
             return data.items.map(({ snippet }) => ({
                 videoId: snippet.resourceId.videoId,
                 title: snippet.title,
-                thumbnail: snippet.thumbnails.standard.url
+                thumbnail: snippet.thumbnails.standard?.url ?? null
             }))
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
@@ -53,7 +53,7 @@ class YoutubeApi {
         }
     }
 
-    async search (query: string, channel: TextBasedChannels): Promise<Track> {
+    async search (query: string): Promise<Track> {
         let data: yts.SearchResult
 
         try {
@@ -76,8 +76,7 @@ class YoutubeApi {
         return new Track({
             url,
             title: result.title,
-            thumbnail: result.thumbnail,
-            textChannel: channel
+            thumbnail: result.thumbnail
         })
     }
 
@@ -118,22 +117,21 @@ class YoutubeApi {
     /**
      * Get Track from video id
      */
-    async issueTrack (videoId: string, channel: TextBasedChannels): Promise<Track> {
+    async issueTrack (videoId: string): Promise<Track> {
         const url = this.buildPlayLink(videoId)
         const snippet = await this.getVideoSnippet(videoId)
 
         return new Track({
             url,
             title: snippet.title,
-            thumbnail: snippet.thumbnails.standard.url,
-            textChannel: channel
+            thumbnail: snippet.thumbnails.standard.url
         })
     }
 
     /**
      * Get Tracks from listId
      */
-    async issueTracks (listId: string, channel: TextBasedChannels): Promise<Track[]> {
+    async issueTracks (listId: string): Promise<Track[]> {
         const listContent = await this.getListContent(listId)
 
         return listContent.map(({ title, videoId, thumbnail }) => {
@@ -142,20 +140,19 @@ class YoutubeApi {
             return new Track({
                 url,
                 title,
-                thumbnail,
-                textChannel: channel
+                thumbnail
             })
         })
     }
 
-    async isSourceExist (url: string, channel: TextBasedChannels) {
+    async isSourceExist (url: string) {
         try {
             const parseData = this.parseUrl(url)
 
             if (parseData.videoId) {
-                await this.issueTrack(parseData.videoId, channel)
+                await this.issueTrack(parseData.videoId)
             } else if (parseData.listId) {
-                await this.issueTracks(parseData.listId, channel)
+                await this.issueTracks(parseData.listId)
             } else {
                 throw new YoutubeApiError('Invalid URL', YoutubeApiError.BAD)
             }

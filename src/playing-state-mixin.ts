@@ -2,7 +2,7 @@ export enum PlaybackState {
     IDLE = 0,
     PLAYING = 1,
     STOPPING = 2,
-    LODAING = 4
+    LODAING = 3
 }
 
 export default class PlayingStateMixin {

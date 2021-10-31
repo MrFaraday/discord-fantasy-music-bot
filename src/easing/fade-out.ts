@@ -18,6 +18,7 @@ export default async function fadeOut (
 
         const reduce = (rest: number) => {
             if (rest < 0) {
+                audioPlayer.stop()
                 return resolve()
             }
 

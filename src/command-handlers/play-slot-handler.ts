@@ -25,6 +25,7 @@ export default async function playSlotHandler (
         if (error instanceof SourceError) {
             return await message.channel.send(error.message)
         } else {
+            console.warn(error)
             return await message.channel.send('It\'s hidden or something went wrong')
         }
     }

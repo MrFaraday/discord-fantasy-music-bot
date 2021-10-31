@@ -1,46 +1,46 @@
 import { AudioResource, createAudioResource } from '@discordjs/voice'
-import { MessageEmbed, TextBasedChannels } from 'discord.js'
+import { MessageEmbed } from 'discord.js'
 import { EMBED_COLOR } from './config'
 import ytdl from 'ytdl-core-discord'
+
+const maxAttempts = 3
 
 interface TrackData {
     url: string
     title: string
     thumbnail: string
-    textChannel: TextBasedChannels
 }
 
 export class Track implements TrackData {
     public readonly url: string
     public readonly title: string
     public readonly thumbnail: string
-    public readonly textChannel: TextBasedChannels
+    public attempts = 0
 
     constructor (trackData: TrackData) {
         this.url = trackData.url
         this.title = trackData.title
         this.thumbnail = trackData.thumbnail
-        this.textChannel = trackData.textChannel
     }
 
-    async onStart (): Promise<void> {
-        const embed = new MessageEmbed({
+    getMessageEmbed (): MessageEmbed {
+        return new MessageEmbed({
             title: this.title,
             color: EMBED_COLOR
         })
-            .setAuthor('Playing')
             .setThumbnail(this.thumbnail)
             .setURL(this.url)
-
-        try {
-            await this.textChannel.send({ embeds: [embed] })
-        } catch (error) {
-            // unable to send embed
-        }
+        // .setAuthor('Playing')
     }
 
     public async createAudioResource (): Promise<AudioResource<Track>> {
+        if (this.attempts > maxAttempts) {
+            console.log('MAX ATTEMPTS EXCEEDED')
+            throw new CreateResourceError(CreateResourceError.MAX_ATTEMPTS_EXCEEDED)
+        }
+
         try {
+            this.attempts++
             const stream: Stream = await ytdl(this.url)
 
             return createAudioResource(stream, {
@@ -48,8 +48,32 @@ export class Track implements TrackData {
                 inlineVolume: true
             })
         } catch (error) {
-            console.error('createAudioResource |', error)
-            throw error
+            if (error instanceof Error && error?.message === 'Video unavailable') {
+                throw new CreateResourceError(
+                    CreateResourceError.UNAVAILABLE,
+                    'Video unavailable'
+                )
+            } else {
+                console.error('>> UNHANDLED createAudioResource error')
+                console.error(this)
+                console.error(error)
+                throw new CreateResourceError(CreateResourceError.UNKNOWN)
+            }
         }
+    }
+}
+
+export class CreateResourceError extends Error {
+    public static UNAVAILABLE = 0
+    public static MAX_ATTEMPTS_EXCEEDED = 1
+    public static UNKNOWN = 2
+
+    public code: number | null = null
+
+    constructor (code: number, message?: string) {
+        super(message)
+        this.code = code
+
+        Object.setPrototypeOf(this, CreateResourceError.prototype)
     }
 }
