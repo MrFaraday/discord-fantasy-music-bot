@@ -10,16 +10,16 @@ interface CommadHandlerParams {
 
 type Stream = import('stream').Readable // import('discord.js').AudioResource
 
-// interface Track {
-//     title: string
-//     getStream(): Promise<Stream>
-//     meta?: [string, string][]
-//     dispatchetFrom?: import('discord.js').TextBasedChannel
-// }
-
 interface Slot {
     name?: string
     value: string
 }
 
 type Slots = Map<number, Slot>
+
+interface Command {
+    aliases: string[]
+    sort: number
+    helpInfo?: string
+    handler(this: import('discord.js').Client, params: CommadHandlerParams): any
+}

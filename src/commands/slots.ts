@@ -2,7 +2,7 @@ import { Client, Message, MessageEmbed } from 'discord.js'
 import { EMBED_COLOR } from '../config'
 import { shortString } from '../utils/string'
 
-export default async function slotsHandler (
+async function handler (
     this: Client,
     { message, guild }: CommadHandlerParams
 ): Promise<Message> {
@@ -22,4 +22,11 @@ export default async function slotsHandler (
         .setDescription(`${slotRecords || '***Empty***'}`)
 
     return await message.channel.send({ embeds: [slotsEmbed] })
+}
+
+export default {
+    aliases: ['slots'],
+    sort: 11,
+    helpInfo: '`drop [0..9]` delete binded link',
+    handler
 }

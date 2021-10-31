@@ -2,7 +2,7 @@ import { Client, Message } from 'discord.js'
 import db from '../db'
 import { isValidInteger } from '../utils/number'
 
-export default async function dropHandler (
+async function handler (
     this: Client,
     { message, guild, args }: CommadHandlerParams
 ): Promise<void | Message> {
@@ -30,4 +30,11 @@ export default async function dropHandler (
     }
 
     return Promise.resolve()
+}
+
+export default {
+    aliases: ['drop'],
+    sort: 11,
+    helpInfo: '`drop [0..9]` delete binded link',
+    handler
 }

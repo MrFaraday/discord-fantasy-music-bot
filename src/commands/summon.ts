@@ -1,6 +1,6 @@
 import { Client, Message } from 'discord.js'
 
-export default async function summonHandler (
+async function handler (
     this: Client,
     { guild, message }: CommadHandlerParams
 ): Promise<void | boolean | Message> {
@@ -15,4 +15,11 @@ export default async function summonHandler (
     } else {
         return await message.channel.send('I\'m here')
     }
+}
+
+export default {
+    aliases: ['summon'],
+    sort: 11,
+    helpInfo: '`drop [0..9]` delete binded link',
+    handler
 }

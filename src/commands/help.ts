@@ -2,7 +2,7 @@ import { Client, Message, MessageEmbed } from 'discord.js'
 import { EMBED_COLOR } from '../config'
 import { concat } from '../utils/string'
 
-export default async function helpHandler (
+async function handler (
     this: Client,
     { message, args }: CommadHandlerParams
 ): Promise<void | Message> {
@@ -34,6 +34,7 @@ export default async function helpHandler (
                 '`n` skip current track',
                 '`s` stop playing and clear queue',
                 '`v [0..200?]` display or set volume',
+                '`now` display current playing track',
                 '`d` disconnect from a voice channel',
                 '`slots` show saved links',
                 '`save [0..9] [link] [name?]` bind link to number, rest of input will be name but it optional',
@@ -45,4 +46,11 @@ export default async function helpHandler (
         )
 
     return await message.channel.send({ embeds: [helpEmbed] })
+}
+
+export default {
+    aliases: ['help'],
+    sort: 0,
+    helpInfo: '`help [v?]` show list of commands, add ***v*** for more info',
+    handler
 }

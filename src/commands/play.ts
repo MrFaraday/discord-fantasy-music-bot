@@ -2,7 +2,7 @@ import { Client, Message } from 'discord.js'
 import issueTracks from '../issue-tracks'
 import SourceError from '../source-error'
 
-export default async function playHandler (
+async function handler (
     this: Client,
     { message, guild, args }: CommadHandlerParams
 ): Promise<void | Message> {
@@ -34,4 +34,11 @@ export default async function playHandler (
             return await message.channel.send('It\'s hidden or something went wrong')
         }
     }
+}
+
+export default {
+    aliases: ['p', 'fp'],
+    sort: 11,
+    helpInfo: '`drop [0..9]` delete binded link',
+    handler
 }

@@ -1,6 +1,6 @@
 import { Client, Message } from 'discord.js'
 
-export default async function nowHandler (
+async function handler (
     this: Client,
     { guild, message }: CommadHandlerParams
 ): Promise<void | boolean | Message> {
@@ -9,4 +9,11 @@ export default async function nowHandler (
         embed.setAuthor('Playing')
         return await message.channel.send({ embeds: [embed] })
     }
+}
+
+export default {
+    aliases: ['now'],
+    sort: 11,
+    helpInfo: '`drop [0..9]` delete binded link',
+    handler
 }
