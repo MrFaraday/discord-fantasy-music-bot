@@ -18,20 +18,28 @@ const client = new Discord.Client({
     ]
 })
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
 client.on('messageCreate', commandDispatcher)
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-client.on('guildCreate', onGuildCreate)
+client.on('interactionCreate', async (interaction) => {
+    if (!interaction.isButton() || !interaction.inGuild()) return
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
+    // void interaction.reply({ content: 'OK' })
+    // void interaction.reply({ ephemeral: true, content: 'ыы' })
+    // 
+    // await new Promise((res) => setTimeout(res, 1000))
+    // await interaction.update({ content: 'ok' })
+    await interaction.deferUpdate()
+
+    // console.log('interaction')
+})
+
+client.on('guildCreate', onGuildCreate)
 client.on('guildDelete', onGuildDelete)
 
 client.on('shardError', (error) => {
     console.error('A websocket connection encountered an error:', error)
 })
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
 client.on('ready', () => {
     console.log(`\nBot ${client.user?.username ?? 'Unknown'} has lauched!`)
     const link = client.generateInvite({
