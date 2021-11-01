@@ -1,36 +1,36 @@
 [
     {
-        "slot": 1,
+        "key": 1,
         "name": "Peaceful",
         "value": "https://www.youtube.com/playlist?list=PLfBh8NkWVMLjsvhK5BzLZr9Zu-Sd9KtbG"
     },
     {
-        "slot": 2,
+        "key": 2,
         "name": "Combat",
         "value": "https://www.youtube.com/playlist?list=PLfBh8NkWVMLjGIg2LdlrhxBnvDX8w74-e"
     },
     {
-        "slot": 3,
+        "key": 3,
         "name": "Dungeon",
         "value": "https://www.youtube.com/playlist?list=PLfBh8NkWVMLgV5UgTRLHzyQ-9wKTeilD8"
     },
     {
-        "slot": 4,
+        "key": 4,
         "name": "City",
         "value": "https://www.youtube.com/playlist?list=PLfBh8NkWVMLiaZbAAMntBwiTO49bf_YYm"
     },
     {
-        "slot": 5,
+        "key": 5,
         "name": "Bossfight",
         "value": "https://www.youtube.com/playlist?list=PLfBh8NkWVMLji-hsRuaaBHM0tlkjEICHW"
     },
     {
-        "slot": 6,
+        "key": 6,
         "name": "Mystery",
         "value": "https://www.youtube.com/playlist?list=PLfBh8NkWVMLgl0oBlMoHOgZCThoyiCt2S"
     },
     {
-        "slot": 7,
+        "key": 7,
         "name": "Tavern",
         "value": "https://www.youtube.com/playlist?list=PLfBh8NkWVMLhdZLYQz6VoP4b4SViKP8w0"
     }

@@ -2,27 +2,27 @@ import { Client, Message } from 'discord.js'
 import db from '../db'
 import { isValidInteger } from '../utils/number'
 
-export default async function dropHandler (
+async function handler (
     this: Client,
     { message, guild, args }: CommadHandlerParams
 ): Promise<void | Message> {
     if (!message.guild) return
-    const [, slotParam] = args
+    const [, bindParam] = args
 
-    const slot = Number(slotParam)
-    if (!slotParam) {
+    const bindKey = Number(bindParam)
+    if (!bindParam) {
         return await message.channel.send('No params provided')
-    } else if (!isValidInteger(slot, 0, 9)) {
-        return await message.channel.send('Slot number must be an integer from 0 to 9')
+    } else if (!isValidInteger(bindKey, 0, 9)) {
+        return await message.channel.send('Bind key must be an integer from 0 to 9')
     }
 
     try {
         await db.query('DELETE FROM slot WHERE guild_id = $1 AND slot_number = $2', [
             message.guild.id,
-            slot
+            bindKey
         ])
 
-        guild.slots.delete(slot)
+        guild.binds.delete(bindKey)
         await message.channel.send('Deleted')
     } catch (error) {
         console.error(error)
@@ -30,4 +30,11 @@ export default async function dropHandler (
     }
 
     return Promise.resolve()
+}
+
+export default {
+    aliases: ['drop'],
+    helpSort: 10,
+    helpInfo: '`drop [0..9]` delete binded link',
+    handler
 }

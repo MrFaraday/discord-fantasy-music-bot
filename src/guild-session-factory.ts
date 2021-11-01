@@ -1,7 +1,7 @@
 import db, { DbClient } from './db'
 import { Client, Guild } from 'discord.js'
 import GuildSession from './guild-session'
-import defaultSlots from './config/default-slots.config.json'
+import defaultBinds from './config/default-binds.config.json'
 import format from 'pg-format'
 import { DEFAULT_PREFIX, DEFAULT_VOLUME } from './config'
 
@@ -10,7 +10,7 @@ interface GuildData {
     volume: number
 }
 
-interface SlotData {
+interface BindData {
     slot_number: number
     value: string
     name: string
@@ -56,24 +56,24 @@ export default class GuildSessionFactory {
             throw new Error('No DbClient instance or guildData')
         }
 
-        const slots = new Map<number, Slot>()
+        const binds = new Map<number, Bind>()
 
-        const fetchSlotsQuery = (
-            await this.dbClient.query<SlotData>(
+        const fetchBindsQuery = (
+            await this.dbClient.query<BindData>(
                 'SELECT slot_number, value, name FROM slot WHERE guild_id = $1',
                 [String(this.guild.id)]
             )
         ).rows
 
-        fetchSlotsQuery.forEach((slot) =>
-            slots.set(slot.slot_number, { value: slot.value, name: slot.name })
+        fetchBindsQuery.forEach((bind) =>
+            binds.set(bind.slot_number, { value: bind.value, name: bind.name })
         )
 
         const { command_prefix, volume } = this.guildData
 
         return new GuildSession({
             guild: this.guild,
-            slots,
+            binds,
             prefix: command_prefix,
             volume
         })
@@ -84,10 +84,10 @@ export default class GuildSessionFactory {
             throw new Error('No DbClient instance')
         }
 
-        const slots = new Map<number, Slot>()
+        const binds = new Map<number, Bind>()
 
-        defaultSlots.forEach((slot) => {
-            slots.set(slot.slot, { name: slot.name, value: slot.value })
+        defaultBinds.forEach((bind) => {
+            binds.set(bind.key, { name: bind.name, value: bind.value })
         })
 
         const prefix = DEFAULT_PREFIX
@@ -97,16 +97,16 @@ export default class GuildSessionFactory {
             'INSERT INTO guild (id, command_prefix, volume) VALUES ($1, $2, $3)'
         await this.dbClient.query(registrateGuildQuery, [this.guild.id, prefix, volume])
 
-        const insertDefaultSlotsQuery = format(
+        const insertDefaultBindsQuery = format(
             'INSERT INTO slot (guild_id, slot_number, value, name) VALUES %L',
-            this.getDefaultSlotsInsertData()
+            this.getDefaultBindsInsertData()
         )
-        await this.dbClient.query(insertDefaultSlotsQuery)
+        await this.dbClient.query(insertDefaultBindsQuery)
 
-        return new GuildSession({ guild: this.guild, slots, prefix, volume })
+        return new GuildSession({ guild: this.guild, binds: binds, prefix, volume })
     }
 
-    getDefaultSlotsInsertData (): [string, number, string, string][] {
-        return defaultSlots.map((s) => [this.guild.id, s.slot, s.value, s.name])
+    getDefaultBindsInsertData (): [string, number, string, string][] {
+        return defaultBinds.map((s) => [this.guild.id, s.key, s.value, s.name])
     }
 }

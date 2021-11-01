@@ -1,10 +1,11 @@
-import { DMChannel, NewsChannel, TextChannel } from 'discord.js'
+import { TextBasedChannels } from 'discord.js'
 import youtubeApi from './api/youtube-api'
 import SourceError from './source-error'
+import { Track } from './track'
 
 export default async function issueTracks (
     query: string,
-    channel: TextChannel | DMChannel | NewsChannel
+    channel: TextBasedChannels
 ): Promise<Track[]> {
     let tracks: Track[] = []
 
@@ -25,11 +26,12 @@ export default async function issueTracks (
         throw new SourceError('Query is too long')
     } else {
         const track = await youtubeApi.search(query)
-        tracks = [track]
-    }
 
-    for (const track of tracks) {
-        track.dispatchetFrom = channel
+        channel
+            .send({ embeds: [track.getMessageEmbed().setAuthor('Enqueued')] })
+            .catch(() => 0)
+
+        tracks = [track]
     }
 
     return tracks

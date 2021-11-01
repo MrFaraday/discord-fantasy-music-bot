@@ -3,24 +3,22 @@ import { EMBED_COLOR } from '../config'
 import { isGuildText } from '../utils/channel'
 import { concat } from '../utils/string'
 
-export default async function onGuildCreate (
-    this: Client,
-    guild: Guild
-): Promise<boolean> {
+export default async function onGuildCreate (this: Client, guild: Guild): Promise<void> {
     console.log(
         `New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`
     )
 
-    return (
-        (await tryToSaluteOnSystemChannel(guild)) ||
-        (await tryToSaluteOnRandomChannel(guild))
-    )
+    const sendInSystemChannel = await tryToSaluteOnSystemChannel(guild)
+
+    if (!sendInSystemChannel) {
+        await tryToSaluteOnRandomChannel(guild)
+    }
 }
 
 const tryToSaluteOnSystemChannel = async (guild: Guild) => {
     try {
         if (guild.systemChannel) {
-            await guild.systemChannel.send(saluteEmbed)
+            await guild.systemChannel.send({ embeds: [saluteEmbed] })
             return true
         } else {
             return false
@@ -31,11 +29,11 @@ const tryToSaluteOnSystemChannel = async (guild: Guild) => {
 }
 
 const tryToSaluteOnRandomChannel = async (guild: Guild) => {
-    const channels = guild.channels.cache.array().filter(isGuildText)
+    const channels = guild.channels.cache.filter(isGuildText)
 
-    for (const guildChannel of channels) {
+    for (const guildChannel of [...channels.values()]) {
         try {
-            await guildChannel.send(saluteEmbed)
+            await guildChannel.send({ embeds: [saluteEmbed] })
             return true
         } catch (error) {
             // wrong channel -> next

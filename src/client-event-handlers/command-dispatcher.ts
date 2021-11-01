@@ -1,6 +1,12 @@
 import { Client, Constants, DiscordAPIError, Message, MessageMentions } from 'discord.js'
 import { getGuildSession } from '../guild-sessions'
-import commandHandlers from '../command-handlers'
+import * as Commands from '../commands'
+
+const commands: Command[] = []
+Object.values(Commands).map((cmd) => {
+    commands.push(cmd)
+})
+commands.sort((a, b) => a.helpSort - b.helpSort)
 
 export default async function commandDispatcher (
     this: Client,
@@ -8,13 +14,20 @@ export default async function commandDispatcher (
 ): Promise<void> {
     if (!message.guild) return
     if (!this.user) return
-    if (message.channel.type !== 'text' || message.author.id === this.user.id) return
+    if (message.channel.type !== 'GUILD_TEXT' || message.author.id === this.user.id)
+        return
 
     const guild = await getGuildSession(this, message.guild)
     const args = getCommandArgs(this.user.id, message, guild.prefix)
 
     try {
-        await getCommandHandler(args).call(this, { message, guild, args })
+        const command = commands.find((c) =>
+            c.aliases.includes(args[0]?.toLocaleLowerCase())
+        )
+
+        if (command) {
+            await command.handler.call(this, { message, guild, args, commands })
+        }
     } catch (error) {
         if (
             error instanceof DiscordAPIError &&
@@ -24,67 +37,6 @@ export default async function commandDispatcher (
         } else {
             console.error('Message handler error:', error)
         }
-    }
-}
-
-const getCommandHandler = (args: string[]) => {
-    switch (args[0]?.toLocaleLowerCase()) {
-        case 'help':
-            return commandHandlers.helpHandler
-        case 'hello':
-            return commandHandlers.greetingsHandler
-
-        case 'prefix':
-            return commandHandlers.prefixHandler
-
-        // Standard command to play track or add it to a queue
-        case 'p':
-        case 'fp':
-            return commandHandlers.playHandler
-
-        // Play saved url
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            return commandHandlers.playSlotHandler
-
-        case 'slots':
-            return commandHandlers.slotsHandler
-
-        case 'save':
-            return commandHandlers.saveHandler
-
-        case 'drop':
-            return commandHandlers.dropHandler
-
-        // Next song
-        case 'n':
-            return commandHandlers.nextHandler
-
-        // Stoping
-        case 's':
-            return commandHandlers.stopHandler
-
-        // Volume
-        case 'v':
-            return commandHandlers.volumeHandler
-
-        // Disconnect
-        case 'd':
-            return commandHandlers.disconnectHandler
-
-        case 'summon':
-            return commandHandlers.summonHandler
-
-        default:
-            return () => void 0
     }
 }
 

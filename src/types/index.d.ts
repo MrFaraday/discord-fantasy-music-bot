@@ -6,23 +6,21 @@ interface CommadHandlerParams {
     message: import('discord.js').Message
     guild: import('../guild-session').default
     args: string[]
+    commands: Command[]
 }
 
-type Stream = string | import('discord.js').VoiceBroadcast | import('stream').Readable
+type Stream = import('stream').Readable // import('discord.js').AudioResource
 
-interface Track {
-    title: string
-    getStream(): Promise<Stream>
-    meta?: [string, string][]
-    dispatchetFrom?:
-        | import('discord.js').TextChannel
-        | import('discord.js').NewsChannel
-        | import('discord.js').DMChannel
-}
-
-interface Slot {
+interface Bind {
     name?: string
     value: string
 }
 
-type Slots = Map<number, Slot>
+type Binds = Map<number, Bind>
+
+interface Command {
+    aliases: string[]
+    helpSort: number
+    helpInfo?: string
+    handler(this: import('discord.js').Client, params: CommadHandlerParams): any
+}

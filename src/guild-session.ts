@@ -1,86 +1,179 @@
 import {
-    Guild,
-    MessageEmbed,
-    StreamDispatcher,
-    VoiceChannel,
-    VoiceConnection
-} from 'discord.js'
+    createAudioPlayer,
+    entersState,
+    getVoiceConnection,
+    joinVoiceChannel,
+    VoiceConnection,
+    VoiceConnectionStatus,
+    AudioPlayer,
+    AudioPlayerStatus,
+    DiscordGatewayAdapterCreator,
+    AudioResource
+} from '@discordjs/voice'
+import { Guild, MessageEmbed, TextBasedChannels, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
-import { EMBED_COLOR, MAX_QUEUE_LENGTH } from './config'
+import { QUEUE_MAX_LENGTH } from './config'
 import fadeOut from './easing/fade-out'
+import { CreateResourceError, Track } from './track'
+
+enum PlaybackState {
+    IDLE = 0,
+    PLAYING = 1,
+    STOPPING = 2,
+    LODAING = 3
+}
 
 interface SessionConstructorParams {
     guild: Guild
-    slots: Slots
+    binds: Binds
     prefix: string
     volume: number
 }
 
 export default class GuildSession {
-    guild: Guild
-    slots: Slots
+    readonly guild: Guild
+    binds: Binds
     prefix: string
     volume: number
     queue: Track[] = []
 
-    private connection: VoiceConnection | null = null
-    private dispatcher: StreamDispatcher | null = null
+    private state: PlaybackState = PlaybackState.IDLE
+    private audioPlayer: AudioPlayer | null = null
+    private playingResource: AudioResource<Track> | null = null
+
     private disconnectTimeout: NodeJS.Timeout | null = null
 
-    private isRepeatLocked = false
-    private terminationPromise: Promise<void> | null = null
-
-    constructor ({ guild, slots, prefix, volume }: SessionConstructorParams) {
+    constructor ({ guild, binds, prefix, volume }: SessionConstructorParams) {
         this.guild = guild
         this.volume = volume
         this.prefix = prefix
-        this.slots = slots
+        this.binds = binds
     }
 
-    async play (channel: VoiceChannel, tracks: Track[]): Promise<void> {
-        this.queue = [...this.queue, ...tracks].slice(0, MAX_QUEUE_LENGTH)
+    get voiceConnection (): VoiceConnection | undefined {
+        return getVoiceConnection(this.guild.id)
+    }
 
-        if (!this.connection) {
+    async play (
+        channel: VoiceChannel,
+        tracks: Track[],
+        textChannel?: TextBasedChannels
+    ): Promise<void> {
+        this.queue = [...this.queue, ...tracks].slice(0, QUEUE_MAX_LENGTH)
+
+        if (!this.voiceConnection) {
             await this.connect(channel)
-            await this.createDispatcher()
-        } else if (!this.dispatcher) {
-            await this.createDispatcher()
+        }
+
+        if (this.state !== PlaybackState.PLAYING) {
+            await this.playNext(textChannel)
         }
     }
 
-    async forcePlay (channel: VoiceChannel, tracks: Track[]): Promise<void> {
-        this.queue = shuffle(tracks)
+    async forcePlay (
+        channel: VoiceChannel,
+        tracks: Track[],
+        textChannel?: TextBasedChannels
+    ): Promise<void> {
+        this.queue = shuffle(tracks.slice(0, QUEUE_MAX_LENGTH))
 
-        if (!this.connection) {
+        if (!this.voiceConnection) {
             await this.connect(channel)
-            await this.createDispatcher()
-        } else {
-            await this.createDispatcher({ endCurrent: true })
         }
+
+        await this.playNext(textChannel)
     }
 
     async connect (channel: VoiceChannel): Promise<void> {
-        this.connection = await channel.join()
-        await this.connection?.voice?.setSelfDeaf(true)
-        this.connection?.on('disconnect', () => {
-            this.queue = []
-            this.connection = null
-            void this.requestDispatcherTermination()
+        if (!channel.guild) return
+        if (!channel.guild.voiceAdapterCreator) return
+
+        const connection = joinVoiceChannel({
+            channelId: channel.id,
+            guildId: channel.guild.id,
+            adapterCreator: channel.guild
+                .voiceAdapterCreator as DiscordGatewayAdapterCreator
         })
+
+        connection.removeAllListeners()
+        connection.on(VoiceConnectionStatus.Disconnected, async () => {
+            try {
+                await Promise.race([
+                    entersState(connection, VoiceConnectionStatus.Signalling, 2_000),
+                    entersState(connection, VoiceConnectionStatus.Connecting, 2_000)
+                ])
+            } catch (error) {
+                this.disconnect()
+            }
+        })
+        connection.on(VoiceConnectionStatus.Destroyed, () => {
+            this.queue = []
+            this.audioPlayer = null
+            this.playingResource = null
+            this.state = PlaybackState.IDLE
+        })
+
+        if (!this.audioPlayer) {
+            this.audioPlayer = createAudioPlayer()
+
+            /**
+             * @todo catch `abort` error
+             */
+            this.audioPlayer.on('error', (error) => {
+                this.state = PlaybackState.IDLE
+
+                if (
+                    error.message === 'Status code: 403' &&
+                    this.playingResource?.metadata
+                ) {
+                    console.log('>> RETRYING |', error.message)
+                    this.queue.unshift(this.playingResource?.metadata)
+                } else {
+                    console.error('>> UNHANLDED audioPlayer error')
+                    console.error(error.message)
+                    console.error('>> NAME')
+                    console.error(error.name)
+                    console.error('>> RESOURCE')
+                    console.error(error.resource)
+                    console.error('<< END')
+                }
+
+                this.playingResource = null
+                void this.playNext()
+            })
+
+            this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
+                this.scheduleDisconnect()
+                this.playingResource = null
+
+                if (this.state !== PlaybackState.LODAING) {
+                    this.state = PlaybackState.IDLE
+                }
+
+                void this.playNext()
+            })
+            this.audioPlayer.on(AudioPlayerStatus.Playing, () => {
+                this.unscheduleSDisconnect()
+                this.state = PlaybackState.PLAYING
+            })
+
+            await entersState(connection, VoiceConnectionStatus.Ready, 20e3)
+            connection.subscribe(this.audioPlayer)
+        }
     }
 
     disconnect (): void {
-        this.connection?.disconnect()
+        this.voiceConnection?.destroy()
     }
 
     changeVolume (volume: number): void {
         this.volume = volume
-        this.dispatcher?.setVolume(this.dispatcherVolume)
+        this.playingResource?.volume?.setVolume(this.playerVolume)
     }
 
     async skip (): Promise<void> {
-        if (this.dispatcher) {
-            await this.createDispatcher({ endCurrent: true })
+        if (this.audioPlayer) {
+            await this.playNext()
         }
     }
 
@@ -89,116 +182,90 @@ export default class GuildSession {
         await this.skip()
     }
 
-    isPlaying (): boolean {
-        return !!this.dispatcher
+    get isPlaying (): boolean {
+        return this.state !== PlaybackState.IDLE
     }
 
-    get channel (): VoiceChannel | null {
-        return this.connection?.channel ?? null
+    get trackEmbed (): MessageEmbed | undefined {
+        if (this.playingResource) {
+            return this.playingResource.metadata.getMessageEmbed()
+        }
     }
 
-    private get dispatcherVolume () {
+    private get playerVolume () {
         return 0.005 * this.volume
     }
 
-    private async createDispatcher ({ endCurrent = false } = {}) {
-        if (!this.connection) return
+    private async playNext (textChannel?: TextBasedChannels) {
+        if (!this.voiceConnection) return
+        if (!this.audioPlayer) return
+        if (this.state === PlaybackState.LODAING) return
 
         const track = this.queue.shift()
 
-        if (!track) {
-            if (endCurrent) await this.requestDispatcherTermination()
+        if (!track && this.state === PlaybackState.PLAYING) {
+            this.state = PlaybackState.STOPPING
+            const stopped = await this.stopCurrentTrack()
 
+            if (!stopped) {
+                this.state = PlaybackState.IDLE
+            }
+
+            return
+        } else if (!track) {
             return
         }
 
         try {
-            if (endCurrent) {
-                this.isRepeatLocked = true
-                void this.requestDispatcherTermination()
-            }
+            this.state = PlaybackState.LODAING
 
-            const stream = await track.getStream()
+            const [resource] = await Promise.all([
+                track.createAudioResource().then((res) => {
+                    res.volume?.setVolume(this.playerVolume)
+                    return res
+                }),
+                this.stopCurrentTrack()
+            ])
 
-            await this.terminationPromise
-            this.isRepeatLocked = false
-
-            this.dispatcher = this.connection
-                .play(stream, {
-                    volume: this.dispatcherVolume,
-                    type: 'opus',
-                    bitrate: 96
-                })
-                .on('start', () => {
-                    if (track.dispatchetFrom) {
-                        const embed = new MessageEmbed({
-                            title: track.title,
-                            color: EMBED_COLOR
-                        })
-
-                        const imageUrl = track.meta?.find(([t]) => t === 'thumbnail')
-                        if (imageUrl) {
-                            embed.setThumbnail(imageUrl[1])
-                        }
-
-                        const link = track.meta?.find(([t]) => t === 'url')
-                        if (link) {
-                            embed.setURL(link[1])
-                        }
-
-                        void track.dispatchetFrom.send(embed)
-                    }
-                })
-                .on('finish', () => this.onDispatcherFinish())
-                .on('error', (err) => {
-                    console.error('Dispatcher error:', err)
-                    this.onDispatcherFinish()
-                })
-
-            this.cancelScheduleDisconnect()
+            this.playingResource = resource
+            this.audioPlayer.play(resource)
         } catch (error) {
             if (
-                error instanceof Error &&
-                error.message.includes('Unable to retrieve video metadata')
+                error instanceof CreateResourceError &&
+                error.code === CreateResourceError.RESTRICTED &&
+                textChannel &&
+                this.queue.length === 0
             ) {
+                textChannel.send('I can\'t play it, sory').catch(() => 0)
+            } else if (error instanceof CreateResourceError) {
+                // next track
+            } else if (
+                error instanceof Error &&
+                error.message.includes('Cannot play a resource that has already ended')
+            ) {
+                console.log('>> RETRYING |', error.message)
                 this.queue.unshift(track)
+            } else {
+                console.error('>> UNHANDLED playNext error')
+                console.error(track)
+                console.error(error)
             }
 
-            console.warn('createDispatcher:', error)
-
-            await this.createDispatcher()
+            this.state = PlaybackState.IDLE
+            await this.playNext()
         }
     }
 
-    private onDispatcherFinish () {
-        this.scheduleDisconnect()
-
-        if (!this.isRepeatLocked) {
-            this.dispatcher = null
-            void this.createDispatcher()
+    private async stopCurrentTrack () {
+        if (this.audioPlayer && this.playingResource) {
+            await fadeOut(this.audioPlayer, this.playingResource)
+            return true
+        } else {
+            return false
         }
     }
 
-    private async requestDispatcherTermination () {
-        await (this.terminationPromise = this.terminateDispatcher())
-    }
-    private async terminateDispatcher () {
-        if (this.dispatcher) {
-            await fadeOut(this.dispatcher)
-            await new Promise((res) => {
-                if (!this.dispatcher) {
-                    res(void 0)
-                } else {
-                    this.dispatcher.end(() => {
-                        this.dispatcher = null
-                        res(void 0)
-                    })
-                }
-            })
-        }
-    }
-
-    private cancelScheduleDisconnect () {
+    private unscheduleSDisconnect () {
         if (this.disconnectTimeout) {
             clearTimeout(this.disconnectTimeout)
             this.disconnectTimeout = null

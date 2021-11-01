@@ -3,7 +3,7 @@ import db from '../db'
 
 const updateVolumeQuery = 'UPDATE guild SET volume = $1 WHERE id = $2'
 
-export default async function volumeHandler (
+async function handler (
     this: Client,
     { message, guild, args }: CommadHandlerParams
 ): Promise<void | Message> {
@@ -28,4 +28,11 @@ export default async function volumeHandler (
     guild.changeVolume(Number(volume))
 
     return await message.channel.send(`Volume set to **${volume}%**`)
+}
+
+export default {
+    aliases: ['v'],
+    helpSort: 5,
+    helpInfo: '`v [0..200?]` display or set volume',
+    handler
 }

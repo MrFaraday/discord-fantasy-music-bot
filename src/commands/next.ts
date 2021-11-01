@@ -1,12 +1,19 @@
 import { Client, Message } from 'discord.js'
 
-export default async function nextHandler (
+async function handler (
     this: Client,
     { guild }: CommadHandlerParams
 ): Promise<void | Message> {
-    if (guild.isPlaying()) {
+    if (guild.isPlaying) {
         return guild.skip()
     }
 
     return Promise.resolve()
+}
+
+export default {
+    aliases: ['n'],
+    helpSort: 3,
+    helpInfo: '`n` skip current track',
+    handler
 }

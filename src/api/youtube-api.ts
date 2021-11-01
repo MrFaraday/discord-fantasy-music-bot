@@ -1,8 +1,8 @@
 import { URL } from 'url'
 import axios from 'axios'
-import { MAX_QUEUE_LENGTH, YOUTUBE_API_KEY } from '../config'
-import ytdl from 'ytdl-core-discord'
-import yts from 'yt-search'
+import { QUEUE_MAX_LENGTH, YOUTUBE_API_KEY } from '../config'
+import { Track } from '../track'
+import YtSearchService, { YtVideoSearchResult } from '../services/yt-search-service'
 
 if (!YOUTUBE_API_KEY) {
     throw new Error('Environment variable YOUTUBE_API_KEY not found')
@@ -15,6 +15,7 @@ const listIdRegEx = /[?&]list=([^&?#/]+)/
 interface ListItem {
     title: string
     videoId: string
+    thumbnail?: string
 }
 
 class YoutubeApi {
@@ -33,13 +34,14 @@ class YoutubeApi {
                 params: {
                     part: 'snippet',
                     playlistId: listId,
-                    maxResults: MAX_QUEUE_LENGTH
+                    maxResults: QUEUE_MAX_LENGTH
                 }
             })
 
             return data.items.map(({ snippet }) => ({
+                videoId: snippet.resourceId.videoId,
                 title: snippet.title,
-                videoId: snippet.resourceId.videoId
+                thumbnail: getThumbnailUrl(snippet)
             }))
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
@@ -51,36 +53,28 @@ class YoutubeApi {
     }
 
     async search (query: string): Promise<Track> {
-        let data: yts.SearchResult
+        let result: YtVideoSearchResult | null = null
 
         try {
-            const url = new URL('http://localhost:3333/search')
-            url.searchParams.append('q', query)
-
-            const res = await axios.get<yts.SearchResult>(url.href)
-            data = res.data
+            result = await YtSearchService.search(query)
         } catch (error) {
             assert(error)
         }
 
-        if (data.videos.length === 0) {
+        if (!result) {
             throw new YoutubeApiError('Not fonund', YoutubeApiError.NOT_FOUND)
         }
 
-        const result = data.videos[0]
         const url = this.buildPlayLink(result.videoId)
 
-        return {
+        return new Track({
+            url,
             title: result.title,
-            getStream: () => ytdl(url),
-            meta: [
-                ['url', url],
-                ['thumbnail', result.thumbnail]
-            ]
-        }
+            thumbnail: result.thumbnail
+        })
     }
 
-    async getVideoTitle (id: string): Promise<string> {
+    async getVideoSnippet (id: string): Promise<Snippet> {
         try {
             const url = new URL('https://www.googleapis.com/youtube/v3/videos')
             url.searchParams.append('key', this.key)
@@ -93,7 +87,7 @@ class YoutubeApi {
                 throw new YoutubeApiError('Video not found', YoutubeApiError.NOT_FOUND)
             }
 
-            return data.items[0].snippet.title
+            return data.items[0].snippet
         } catch (error) {
             assert(error)
         }
@@ -111,7 +105,7 @@ class YoutubeApi {
      * @param id video id
      */
     buildPlayLink (id: string) {
-        return 'http://www.youtube.com/watch?v=' + id
+        return 'https://www.youtube.com/watch?v=' + id
     }
 
     /**
@@ -119,12 +113,13 @@ class YoutubeApi {
      */
     async issueTrack (videoId: string): Promise<Track> {
         const url = this.buildPlayLink(videoId)
+        const snippet = await this.getVideoSnippet(videoId)
 
-        return {
-            title: await this.getVideoTitle(videoId),
-            getStream: () => ytdl(url),
-            meta: [['url', url]]
-        }
+        return new Track({
+            url,
+            title: snippet.title,
+            thumbnail: getThumbnailUrl(snippet)
+        })
     }
 
     /**
@@ -133,14 +128,14 @@ class YoutubeApi {
     async issueTracks (listId: string): Promise<Track[]> {
         const listContent = await this.getListContent(listId)
 
-        return listContent.map(({ title, videoId }) => {
+        return listContent.map(({ title, videoId, thumbnail }) => {
             const url = this.buildPlayLink(videoId)
 
-            return {
+            return new Track({
+                url,
                 title,
-                getStream: () => ytdl(url),
-                meta: [['url', url]]
-            }
+                thumbnail
+            })
         })
     }
 
@@ -179,6 +174,11 @@ function assert (error: unknown): never {
     } else {
         throw error
     }
+}
+
+const getThumbnailUrl = (snippet: Snippet): string | undefined => {
+    const { default: def, high, maxres, medium, standard } = snippet.thumbnails
+    return maxres?.url ?? standard?.url ?? high?.url ?? medium?.url ?? def?.url
 }
 
 const youtubeApi = new YoutubeApi(YOUTUBE_API_KEY)
@@ -260,11 +260,11 @@ interface Snippet {
     title: string
     description: string
     thumbnails: {
-        default: Thumbnail<120, 90>
-        medium: Thumbnail<320, 180>
-        high: Thumbnail<480, 360>
-        standard: Thumbnail<640, 480>
-        maxres: Thumbnail<1280, 720>
+        default?: Thumbnail<120, 90>
+        medium?: Thumbnail<320, 180>
+        high?: Thumbnail<480, 360>
+        standard?: Thumbnail<640, 480>
+        maxres?: Thumbnail<1280, 720>
     }
     channelTitle: string
     localized: {

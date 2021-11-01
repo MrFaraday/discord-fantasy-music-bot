@@ -3,7 +3,7 @@ import db from '../db'
 
 const setPrefixQuery = 'UPDATE guild SET command_prefix = $1 WHERE id = $2'
 
-export default async function prefixHandler (
+async function handler (
     this: Client,
     { guild, args, message }: CommadHandlerParams
 ): Promise<void | Message> {
@@ -29,4 +29,11 @@ export default async function prefixHandler (
         await db.query(setPrefixQuery, [newPrefix, message.guild.id])
         return await message.channel.send(`New prefix: **${newPrefix}**`)
     }
+}
+
+export default {
+    aliases: ['prefix'],
+    helpSort: 12,
+    helpInfo: '`prefix [value]` set prefix for commands, enter ***none*** to remove it',
+    handler
 }
