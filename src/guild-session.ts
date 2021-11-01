@@ -129,13 +129,7 @@ export default class GuildSession {
                     console.log('>> RETRYING |', error.message)
                     this.queue.unshift(this.playingResource?.metadata)
                 } else {
-                    console.error('>> UNHANLDED audioPlayer error')
-                    console.error(error.message)
-                    console.error('>> NAME')
-                    console.error(error.name)
-                    console.error('>> RESOURCE')
-                    console.error(error.resource)
-                    console.error('<< END')
+                    console.error('>> UNHANLDED audioPlayer error', '\n', error.message)
                 }
 
                 this.playingResource = null

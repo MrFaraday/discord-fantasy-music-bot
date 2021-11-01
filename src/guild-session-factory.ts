@@ -11,9 +11,9 @@ interface GuildData {
 }
 
 interface BindData {
-    slot_number: number
-    value: string
-    name: string
+    bind_key: number
+    bind_value: string
+    bind_name: string
 }
 
 export default class GuildSessionFactory {
@@ -60,13 +60,13 @@ export default class GuildSessionFactory {
 
         const fetchBindsQuery = (
             await this.dbClient.query<BindData>(
-                'SELECT slot_number, value, name FROM slot WHERE guild_id = $1',
+                'SELECT bind_key, bind_value, bind_name FROM bind WHERE guild_id = $1',
                 [String(this.guild.id)]
             )
         ).rows
 
         fetchBindsQuery.forEach((bind) =>
-            binds.set(bind.slot_number, { value: bind.value, name: bind.name })
+            binds.set(bind.bind_key, { value: bind.bind_value, name: bind.bind_name })
         )
 
         const { command_prefix, volume } = this.guildData
@@ -98,7 +98,7 @@ export default class GuildSessionFactory {
         await this.dbClient.query(registrateGuildQuery, [this.guild.id, prefix, volume])
 
         const insertDefaultBindsQuery = format(
-            'INSERT INTO slot (guild_id, slot_number, value, name) VALUES %L',
+            'INSERT INTO bind (guild_id, bind_key, bind_value, bind_name) VALUES %L',
             this.getDefaultBindsInsertData()
         )
         await this.dbClient.query(insertDefaultBindsQuery)

@@ -43,8 +43,8 @@ async function handler (
         const [record] = (
             await client.query(
                 `
-                SELECT slot_number FROM slot
-                WHERE guild_id = $1 AND slot_number = $2
+                SELECT bind_key FROM bind
+                WHERE guild_id = $1 AND bind_key = $2
                 `,
                 [guildId, bindKey]
             )
@@ -53,15 +53,15 @@ async function handler (
         if (record) {
             await client.query(
                 `
-                UPDATE slot SET slot_number = $2, value = $3, name = $4
-                WHERE guild_id = $1 AND slot_number = $2
+                UPDATE bind SET bind_key = $2, bind_value = $3, bind_name = $4
+                WHERE guild_id = $1 AND bind_key = $2
                 `,
                 [guildId, bindKey, url, bindName || null]
             )
         } else {
             await client.query(
                 `
-                INSERT INTO slot (guild_id, slot_number, value, name)
+                INSERT INTO bind (guild_id, bind_key, bind_value, bind_name)
                 VALUES ($1, $2, $3, $4)
                 `,
                 [guildId, bindKey, url, bindName || null]
