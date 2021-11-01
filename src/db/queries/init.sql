@@ -6,12 +6,12 @@ CREATE TABLE IF NOT EXISTS guild (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS slot (
+CREATE TABLE IF NOT EXISTS bind (
     id SERIAL,
     guild_id varchar(255) NOT NULL,
-    slot_number smallint NOT NULL,
-    value varchar(500) NOT NULL,
-    name varchar(80),
+    bind_key smallint NOT NULL,
+    bind_value varchar(500) NOT NULL,
+    bind_name varchar(80),
 
     PRIMARY KEY (id),
     CONSTRAINT fk_guild

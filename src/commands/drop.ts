@@ -17,7 +17,7 @@ async function handler (
     }
 
     try {
-        await db.query('DELETE FROM slot WHERE guild_id = $1 AND slot_number = $2', [
+        await db.query('DELETE FROM bind WHERE guild_id = $1 AND bind_key = $2', [
             message.guild.id,
             bindKey
         ])
