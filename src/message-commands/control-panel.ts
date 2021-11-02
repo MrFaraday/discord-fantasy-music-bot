@@ -105,7 +105,7 @@ async function handler (
 
 export default {
     aliases: ['cpanel'],
-    helpSort: 5,
+    helpSort: 2,
     helpInfo: '`cpanel` display control panel',
     handler
 }
