@@ -1,14 +1,15 @@
 import { ButtonInteraction, Client } from 'discord.js'
 
-async function handler (this: Client, { interaction, guild }: InteractionHandlerParams) {
+async function handler (
+    this: Client,
+    { interaction, guild }: InteractionHandlerParams
+): Promise<any> {
     if (guild.isPlaying) {
-        return guild.stop()
+        await guild.stop()
     }
 
-    console.log('stop')
-
     if (interaction instanceof ButtonInteraction) {
-        return await interaction.deleteReply()
+        return await interaction.deferUpdate()
     }
 }
 
