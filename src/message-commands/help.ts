@@ -23,7 +23,6 @@ async function handler (
     ])
 
     const description = concat(commands.map((c) => c.helpInfo))
-
     const helpEmbed = new MessageEmbed()
         .setColor(EMBED_COLOR)
         .setTitle('Commands')

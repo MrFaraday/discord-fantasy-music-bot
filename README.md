@@ -8,8 +8,8 @@ If you interested to use it but have questions or suggestions for better experie
 
 ### Features
 
-- Binding for tracks and playlists
-- ¯\\\_(ツ)_/¯
+-   Binding for tracks and playlists
+-   ¯\\\_(ツ)\_/¯
 
 ### Usage
 
@@ -17,19 +17,21 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 
 #### Commands
 
--   `help [v?]` show list of commands, add ***v*** for more info
--   `p [url]` play track(playlist) from URL or add to queue
--   `fp [url]` clear queue and play shuffled playlist or track immediately
--   `[0..9]` play saved tracks immediately, equal to ***fp [saved url]***
+-   `help [v?]` show list of commands, add **_v_** for more info
+-   `p [link]` play track(playlist) from link or add to queue
+-   `fp [link]` clear queue and play shuffled playlist or track immediately
+-   `[0..9]` play saved tracks immediately, equal to **_fp [saved link]_**
+-   `cpanel` display control panel
 -   `n` skip current track
 -   `s` stop playing and clear queue
 -   `v [0..200?]` display or set volume
+-   `now` display current playing track
 -   `d` disconnect from a voice channel
--   `binds` show saved URLs
--   `bind [0..9] [url] [name?]` bind url to number, rest of input will be name but it optional
+-   `binds` show saved links
+-   `bind [0..9] [link] [name?]` bind link to number, rest of input will be name but it optional
 -   `drop [0..9]` delete binded link
 -   `summon` attract bot to your voice channel while playing or idle
--   `prefix [value]` set prefix for commands, enter ***none*** to remove it
+-   `prefix [value]` set prefix for commands, enter **_none_** to remove it
 
 > Max queue size is 50 items.<br>
 > During idle it will leave voice channel after 5 minutes automatically.<br>
@@ -46,17 +48,15 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 
 -   `queue` show queue
 -   `shuffle` shuffle queue
--   `now` show playing track
--   pausing and control via reactions
 
 ## Contributing
 
 ##### Requirements
 
-- Discord Application at [Developer Portal](https://discord.com/developers/applications)
-- [FFMPEG](https://ffmpeg.org/)
-- YouTube API key at [Google Cloud Platform](https://console.cloud.google.com/apis/)
-- PostgreSQL database
+-   Discord Application at [Developer Portal](https://discord.com/developers/applications)
+-   [FFMPEG](https://ffmpeg.org/)
+-   YouTube API key at [Google Cloud Platform](https://console.cloud.google.com/apis/)
+-   PostgreSQL database
 
 ##### .env file keys
 
