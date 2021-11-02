@@ -1,4 +1,5 @@
 import { Client, Message } from 'discord.js'
+import { YoutubeApiError } from '../api/youtube-api'
 import issueTracks from '../issue-tracks'
 import SourceError from '../source-error'
 
@@ -24,11 +25,17 @@ async function handler (
         if (mode === 'p') {
             return await guild.play(message.member.voice.channel, tracks, message.channel)
         } else if (mode === 'fp') {
-            return await guild.forcePlay(message.member.voice.channel, tracks, message.channel)
+            return await guild.forcePlay(
+                message.member.voice.channel,
+                tracks,
+                message.channel
+            )
         }
     } catch (error) {
         if (error instanceof SourceError) {
             return await message.channel.send(error.message)
+        } else if (error instanceof YoutubeApiError && error.code === 404) {
+            return await message.channel.send('Video not found')
         } else {
             console.warn('playHandler', error)
             return await message.channel.send('It\'s hidden or something went wrong')
