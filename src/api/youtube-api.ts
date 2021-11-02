@@ -47,7 +47,7 @@ class YoutubeApi {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
                 throw new YoutubeApiError('Playlist not found', YoutubeApiError.NOT_FOUND)
             } else {
-                assert(error)
+                throwError(error)
             }
         }
     }
@@ -58,7 +58,7 @@ class YoutubeApi {
         try {
             result = await YtSearchService.search(query)
         } catch (error) {
-            assert(error)
+            throwError(error)
         }
 
         if (!result) {
@@ -89,7 +89,7 @@ class YoutubeApi {
 
             return data.items[0].snippet
         } catch (error) {
-            assert(error)
+            throwError(error)
         }
     }
 
@@ -166,7 +166,7 @@ class YoutubeApi {
     }
 }
 
-function assert (error: unknown): never {
+function throwError (error: unknown): never {
     if (axios.isAxiosError(error) && error.response) {
         throw new Error(`request failed, status: ${error.response.status}`)
     } else if (axios.isAxiosError(error) && error.request) {

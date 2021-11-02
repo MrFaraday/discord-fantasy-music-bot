@@ -5,7 +5,7 @@ const setPrefixQuery = 'UPDATE guild SET command_prefix = $1 WHERE id = $2'
 
 async function handler (
     this: Client,
-    { guild, args, message }: CommadHandlerParams
+    { guild, args, message }: MessageCommadHandlerParams
 ): Promise<void | Message> {
     if (!message.guild) return
 

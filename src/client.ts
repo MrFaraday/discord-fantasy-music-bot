@@ -1,9 +1,10 @@
 import Discord, { Intents, Permissions } from 'discord.js'
 import { TOKEN } from './config'
 
-import commandDispatcher from './client-event-handlers/command-dispatcher'
-import onGuildDelete from './client-event-handlers/on-guild-delete'
-import onGuildCreate from './client-event-handlers/on-guild-create'
+import messageCreateHandler from './client-event-handlers/message-create-handler'
+import guildDeleteHandler from './client-event-handlers/guild-delete-handler'
+import guildCreateHandler from './client-event-handlers/guild-create-handler'
+import interactionCreateHandler from './client-event-handlers/interaction-create-handler'
 
 if (!TOKEN) {
     throw new Error('Environment variable TOKEN not found')
@@ -18,23 +19,10 @@ const client = new Discord.Client({
     ]
 })
 
-client.on('messageCreate', commandDispatcher)
-
-client.on('interactionCreate', async (interaction) => {
-    if (!interaction.isButton() || !interaction.inGuild()) return
-
-    // void interaction.reply({ content: 'OK' })
-    // void interaction.reply({ ephemeral: true, content: 'ыы' })
-    // 
-    // await new Promise((res) => setTimeout(res, 1000))
-    // await interaction.update({ content: 'ok' })
-    await interaction.deferUpdate()
-
-    // console.log('interaction')
-})
-
-client.on('guildCreate', onGuildCreate)
-client.on('guildDelete', onGuildDelete)
+client.on('messageCreate', messageCreateHandler)
+client.on('interactionCreate', interactionCreateHandler)
+client.on('guildCreate', guildCreateHandler)
+client.on('guildDelete', guildDeleteHandler)
 
 client.on('shardError', (error) => {
     console.error('A websocket connection encountered an error:', error)

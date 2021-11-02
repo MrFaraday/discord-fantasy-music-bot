@@ -5,7 +5,7 @@ const updateVolumeQuery = 'UPDATE guild SET volume = $1 WHERE id = $2'
 
 async function handler (
     this: Client,
-    { message, guild, args }: CommadHandlerParams
+    { message, guild, args }: MessageCommadHandlerParams
 ): Promise<void | Message> {
     if (!message.guild) return
 

@@ -2,7 +2,7 @@ import { Client, Message } from 'discord.js'
 
 async function handler (
     this: Client,
-    { guild, message }: CommadHandlerParams
+    { guild, message }: MessageCommadHandlerParams
 ): Promise<void | boolean | Message> {
     const embed = guild.trackEmbed
     if (embed) {

@@ -5,7 +5,7 @@ import SourceError from '../source-error'
 
 async function handler (
     this: Client,
-    { message, guild, args }: CommadHandlerParams
+    { message, guild, args }: MessageCommadHandlerParams
 ): Promise<void | Message> {
     if (!message.member) return
 

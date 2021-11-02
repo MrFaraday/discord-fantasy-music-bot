@@ -4,7 +4,7 @@ import { shortString } from '../utils/string'
 
 async function handler (
     this: Client,
-    { message, guild }: CommadHandlerParams
+    { message, guild }: MessageCommadHandlerParams
 ): Promise<Message> {
     const binds = Array.from(guild.binds)
 
@@ -12,7 +12,7 @@ async function handler (
         .sort(([a], [b]) => a - b)
         .map(
             ([bindKey, { name, value }]) =>
-                `${bindKey}: [${name ?? shortString(value)}](${value})`
+                `**${bindKey}** [${name ?? shortString(value)}](${value})`
         )
         .join('\n')
 
