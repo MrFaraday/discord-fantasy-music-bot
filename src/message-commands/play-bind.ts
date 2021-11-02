@@ -4,7 +4,7 @@ import SourceError from '../source-error'
 
 async function handler (
     this: Client,
-    { message, guild, args }: CommadHandlerParams
+    { message, guild, args }: MessageCommadHandlerParams
 ): Promise<Message | void> {
     const bind = Number(args[0])
 

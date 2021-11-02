@@ -7,6 +7,7 @@ import prism from 'prism-media'
 import { pipeline, Readable } from 'stream'
 import { LiveStreaming } from 'play-dl/dist/YouTube/classes/LiveStream'
 import { YouTubeVideo } from 'play-dl/dist/YouTube/classes/Video'
+import { assertType } from './utils/assertion'
 
 const maxAttempts = 3
 
@@ -63,15 +64,19 @@ export class Track implements TrackData {
                 const demuxer = new prism.opus.WebmDemuxer()
                 const stream = await stream_from_info(this.videoInfo)
 
-                if (!(stream.stream instanceof Readable)) {
-                    throw new TypeError('stream type error')
-                }
+                assertType<Readable>(
+                    stream.stream,
+                    stream.stream instanceof Readable,
+                    'stream type error'
+                )
 
                 const source = pipeline([stream.stream, demuxer], () => 0)
 
-                if (!(source instanceof Readable)) {
-                    throw new TypeError('stream type error')
-                }
+                assertType<Readable>(
+                    source,
+                    source instanceof Readable,
+                    'stream type error'
+                )
 
                 return createAudioResource(source, {
                     inlineVolume: true,

@@ -1,6 +1,6 @@
 import { Client } from 'discord.js'
 
-async function handler (this: Client, { guild }: CommadHandlerParams): Promise<void> {
+async function handler (this: Client, { guild }: MessageCommadHandlerParams): Promise<void> {
     guild.disconnect()
 
     return Promise.resolve()

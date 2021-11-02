@@ -1,11 +1,10 @@
 import { Client, Message } from 'discord.js'
 import db from '../db'
-
-const updateVolumeQuery = 'UPDATE guild SET volume = $1 WHERE id = $2'
+import queries from '../db/queries'
 
 async function handler (
     this: Client,
-    { message, guild, args }: CommadHandlerParams
+    { message, guild, args }: MessageCommadHandlerParams
 ): Promise<void | Message> {
     if (!message.guild) return
 
@@ -24,10 +23,13 @@ async function handler (
         return await message.channel.send('Must be from 0 to 200')
     }
 
-    await db.query(updateVolumeQuery, [volume, message.guild.id])
-    guild.changeVolume(Number(volume))
-
-    return await message.channel.send(`Volume set to **${volume}%**`)
+    if (currentVolume !== volume) {
+        await db.query(queries.updateVolume, [volume, message.guild.id])
+        guild.changeVolume(Number(volume))
+        await message.channel.send(`Volume set to **${volume}%**`)
+    } else {
+        await message.channel.send('It is current volume')
+    }
 }
 
 export default {

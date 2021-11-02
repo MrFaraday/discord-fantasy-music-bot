@@ -4,7 +4,7 @@ import { isValidInteger } from '../utils/number'
 
 async function handler (
     this: Client,
-    { message, guild, args }: CommadHandlerParams
+    { message, guild, args }: MessageCommadHandlerParams
 ): Promise<void | Message> {
     if (!message.guild) return
     const [, bindParam] = args

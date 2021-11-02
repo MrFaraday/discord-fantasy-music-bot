@@ -1,6 +1,6 @@
 import { Client, Message } from 'discord.js'
 
-async function handler (this: Client, { message }: CommadHandlerParams): Promise<Message> {
+async function handler (this: Client, { message }: MessageCommadHandlerParams): Promise<Message> {
     return await message.channel.send('Hello :)')
 }
 

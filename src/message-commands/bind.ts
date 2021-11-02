@@ -9,7 +9,7 @@ const urlRegEx =
 
 async function handler (
     this: Client,
-    { guild, args, message }: CommadHandlerParams
+    { guild, args, message }: MessageCommadHandlerParams
 ): Promise<void | Message> {
     if (!message.guild) return
 
@@ -70,10 +70,11 @@ async function handler (
 
         guild.binds.set(bindKey, { name: bindName || shortString(url), value: url })
 
-        return await message.channel.send('Saved!')
+        const messageText = bindName ? 'Saved!' : 'Saved! You can also add a name to it.'
+        return await message.channel.send(messageText)
     } catch (error) {
         console.log(error)
-        return await message.channel.send('Something went wrong, I\'ll find that soon')
+        return await message.channel.send('Something went wrong, I\'ll find that soon.')
     } finally {
         client.release()
     }

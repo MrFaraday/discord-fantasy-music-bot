@@ -2,7 +2,7 @@ import { Client, Message } from 'discord.js'
 
 async function handler (
     this: Client,
-    { guild }: CommadHandlerParams
+    { guild }: MessageCommadHandlerParams
 ): Promise<void | Message> {
     if (guild.isPlaying) {
         return guild.stop()

@@ -1,9 +1,10 @@
 import Discord, { Intents, Permissions } from 'discord.js'
 import { TOKEN } from './config'
 
-import commandDispatcher from './client-event-handlers/command-dispatcher'
-import onGuildDelete from './client-event-handlers/on-guild-delete'
-import onGuildCreate from './client-event-handlers/on-guild-create'
+import messageCreateHandler from './client-event-handlers/message-create-handler'
+import guildDeleteHandler from './client-event-handlers/guild-delete-handler'
+import guildCreateHandler from './client-event-handlers/guild-create-handler'
+import interactionCreateHandler from './client-event-handlers/interaction-create-handler'
 
 if (!TOKEN) {
     throw new Error('Environment variable TOKEN not found')
@@ -18,20 +19,15 @@ const client = new Discord.Client({
     ]
 })
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-client.on('messageCreate', commandDispatcher)
-
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-client.on('guildCreate', onGuildCreate)
-
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-client.on('guildDelete', onGuildDelete)
+client.on('messageCreate', messageCreateHandler)
+client.on('interactionCreate', interactionCreateHandler)
+client.on('guildCreate', guildCreateHandler)
+client.on('guildDelete', guildDeleteHandler)
 
 client.on('shardError', (error) => {
     console.error('A websocket connection encountered an error:', error)
 })
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
 client.on('ready', () => {
     console.log(`\nBot ${client.user?.username ?? 'Unknown'} has lauched!`)
     const link = client.generateInvite({

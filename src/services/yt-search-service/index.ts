@@ -1,7 +1,7 @@
 import { Worker } from 'worker_threads'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
-import assert from 'assert'
+import { assert } from '../../utils/assertion'
 
 type Uuid = string
 

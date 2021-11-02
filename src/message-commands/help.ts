@@ -4,7 +4,7 @@ import { concat } from '../utils/string'
 
 async function handler (
     this: Client,
-    { message, args, commands }: CommadHandlerParams
+    { message, args, commands }: MessageCommadHandlerParams
 ): Promise<void | Message> {
     if (!this.user) return
     const isVerbose = 'v' === args[1]?.toLowerCase()
@@ -23,7 +23,6 @@ async function handler (
     ])
 
     const description = concat(commands.map((c) => c.helpInfo))
-
     const helpEmbed = new MessageEmbed()
         .setColor(EMBED_COLOR)
         .setTitle('Commands')
