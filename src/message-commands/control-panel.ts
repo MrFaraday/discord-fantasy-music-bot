@@ -21,15 +21,25 @@ const playbackControlButtonRow = new MessageActionRow().addComponents(
     new MessageButton()
         .setCustomId('playback-cpanel-skip')
         .setStyle('PRIMARY')
-        .setLabel('\u23ED'),
+        .setLabel('\u23ED')
+)
+const volumeControlButtonRow = new MessageActionRow().addComponents(
     new MessageButton()
-        .setCustomId('playback-cpanel-reduce-volume')
+        .setCustomId('playback-cpanel-reduce-volume-5')
+        .setStyle('SECONDARY')
+        .setLabel('--🔊'),
+    new MessageButton()
+        .setCustomId('playback-cpanel-reduce-volume-1')
         .setStyle('SECONDARY')
         .setLabel('-🔊'),
     new MessageButton()
-        .setCustomId('playback-cpanel-increase-volume')
+        .setCustomId('playback-cpanel-increase-volume-1')
         .setStyle('SECONDARY')
-        .setLabel('+🔊')
+        .setLabel('+🔊'),
+    new MessageButton()
+        .setCustomId('playback-cpanel-increase-volume-5')
+        .setStyle('SECONDARY')
+        .setLabel('++🔊')
 )
 
 const groups = [[7, 8, 9], [4, 5, 6], [1, 2, 3], [0]]
@@ -77,9 +87,16 @@ async function handler (
         .map((buttons) => new MessageActionRow().addComponents(...buttons))
 
     try {
+        if (binds.length > 0) {
+            await message.channel.send({
+                embeds: [bindsEmbed],
+                components: bindsButtonRows
+            })
+        }
+
         return await message.channel.send({
-            embeds: [bindsEmbed],
-            components: [...bindsButtonRows, playbackControlButtonRow]
+            content: `Volume: **${guild.volume}**`,
+            components: [playbackControlButtonRow, volumeControlButtonRow]
         })
     } catch (error) {
         console.warn(error)
@@ -89,6 +106,6 @@ async function handler (
 export default {
     aliases: ['cpanel'],
     helpSort: 5,
-    helpInfo: '`cpanel` --',
+    helpInfo: '`cpanel` display control panel',
     handler
 }

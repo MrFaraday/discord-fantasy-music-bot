@@ -23,10 +23,13 @@ async function handler (
         return await message.channel.send('Must be from 0 to 200')
     }
 
-    await db.query(queries.updateVolume, [volume, message.guild.id])
-    guild.changeVolume(Number(volume))
-
-    return await message.channel.send(`Volume set to **${volume}%**`)
+    if (currentVolume !== volume) {
+        await db.query(queries.updateVolume, [volume, message.guild.id])
+        guild.changeVolume(Number(volume))
+        await message.channel.send(`Volume set to **${volume}%**`)
+    } else {
+        await message.channel.send('It is current volume')
+    }
 }
 
 export default {
