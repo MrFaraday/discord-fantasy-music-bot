@@ -67,7 +67,7 @@ export class Track implements TrackData {
                     throw new TypeError('stream type error')
                 }
 
-                const source = pipeline([stream.stream, demuxer], () => {})
+                const source = pipeline([stream.stream, demuxer], () => 0)
 
                 if (!(source instanceof Readable)) {
                     throw new TypeError('stream type error')
