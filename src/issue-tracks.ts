@@ -5,7 +5,7 @@ import { Track } from './track'
 
 export default async function issueTracks (
     query: string,
-    channel: TextBasedChannels
+    channel?: TextBasedChannels
 ): Promise<Track[]> {
     let tracks: Track[] = []
 
@@ -27,9 +27,11 @@ export default async function issueTracks (
     } else {
         const track = await youtubeApi.search(query)
 
-        channel
-            .send({ embeds: [track.getMessageEmbed().setAuthor('Enqueued')] })
-            .catch(() => 0)
+        if (channel) {
+            channel
+                .send({ embeds: [track.getMessageEmbed().setAuthor('Enqueued')] })
+                .catch(() => 0)
+        }
 
         tracks = [track]
     }

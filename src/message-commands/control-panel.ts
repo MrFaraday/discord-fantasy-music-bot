@@ -16,11 +16,20 @@ const playbackControlButtonRow = new MessageActionRow().addComponents(
     /* new MessageButton()
         .setCustomId('playback-cpanel-palypause')
         .setStyle('SUCCESS')
-        .setLabel('\u25B6\u23F8'), */
+        .setLabel('\u25B6\u23F8')
+        .setDisabled(true), */
     new MessageButton()
         .setCustomId('playback-cpanel-skip')
         .setStyle('PRIMARY')
-        .setLabel('\u23ED')
+        .setLabel('\u23ED'),
+    new MessageButton()
+        .setCustomId('playback-cpanel-reduce-volume')
+        .setStyle('SECONDARY')
+        .setLabel('-🔊'),
+    new MessageButton()
+        .setCustomId('playback-cpanel-increase-volume')
+        .setStyle('SECONDARY')
+        .setLabel('+🔊')
 )
 
 const groups = [[7, 8, 9], [4, 5, 6], [1, 2, 3], [0]]

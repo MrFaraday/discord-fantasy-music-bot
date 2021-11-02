@@ -22,7 +22,7 @@ export default async function interactionCreateHandler (
             c.interactionIds.includes(interaction.customId)
         )
 
-        assert(command, 'Command not found, id:' + interaction.customId)
+        assert(command, 'Command not found, id: ' + interaction.customId)
 
         await command.handler.call(this, { guild, interaction })
     } catch (error) {
