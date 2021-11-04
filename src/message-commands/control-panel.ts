@@ -12,7 +12,8 @@ const playbackControlButtonRow = new MessageActionRow().addComponents(
     new MessageButton()
         .setCustomId('playback-cpanel-stop')
         .setStyle('DANGER')
-        .setLabel('\u23F9'),
+        // .setLabel('\u23F9'),
+        .setLabel('Stop'),
     /* new MessageButton()
         .setCustomId('playback-cpanel-palypause')
         .setStyle('SUCCESS')
@@ -21,25 +22,30 @@ const playbackControlButtonRow = new MessageActionRow().addComponents(
     new MessageButton()
         .setCustomId('playback-cpanel-skip')
         .setStyle('PRIMARY')
-        .setLabel('\u23ED')
+        // .setLabel('\u23ED')
+        .setLabel('Skip')
 )
 const volumeControlButtonRow = new MessageActionRow().addComponents(
     new MessageButton()
         .setCustomId('playback-cpanel-reduce-volume-5')
         .setStyle('SECONDARY')
-        .setLabel('--🔊'),
+        // .setLabel('--🔊'),
+        .setLabel('--Vol'),
     new MessageButton()
         .setCustomId('playback-cpanel-reduce-volume-1')
         .setStyle('SECONDARY')
-        .setLabel('-🔊'),
+        // .setLabel('-🔊'),
+        .setLabel('-Vol'),
     new MessageButton()
         .setCustomId('playback-cpanel-increase-volume-1')
         .setStyle('SECONDARY')
-        .setLabel('+🔊'),
+        // .setLabel('+🔊'),
+        .setLabel('+Vol'),
     new MessageButton()
         .setCustomId('playback-cpanel-increase-volume-5')
         .setStyle('SECONDARY')
-        .setLabel('++🔊')
+        // .setLabel('++🔊')
+        .setLabel('++Vol')
 )
 
 const groups = [[7, 8, 9], [4, 5, 6], [1, 2, 3], [0]]

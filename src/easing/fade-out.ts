@@ -30,6 +30,6 @@ export default async function fadeOut (
             setTimeout(reduce, interval, next)
         }
 
-        void reduce(fadeDuration)
+        reduce(fadeDuration)
     })
 }
