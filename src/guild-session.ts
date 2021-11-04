@@ -231,6 +231,13 @@ export default class GuildSession {
                 this.queue.length === 0
             ) {
                 textChannel.send('I can\'t play it, sory').catch(() => 0)
+            } else if (
+                error instanceof CreateResourceError &&
+                error.code === CreateResourceError.MAX_ATTEMPTS_EXCEEDED &&
+                textChannel &&
+                this.queue.length === 0
+            ) {
+                textChannel.send('Something get wrong, check this later').catch(() => 0)
             } else if (error instanceof CreateResourceError) {
                 // next track
             } else if (

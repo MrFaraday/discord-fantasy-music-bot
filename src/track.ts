@@ -114,7 +114,12 @@ export class Track implements TrackData {
                 })
             }
         } catch (error) {
-            if (
+            if (error instanceof Error && error.message === 'Got 429 from the request') {
+                console.log(error)
+
+                console.log('>> RETRYING |', error.message)
+                return this.createAudioResource()
+            } else if (
                 error instanceof Error &&
                 error.message.includes('While getting info from url')
             ) {

@@ -25,7 +25,7 @@ class YoutubeApi {
         this.key = apiKey
     }
 
-    async getListContent (listId: string): Promise<ListItem[]> {
+    async getListItems (listId: string): Promise<YoutubePlaylistItemListResponse> {
         try {
             const url = new URL('https://www.googleapis.com/youtube/v3/playlistItems')
             url.searchParams.append('key', this.key)
@@ -38,11 +38,26 @@ class YoutubeApi {
                 }
             })
 
-            return data.items.map(({ snippet }) => ({
-                videoId: snippet.resourceId.videoId,
-                title: snippet.title,
-                thumbnail: getThumbnailUrl(snippet)
-            }))
+            return data
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status === 404) {
+                throw new YoutubeApiError('Playlist not found', YoutubeApiError.NOT_FOUND)
+            } else {
+                throwError(error)
+            }
+        }
+    }
+
+    async getListData (listId: string): Promise<YoutubePlaylistResponseItem> {
+        try {
+            const url = new URL('https://www.googleapis.com/youtube/v3/playlists')
+            url.searchParams.append('key', this.key)
+
+            const { data } = await axios.get<YoutubePlaylistListResponse>(url.href, {
+                params: { part: 'snippet', id: listId, maxResults: 1 }
+            })
+
+            return data.items[0]
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
                 throw new YoutubeApiError('Playlist not found', YoutubeApiError.NOT_FOUND)
@@ -125,18 +140,30 @@ class YoutubeApi {
     /**
      * Get Tracks from listId
      */
-    async issueTracks (listId: string): Promise<Track[]> {
-        const listContent = await this.getListContent(listId)
+    async issueTracks (
+        listId: string
+    ): Promise<{ tracks: Track[]; listData: PlaylistData }> {
+        const [listItems, listData] = await Promise.all([
+            this.getListItems(listId),
+            this.getListData(listId)
+        ])
 
-        return listContent.map(({ title, videoId, thumbnail }) => {
-            const url = this.buildPlayLink(videoId)
+        const tracks = listItems.items.map(
+            ({ snippet }) =>
+                new Track({
+                    url: this.buildPlayLink(snippet.resourceId.videoId),
+                    title: snippet.title,
+                    thumbnail: getThumbnailUrl(snippet)
+                })
+        )
 
-            return new Track({
-                url,
-                title,
-                thumbnail
-            })
-        })
+        return {
+            tracks,
+            listData: {
+                title: listData.snippet.title,
+                thumbnail: getThumbnailUrl(listData.snippet)
+            }
+        }
     }
 
     async isSourceExist (url: string) {
@@ -198,6 +225,11 @@ export class YoutubeApiError {
     }
 }
 
+interface PlaylistData {
+    title: string
+    thumbnail?: string
+}
+
 // Responses
 
 interface YoutubeResponse {
@@ -220,9 +252,9 @@ interface YoutubeVideoListResponse extends YoutubeResponse {
     items: YoutubeVideoListResponseItem[]
 }
 
-interface YoutubeSearchListResponse extends YoutubeResponse {
-    kind: 'youtube#searchListResponse'
-    items: YoutubeSearchResponseItem[]
+interface YoutubePlaylistListResponse extends YoutubeResponse {
+    kind: 'youtube#playlistListResponse'
+    items: YoutubePlaylistResponseItem[]
 }
 
 // Items
@@ -243,13 +275,10 @@ interface YoutubeVideoListResponseItem extends ResponseItem {
     snippet: VideoSnippet
 }
 
-interface YoutubeSearchResponseItem extends ResponseItem {
-    id: {
-        kind: 'youtube#video' | string
-        videoId: string
-    }
-    kind: 'youtube#searchResult'
-    snippet: VideoSnippet
+interface YoutubePlaylistResponseItem extends ResponseItem {
+    id: string
+    kind: 'youtube#playlist'
+    snippet: Snippet
 }
 
 // Snippets

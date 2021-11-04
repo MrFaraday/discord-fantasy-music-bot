@@ -2,6 +2,7 @@ import { Worker } from 'worker_threads'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { assert } from '../../utils/assertion'
+import { NODE_ENV } from '../../config'
 
 type Uuid = string
 
@@ -31,8 +32,22 @@ const serviceRequests = new Map<Uuid, ServiceRequest>()
 let isOnline = false
 let worker: Worker
 
+const workerFilePath =
+    NODE_ENV === 'development'
+        ? path.join(
+            __dirname,
+            '..',
+            '..',
+            '..',
+            'build',
+            'services',
+            'yt-search-service',
+            'worker.js'
+        )
+        : path.join(__dirname, 'worker.js')
+
 function spawnWorker () {
-    worker = new Worker(path.join(__dirname, 'worker.js'))
+    worker = new Worker(workerFilePath)
 
     worker.on('online', () => {
         isOnline = true

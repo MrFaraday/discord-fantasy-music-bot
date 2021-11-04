@@ -6,6 +6,7 @@ import dotenv from 'dotenv'
 const { config }: typeof dotenv = require('dotenv')
 config()
 
+export const NODE_ENV = process.env.NODE_ENV
 export const TOKEN = process.env.TOKEN
 export const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY
 export const DATABASE_URL = process.env.DATABASE_URL

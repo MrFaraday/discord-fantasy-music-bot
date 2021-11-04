@@ -20,7 +20,11 @@ async function handler (
     }
 
     try {
-        const tracks = await issueTracks(query.join(' '), message.channel)
+        const { tracks, embed } = await issueTracks(query.join(' '))
+
+        if (embed) {
+            message.channel.send({ embeds: [embed] }).catch(() => 0)
+        }
 
         if (mode === 'p') {
             return await guild.play(message.member.voice.channel, tracks, message.channel)

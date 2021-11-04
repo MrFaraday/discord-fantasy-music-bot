@@ -18,7 +18,7 @@ async function handler (
     if (!saved) return
 
     try {
-        const tracks = await issueTracks(saved.value)
+        const { tracks } = await issueTracks(saved.value)
 
         void interaction.deferUpdate()
 
