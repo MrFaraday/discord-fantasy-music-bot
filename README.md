@@ -11,6 +11,9 @@ If you interested to use it but have questions or suggestions for better experie
 -   Tracks and playlists binding
 -   Playback control and quick switching between ambient playlists, no more message commands typing  during session
 
+
+![Tux, the Linux mascot](https://raw.githubusercontent.com/mr-faraday/discord-fantasy-music-bot/master/docs/cpad-demo.jpg)
+
 ### Usage
 
 Invite bot to a guild. When bot get command to play it automatically join to your voice channel. Default prefix: `-`, add it right before each command, e.g. `-help`, `-s`.
