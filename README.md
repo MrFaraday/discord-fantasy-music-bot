@@ -8,8 +8,8 @@ If you interested to use it but have questions or suggestions for better experie
 
 ### Features
 
--   Binding for tracks and playlists
--   ¯\\\_(ツ)\_/¯
+-   Tracks and playlists binding
+-   Playback control and quick switching between ambient playlists, no more message commands typing  during session
 
 ### Usage
 
@@ -21,7 +21,7 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 -   `p [link]` play track(playlist) from link or add to queue
 -   `fp [link]` clear queue and play shuffled playlist or track immediately
 -   `[0..9]` play saved tracks immediately, equal to **_fp [saved link]_**
--   `cpanel` display control panel
+-   `cpad` display control pad
 -   `n` skip current track
 -   `s` stop playing and clear queue
 -   `v [0..200?]` display or set volume
