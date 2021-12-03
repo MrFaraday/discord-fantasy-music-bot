@@ -28,10 +28,10 @@ async function handler (
 
 export default {
     interactionIds: [
-        'playback-cpanel-reduce-volume-1',
-        'playback-cpanel-increase-volume-1',
-        'playback-cpanel-reduce-volume-5',
-        'playback-cpanel-increase-volume-5'
+        'playback-cpad-reduce-volume-1',
+        'playback-cpad-increase-volume-1',
+        'playback-cpad-reduce-volume-5',
+        'playback-cpad-increase-volume-5'
     ],
     handler
 }

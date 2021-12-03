@@ -10,39 +10,39 @@ import { shortString } from '../utils/string'
 
 const playbackControlButtonRow = new MessageActionRow().addComponents(
     new MessageButton()
-        .setCustomId('playback-cpanel-stop')
+        .setCustomId('playback-cpad-stop')
         .setStyle('DANGER')
         // .setLabel('\u23F9'),
         .setLabel('Stop'),
     /* new MessageButton()
-        .setCustomId('playback-cpanel-palypause')
+        .setCustomId('playback-cpad-palypause')
         .setStyle('SUCCESS')
         .setLabel('\u25B6\u23F8')
         .setDisabled(true), */
     new MessageButton()
-        .setCustomId('playback-cpanel-skip')
+        .setCustomId('playback-cpad-skip')
         .setStyle('PRIMARY')
         // .setLabel('\u23ED')
         .setLabel('Skip')
 )
 const volumeControlButtonRow = new MessageActionRow().addComponents(
     new MessageButton()
-        .setCustomId('playback-cpanel-reduce-volume-5')
+        .setCustomId('playback-cpad-reduce-volume-5')
         .setStyle('SECONDARY')
         // .setLabel('--🔊'),
         .setLabel('--Vol'),
     new MessageButton()
-        .setCustomId('playback-cpanel-reduce-volume-1')
+        .setCustomId('playback-cpad-reduce-volume-1')
         .setStyle('SECONDARY')
         // .setLabel('-🔊'),
         .setLabel('-Vol'),
     new MessageButton()
-        .setCustomId('playback-cpanel-increase-volume-1')
+        .setCustomId('playback-cpad-increase-volume-1')
         .setStyle('SECONDARY')
         // .setLabel('+🔊'),
         .setLabel('+Vol'),
     new MessageButton()
-        .setCustomId('playback-cpanel-increase-volume-5')
+        .setCustomId('playback-cpad-increase-volume-5')
         .setStyle('SECONDARY')
         // .setLabel('++🔊')
         .setLabel('++Vol')
@@ -79,7 +79,7 @@ async function handler (
                 const bind = binds.find(getBindFromKey(key))
 
                 const button = new MessageButton()
-                    .setCustomId('playback-cpanel-bind-' + String(key))
+                    .setCustomId('playback-cpad-bind-' + String(key))
                     .setLabel(String(key))
                     .setStyle('SECONDARY')
 

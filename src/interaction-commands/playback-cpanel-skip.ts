@@ -14,6 +14,6 @@ async function handler (
 }
 
 export default {
-    interactionIds: ['playback-cpanel-skip'],
+    interactionIds: ['playback-cpad-skip'],
     handler
 }

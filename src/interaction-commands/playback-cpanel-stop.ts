@@ -14,6 +14,6 @@ async function handler (
 }
 
 export default {
-    interactionIds: ['playback-cpanel-stop'],
+    interactionIds: ['playback-cpad-stop'],
     handler
 }
