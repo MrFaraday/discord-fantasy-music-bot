@@ -58,7 +58,7 @@ function spawnWorker () {
         }
     })
 
-    worker.on('message', (message) => {
+    worker.on('message', (message: string) => {
         const response: unknown = JSON.parse(message)
 
         if (!validateServiceResult(response)) {

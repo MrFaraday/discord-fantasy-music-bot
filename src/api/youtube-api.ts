@@ -12,12 +12,6 @@ const videoIdRegEx = /[?&]v=([^&?#/]+)/
 const shortVideoIdRegEx = /^https?:\/\/youtu\.be\/([^&?#/]+)$/
 const listIdRegEx = /[?&]list=([^&?#/]+)/
 
-interface ListItem {
-    title: string
-    videoId: string
-    thumbnail?: string
-}
-
 class YoutubeApi {
     private key: string
 

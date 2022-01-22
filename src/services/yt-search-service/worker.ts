@@ -4,12 +4,13 @@ import { assert, assertType } from '../../utils/assertion'
 
 assert(parentPort)
 
-parentPort.on('message', async (message) => {
+parentPort.on('message', async (message: string) => {
     let uuid
     let query
 
     try {
-        const request = JSON.parse(message)
+        const request: unknown = JSON.parse(message)
+
         assertType<[string, string]>(
             request,
             Array.isArray(request) &&
