@@ -20,8 +20,8 @@ async function handler (
 
     if (!bindParam) {
         return await message.channel.send('No params provided')
-    } else if (!isValidInteger(bindKey, 0, 9)) {
-        return await message.channel.send('Bind key must be an integer from 0 to 9')
+    } else if (!isValidInteger(bindKey, 0, 15)) {
+        return await message.channel.send('Bind key must be an integer from 0 to 15')
     } else if (!url) {
         return await message.channel.send('No link provided')
     } else if (url.length > 500) {
@@ -84,6 +84,6 @@ export default {
     aliases: ['bind'],
     helpSort: 9,
     helpInfo:
-        '`bind [0..9] [link] [name?]` bind link to number, rest of input will be name but it optional',
+        '`bind [0..15] [link] [name?]` bind link to number, rest of input will be name but it optional',
     handler
 }

@@ -12,8 +12,8 @@ async function handler (
     const bindKey = Number(bindParam)
     if (!bindParam) {
         return await message.channel.send('No params provided')
-    } else if (!isValidInteger(bindKey, 0, 9)) {
-        return await message.channel.send('Bind key must be an integer from 0 to 9')
+    } else if (!isValidInteger(bindKey, 0, 15)) {
+        return await message.channel.send('Bind key must be an integer from 0 to 15')
     }
 
     try {
@@ -35,6 +35,6 @@ async function handler (
 export default {
     aliases: ['drop'],
     helpSort: 10,
-    helpInfo: '`drop [0..9]` delete binded link',
+    helpInfo: '`drop [0..15]` delete binded link',
     handler
 }
