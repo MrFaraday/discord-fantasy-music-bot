@@ -1,4 +1,5 @@
 import { Client, Message, MessageEmbed } from 'discord.js'
+import { SlashCommandBuilder } from '@discordjs/builders'
 import { EMBED_COLOR } from '../config'
 import { shortString } from '../utils/string'
 
@@ -24,9 +25,12 @@ async function handler (
     return await message.channel.send({ embeds: [bindsEmbed] })
 }
 
+const slashConfig = new SlashCommandBuilder().setName('binds')
+
 export default {
     aliases: ['binds'],
     sort: 8,
     helpInfo: '`binds` show saved links',
+    slashConfig,
     handler
 }

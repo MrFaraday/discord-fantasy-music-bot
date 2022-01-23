@@ -5,6 +5,7 @@ import {
     MessageButton,
     MessageEmbed
 } from 'discord.js'
+import { SlashCommandBuilder } from '@discordjs/builders'
 import { EMBED_COLOR } from '../config'
 import { shortString } from '../utils/string'
 
@@ -109,9 +110,12 @@ async function handler (
     }
 }
 
+const slashConfig = new SlashCommandBuilder().setName('cpad')
+
 export default {
-    aliases: ['cpad', 'cpad'],
+    aliases: ['cpad'],
     sort: 2,
     helpInfo: '`cpad` display control pad',
+    slashConfig,
     handler
 }

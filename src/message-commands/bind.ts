@@ -1,8 +1,10 @@
 import { Client, Message } from 'discord.js'
+import { SlashCommandBuilder } from '@discordjs/builders'
 import youtubeApi from '../api/youtube-api'
 import db from '../db'
 import { isValidInteger } from '../utils/number'
 import { shortString } from '../utils/string'
+import MessageCommand from '../message-command'
 
 const urlRegEx =
     /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_+.~#?&//=]*)/
@@ -80,10 +82,29 @@ async function handler (
     }
 }
 
-export default {
+const slashConfig = new SlashCommandBuilder()
+    .setName('bind')
+    .setDescription('Bind play link!')
+    .addIntegerOption((option) =>
+        option
+            .setName('bind number')
+            .setDescription('Lala')
+            .setRequired(true)
+            .setMinValue(0)
+            .setMaxValue(15)
+    )
+    .addStringOption((option) =>
+        option.setName('link').setDescription('Link url').setRequired(true)
+    )
+    .addStringOption((option) =>
+        option.setName('name').setDescription('Bind name').setRequired(false)
+    )
+
+export default new MessageCommand({
     aliases: ['bind'],
     sort: 9,
     helpInfo:
         '`bind [0..15] [link] [name?]` bind link to number, rest of input will be name but it optional',
+    slashConfig,
     handler
-}
+})

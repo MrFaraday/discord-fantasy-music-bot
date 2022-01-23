@@ -1,6 +1,7 @@
 import { Client, Message } from 'discord.js'
 import issueTracks from '../issue-tracks'
 import SourceError from '../source-error'
+import { SlashCommandBuilder } from '@discordjs/builders'
 
 async function handler (
     this: Client,
@@ -35,9 +36,12 @@ async function handler (
     }
 }
 
+const slashConfig = new SlashCommandBuilder().setName('play-bind')
+
 export default {
     aliases: new Array(16).fill(0).map((_, i) => String(i)),
     sort: 2,
     helpInfo: '`[0..15]` play saved tracks immediately, equal to ***fp [saved link]***',
+    slashConfig,
     handler
 }
