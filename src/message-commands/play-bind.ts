@@ -37,7 +37,7 @@ async function handler (
 
 export default {
     aliases: new Array(16).fill(0).map((_, i) => String(i)),
-    helpSort: 2,
+    sort: 2,
     helpInfo: '`[0..15]` play saved tracks immediately, equal to ***fp [saved link]***',
     handler
 }

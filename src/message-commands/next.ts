@@ -13,7 +13,7 @@ async function handler (
 
 export default {
     aliases: ['n'],
-    helpSort: 3,
+    sort: 3,
     helpInfo: '`n` skip current track',
     handler
 }

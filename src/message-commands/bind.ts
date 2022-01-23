@@ -82,7 +82,7 @@ async function handler (
 
 export default {
     aliases: ['bind'],
-    helpSort: 9,
+    sort: 9,
     helpInfo:
         '`bind [0..15] [link] [name?]` bind link to number, rest of input will be name but it optional',
     handler

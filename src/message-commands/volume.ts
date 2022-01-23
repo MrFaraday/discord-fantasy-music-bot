@@ -34,7 +34,7 @@ async function handler (
 
 export default {
     aliases: ['v'],
-    helpSort: 5,
+    sort: 5,
     helpInfo: '`v [0..200?]` display or set volume',
     handler
 }

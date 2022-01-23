@@ -34,7 +34,7 @@ async function handler (
 
 export default {
     aliases: ['drop'],
-    helpSort: 10,
+    sort: 10,
     helpInfo: '`drop [0..15]` delete binded link',
     handler
 }

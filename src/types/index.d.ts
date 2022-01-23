@@ -25,8 +25,9 @@ type Binds = Map<number, Bind>
 
 interface MessageCommand {
     aliases: string[]
-    helpSort: number
+    sort: number
     helpInfo?: string
+    slashConfig: import('@discordjs/builders').SlashCommandBuilder
     handler(this: import('discord.js').Client, params: MessageCommadHandlerParams): any
 }
 

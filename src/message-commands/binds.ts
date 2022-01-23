@@ -26,7 +26,7 @@ async function handler (
 
 export default {
     aliases: ['binds'],
-    helpSort: 8,
+    sort: 8,
     helpInfo: '`binds` show saved links',
     handler
 }

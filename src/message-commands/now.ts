@@ -13,7 +13,7 @@ async function handler (
 
 export default {
     aliases: ['now'],
-    helpSort: 6,
+    sort: 6,
     helpInfo: '`now` display current playing track',
     handler
 }

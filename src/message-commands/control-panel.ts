@@ -111,7 +111,7 @@ async function handler (
 
 export default {
     aliases: ['cpad', 'cpanel'],
-    helpSort: 2,
+    sort: 2,
     helpInfo: '`cpad` display control pad',
     handler
 }

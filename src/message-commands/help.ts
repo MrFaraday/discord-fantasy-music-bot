@@ -33,7 +33,7 @@ async function handler (
 
 export default {
     aliases: ['help'],
-    helpSort: 0,
+    sort: 0,
     helpInfo: '`help [v?]` show list of commands, add ***v*** for more info',
     handler
 }

@@ -1,6 +1,9 @@
 import { Client } from 'discord.js'
 
-async function handler (this: Client, { guild }: MessageCommadHandlerParams): Promise<void> {
+async function handler (
+    this: Client,
+    { guild }: MessageCommadHandlerParams
+): Promise<void> {
     guild.disconnect()
 
     return Promise.resolve()
@@ -8,7 +11,7 @@ async function handler (this: Client, { guild }: MessageCommadHandlerParams): Pr
 
 export default {
     aliases: ['d'],
-    helpSort: 7,
+    sort: 7,
     helpInfo: '`d` disconnect from a voice channel',
     handler
 }

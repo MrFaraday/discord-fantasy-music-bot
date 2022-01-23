@@ -19,7 +19,7 @@ async function handler (
 
 export default {
     aliases: ['summon'],
-    helpSort: 11,
+    sort: 11,
     helpInfo: '`summon` attract bot to your voice channel while playing or idle',
     handler
 }

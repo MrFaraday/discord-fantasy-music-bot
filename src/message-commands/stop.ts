@@ -13,7 +13,7 @@ async function handler (
 
 export default {
     aliases: ['s'],
-    helpSort: 4,
+    sort: 4,
     helpInfo: '`s` stop playing and clear queue',
     handler
 }
