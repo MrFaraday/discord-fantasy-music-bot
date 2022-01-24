@@ -1,6 +1,7 @@
 import { Client, Message } from 'discord.js'
 import db from '../db'
 import { SlashCommandBuilder } from '@discordjs/builders'
+import MessageCommand from '../message-command'
 
 const setPrefixQuery = 'UPDATE guild SET command_prefix = $1 WHERE id = $2'
 
@@ -34,10 +35,10 @@ async function handler (
 
 const slashConfig = new SlashCommandBuilder().setName('prefix')
 
-export default {
+export default new MessageCommand({
     aliases: ['prefix'],
     sort: 12,
     helpInfo: '`prefix [value]` set prefix for commands, enter ***none*** to remove it',
     slashConfig,
     handler
-}
+})

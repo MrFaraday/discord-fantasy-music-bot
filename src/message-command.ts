@@ -3,9 +3,9 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 
 interface MessageCommadParams {
     aliases: string[]
-    sort: number
-    helpInfo: string
-    slashConfig: SlashCommandBuilder
+    sort?: number
+    helpInfo?: string
+    slashConfig: SlashCommandBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
     handler(this: Client, { guild, message }: MessageCommadHandlerParams): Promise<any>
 }
 
