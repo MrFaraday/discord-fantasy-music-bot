@@ -1,6 +1,6 @@
 import { Client } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import MessageCommand from '../message-command'
+import ClientCommand from '../client-command'
 
 async function handler (
     this: Client,
@@ -13,7 +13,7 @@ async function handler (
 
 const slashConfig = new SlashCommandBuilder().setName('disconnect')
 
-export default new MessageCommand({
+export default new ClientCommand({
     aliases: ['d'],
     sort: 7,
     helpInfo: '`d` disconnect from a voice channel',

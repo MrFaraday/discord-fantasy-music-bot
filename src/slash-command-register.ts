@@ -1,15 +1,17 @@
 import { REST } from '@discordjs/rest'
-import { RESTPostAPIApplicationCommandsJSONBody, Routes } from 'discord-api-types/v9'
-import MessageCommand from './message-command'
-import * as MessageCommands from './message-commands'
+import { /* RESTPostAPIApplicationCommandsJSONBody, */ Routes } from 'discord-api-types/v9'
+import ClientCommand from './client-command'
+import * as ClientCommands from './client-commands'
 import { assert } from './utils/assertion'
+import { SlashCommandBuilder } from '@discordjs/builders'
 
-const configs: RESTPostAPIApplicationCommandsJSONBody[] = []
-const commands: MessageCommand[] = Object.values(MessageCommands)
+// const configs: RESTPostAPIApplicationCommandsJSONBody[] = []
+const configs: SlashCommandBuilder[] = []
+const commands: ClientCommand[] = Object.values(ClientCommands)
 commands.sort((a, b) => a?.sort - b?.sort)
 
 for (const command of commands) {
-    configs.push(command.slashConfig.toJSON())
+    configs.push(command.slashConfig)
 }
 
 export async function registerSlashCommands (token: string) {

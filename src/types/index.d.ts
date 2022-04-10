@@ -6,7 +6,7 @@ interface MessageCommadHandlerParams {
     message: import('discord.js').Message
     guild: import('../guild-session').default
     args: string[]
-    commands: MessageCommand[]
+    commands: ClientCommand[]
 }
 
 interface InteractionHandlerParams {
@@ -22,13 +22,19 @@ interface Bind {
 }
 
 type Binds = Map<number, Bind>
+type SlashConfig =
+    | import('@discordjs/builders').SlashCommandBuilder
+    | Omit<
+          import('@discordjs/builders').SlashCommandBuilder,
+          'addSubcommand' | 'addSubcommandGroup'
+      >
 
-interface MessageCommand {
+interface ClientCommand {
     aliases: string[]
-    sort: number
+    sort?: number
     helpInfo?: string
-    slashConfig: import('@discordjs/builders').SlashCommandBuilder
-    handler(this: import('discord.js').Client, params: MessageCommadHandlerParams): any
+    slashConfig: SlashConfig
+    handler(this: Client, { guild, message }: MessageCommadHandlerParams): Promise<any>
 }
 
 interface InteractionCommand {

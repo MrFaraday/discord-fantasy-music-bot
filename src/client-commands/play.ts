@@ -3,7 +3,7 @@ import { YoutubeApiError } from '../api/youtube-api'
 import issueTracks from '../issue-tracks'
 import SourceError from '../source-error'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import MessageCommand from '../message-command'
+import ClientCommand from '../client-command'
 
 async function handler (
     this: Client,
@@ -51,7 +51,7 @@ async function handler (
 
 const slashConfig = new SlashCommandBuilder().setName('play')
 
-export default new MessageCommand({
+export default new ClientCommand({
     aliases: ['p', 'fp'],
     sort: 1,
     helpInfo:

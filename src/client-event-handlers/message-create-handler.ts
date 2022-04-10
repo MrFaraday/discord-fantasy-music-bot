@@ -1,8 +1,8 @@
 import { Client, Constants, DiscordAPIError, Message, MessageMentions } from 'discord.js'
 import { getGuildSession } from '../guild-sessions'
-import * as MessageCommands from '../message-commands'
+import * as ClientCommands from '../client-commands'
 
-const commands: MessageCommand[] = Object.values(MessageCommands)
+const commands: ClientCommand[] = Object.values(ClientCommands)
 commands.sort((a, b) => a.sort - b.sort)
 
 export default async function messageCreateHandler (

@@ -2,7 +2,7 @@ import { fireClient } from './client'
 import { TOKEN } from './config'
 import db from './db'
 import queries from './db/queries'
-import { registerSlashCommands } from './slash-command-registar'
+import { registerSlashCommands } from './slash-command-register'
 import { assert } from './utils/assertion'
 
 process.on('unhandledRejection', (error) => {

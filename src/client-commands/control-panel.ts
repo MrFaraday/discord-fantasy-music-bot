@@ -8,7 +8,7 @@ import {
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { EMBED_COLOR } from '../config'
 import { shortString } from '../utils/string'
-import MessageCommand from '../message-command'
+import ClientCommand from '../client-command'
 
 const playbackControlButtonRow = new MessageActionRow().addComponents(
     new MessageButton()
@@ -113,7 +113,7 @@ async function handler (
 
 const slashConfig = new SlashCommandBuilder().setName('cpad')
 
-export default new MessageCommand({
+export default new ClientCommand({
     aliases: ['cpad'],
     sort: 2,
     helpInfo: '`cpad` display control pad',

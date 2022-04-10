@@ -2,7 +2,7 @@ import { Client, Message, MessageEmbed } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { EMBED_COLOR } from '../config'
 import { shortString } from '../utils/string'
-import MessageCommand from '../message-command'
+import ClientCommand from '../client-command'
 
 async function handler (
     this: Client,
@@ -28,7 +28,7 @@ async function handler (
 
 const slashConfig = new SlashCommandBuilder().setName('binds')
 
-export default new MessageCommand({
+export default new ClientCommand({
     aliases: ['binds'],
     sort: 8,
     helpInfo: '`binds` show saved links',

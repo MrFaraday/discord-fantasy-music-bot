@@ -1,6 +1,6 @@
 import { Client, Message } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import MessageCommand from '../message-command'
+import ClientCommand from '../client-command'
 
 async function handler (
     this: Client,
@@ -15,7 +15,7 @@ async function handler (
 
 const slashConfig = new SlashCommandBuilder().setName('now')
 
-export default new MessageCommand({
+export default new ClientCommand({
     aliases: ['now'],
     sort: 6,
     helpInfo: '`now` display current playing track',
