@@ -31,7 +31,7 @@ client.on('shardError', (error) => {
 client.on('ready', () => {
     console.log(`\nBot ${client.user?.username ?? 'Unknown'} has lauched!`)
     const link = client.generateInvite({
-        scopes: ['bot'],
+        scopes: ['bot', 'applications.commands'],
         permissions: [
             Permissions.FLAGS.ADD_REACTIONS,
             Permissions.FLAGS.SEND_MESSAGES,
