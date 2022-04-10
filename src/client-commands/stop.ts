@@ -1,6 +1,5 @@
 import { Client, Message } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import ClientCommand from '../client-command'
 
 async function handler (
     this: Client,
@@ -15,10 +14,12 @@ async function handler (
 
 const slashConfig = new SlashCommandBuilder().setName('stop')
 
-export default new ClientCommand({
+const command: ClientCommand = {
     aliases: ['s'],
     sort: 4,
     helpInfo: '`s` stop playing and clear queue',
     slashConfig,
     handler
-})
+}
+
+export default command

@@ -2,7 +2,6 @@ import { Client, Message, MessageEmbed } from 'discord.js'
 import { EMBED_COLOR } from '../config'
 import { concat } from '../utils/string'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import ClientCommand from '../client-command'
 
 async function handler (
     this: Client,
@@ -35,10 +34,12 @@ async function handler (
 
 const slashConfig = new SlashCommandBuilder().setName('help')
 
-export default new ClientCommand({
+const command: ClientCommand = {
     aliases: ['help'],
     sort: 0,
     helpInfo: '`help [v?]` show list of commands, add ***v*** for more info',
     slashConfig,
     handler
-})
+}
+
+export default command

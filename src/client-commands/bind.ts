@@ -4,7 +4,6 @@ import youtubeApi from '../api/youtube-api'
 import db from '../db'
 import { isValidInteger } from '../utils/number'
 import { shortString } from '../utils/string'
-import ClientCommand from '../client-command'
 
 const urlRegEx =
     /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_+.~#?&//=]*)/
@@ -100,11 +99,13 @@ const slashConfig = new SlashCommandBuilder()
         option.setName('name').setDescription('Bind name').setRequired(false)
     )
 
-export default new ClientCommand({
+const command: ClientCommand = {
     aliases: ['bind'],
     sort: 9,
     helpInfo:
         '`bind [0..15] [link] [name?]` bind link to number, rest of input will be name but it optional',
     slashConfig,
     handler
-})
+}
+
+export default command

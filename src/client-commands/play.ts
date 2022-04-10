@@ -3,7 +3,6 @@ import { YoutubeApiError } from '../api/youtube-api'
 import issueTracks from '../issue-tracks'
 import SourceError from '../source-error'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import ClientCommand from '../client-command'
 
 async function handler (
     this: Client,
@@ -51,11 +50,13 @@ async function handler (
 
 const slashConfig = new SlashCommandBuilder().setName('play')
 
-export default new ClientCommand({
+const command: ClientCommand = {
     aliases: ['p', 'fp'],
     sort: 1,
     helpInfo:
         '`p [link]` play track(playlist) from link or add to queue\n`fp [link]` clear queue and play shuffled playlist or track immediately',
     slashConfig,
     handler
-})
+}
+
+export default command

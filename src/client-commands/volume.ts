@@ -2,7 +2,6 @@ import { Client, Message } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import db from '../db'
 import queries from '../db/queries'
-import ClientCommand from '../client-command'
 
 async function handler (
     this: Client,
@@ -36,10 +35,13 @@ async function handler (
 
 const slashConfig = new SlashCommandBuilder().setName('volume')
 
-export default new ClientCommand({
+
+const command: ClientCommand = {
     aliases: ['v'],
     sort: 5,
     helpInfo: '`v [0..200?]` display or set volume',
     slashConfig,
     handler
-})
+}
+
+export default command

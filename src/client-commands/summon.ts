@@ -1,6 +1,5 @@
 import { Client, Message } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import ClientCommand from '../client-command'
 
 async function handler (
     this: Client,
@@ -21,10 +20,12 @@ async function handler (
 
 const slashConfig = new SlashCommandBuilder().setName('summon')
 
-export default new ClientCommand({
+const command: ClientCommand = {
     aliases: ['summon'],
     sort: 11,
     helpInfo: '`summon` attract bot to your voice channel while playing or idle',
     slashConfig,
     handler
-})
+}
+
+export default command

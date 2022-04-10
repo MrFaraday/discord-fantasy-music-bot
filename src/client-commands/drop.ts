@@ -2,7 +2,6 @@ import { Client, Message } from 'discord.js'
 import db from '../db'
 import { isValidInteger } from '../utils/number'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import ClientCommand from '../client-command'
 
 async function handler (
     this: Client,
@@ -36,10 +35,12 @@ async function handler (
 
 const slashConfig = new SlashCommandBuilder().setName('drop')
 
-export default new ClientCommand({
+const command: ClientCommand = {
     aliases: ['drop'],
     sort: 10,
     helpInfo: '`drop [0..15]` delete binded link',
     slashConfig,
     handler
-})
+}
+
+export default command
