@@ -10,7 +10,9 @@ async function handler (
     return Promise.resolve()
 }
 
-const slashConfig = new SlashCommandBuilder().setName('disconnect')
+const slashConfig = new SlashCommandBuilder()
+    .setName('disconnect')
+    .setDescription('Disconect from current voice channel')
 
 const command: ClientCommand = {
     aliases: ['d'],

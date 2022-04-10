@@ -48,7 +48,9 @@ async function handler (
     }
 }
 
-const slashConfig = new SlashCommandBuilder().setName('play')
+const slashConfig = new SlashCommandBuilder()
+    .setName('play')
+    .setDescription('Play track or playlist from link')
 
 const command: ClientCommand = {
     aliases: ['p', 'fp'],

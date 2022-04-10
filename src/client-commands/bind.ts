@@ -86,7 +86,7 @@ const slashConfig = new SlashCommandBuilder()
     .setDescription('Bind play link!')
     .addIntegerOption((option) =>
         option
-            .setName('bind number')
+            .setName('number')
             .setDescription('Lala')
             .setRequired(true)
             .setMinValue(0)

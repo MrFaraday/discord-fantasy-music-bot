@@ -25,7 +25,9 @@ async function handler (
     return await message.channel.send({ embeds: [bindsEmbed] })
 }
 
-const slashConfig = new SlashCommandBuilder().setName('binds')
+const slashConfig = new SlashCommandBuilder()
+    .setName('binds')
+    .setDescription('Show binds')
 
 const command: ClientCommand = {
     aliases: ['binds'],

@@ -32,7 +32,9 @@ async function handler (
     }
 }
 
-const slashConfig = new SlashCommandBuilder().setName('prefix')
+const slashConfig = new SlashCommandBuilder()
+    .setName('prefix')
+    .setDescription('Change prefix')
 
 const command: ClientCommand = {
     aliases: ['prefix'],

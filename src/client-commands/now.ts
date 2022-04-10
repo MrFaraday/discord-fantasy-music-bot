@@ -12,7 +12,9 @@ async function handler (
     }
 }
 
-const slashConfig = new SlashCommandBuilder().setName('now')
+const slashConfig = new SlashCommandBuilder()
+    .setName('now')
+    .setDescription('Show current track')
 
 const command: ClientCommand = {
     aliases: ['now'],

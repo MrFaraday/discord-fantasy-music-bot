@@ -36,7 +36,9 @@ async function handler (
     }
 }
 
-const slashConfig = new SlashCommandBuilder().setName('play-bind')
+const slashConfig = new SlashCommandBuilder()
+    .setName('play-bind')
+    .setDescription('Play binded link')
 
 const command: ClientCommand = {
     aliases: new Array(16).fill(0).map((_, i) => String(i)),

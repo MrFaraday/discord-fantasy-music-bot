@@ -18,7 +18,9 @@ async function handler (
     }
 }
 
-const slashConfig = new SlashCommandBuilder().setName('summon')
+const slashConfig = new SlashCommandBuilder()
+    .setName('summon')
+    .setDescription('Attract bot to your voice channel')
 
 const command: ClientCommand = {
     aliases: ['summon'],

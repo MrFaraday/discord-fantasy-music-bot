@@ -33,7 +33,9 @@ async function handler (
     return Promise.resolve()
 }
 
-const slashConfig = new SlashCommandBuilder().setName('drop')
+const slashConfig = new SlashCommandBuilder()
+    .setName('drop')
+    .setDescription('Delete binded link')
 
 const command: ClientCommand = {
     aliases: ['drop'],

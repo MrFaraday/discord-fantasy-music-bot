@@ -33,8 +33,9 @@ async function handler (
     }
 }
 
-const slashConfig = new SlashCommandBuilder().setName('volume')
-
+const slashConfig = new SlashCommandBuilder()
+    .setName('volume')
+    .setDescription('Change volume')
 
 const command: ClientCommand = {
     aliases: ['v'],

@@ -32,7 +32,9 @@ async function handler (
     return await message.channel.send({ embeds: [helpEmbed] })
 }
 
-const slashConfig = new SlashCommandBuilder().setName('help')
+const slashConfig = new SlashCommandBuilder()
+    .setName('help')
+    .setDescription('Show list of commands')
 
 const command: ClientCommand = {
     aliases: ['help'],

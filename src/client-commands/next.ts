@@ -12,7 +12,9 @@ async function handler (
     return Promise.resolve()
 }
 
-const slashConfig = new SlashCommandBuilder().setName('next')
+const slashConfig = new SlashCommandBuilder()
+    .setName('next')
+    .setDescription('Skip current track')
 
 const command: ClientCommand = {
     aliases: ['n'],

@@ -12,7 +12,9 @@ async function handler (
     return Promise.resolve()
 }
 
-const slashConfig = new SlashCommandBuilder().setName('stop')
+const slashConfig = new SlashCommandBuilder()
+    .setName('stop')
+    .setDescription('Stop playing')
 
 const command: ClientCommand = {
     aliases: ['s'],

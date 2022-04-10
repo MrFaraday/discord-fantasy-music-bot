@@ -15,6 +15,7 @@ async function startup () {
 
         await db.query(queries.init)
         await registerSlashCommands(TOKEN)
+
         await fireClient()
     } catch (error) {
         console.error('Stratup error')

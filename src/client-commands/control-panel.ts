@@ -110,7 +110,9 @@ async function handler (
     }
 }
 
-const slashConfig = new SlashCommandBuilder().setName('cpad')
+const slashConfig = new SlashCommandBuilder()
+    .setName('cpad')
+    .setDescription('Show control pad')
 
 const command: ClientCommand = {
     aliases: ['cpad'],

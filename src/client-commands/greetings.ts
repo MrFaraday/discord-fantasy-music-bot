@@ -9,13 +9,13 @@ async function handler (
     return await message.channel.send('Hello :)')
 }
 
-const slashConfig = new SlashCommandBuilder().setName('hello')
+const slashConfig = new SlashCommandBuilder().setName('hello').setDescription('Hello!')
 
 const command: ClientCommand = {
     aliases: ['hello'],
     sort: 11,
     slashConfig,
     handler
-} 
+}
 
 export default command
