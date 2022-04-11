@@ -55,6 +55,7 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 
 ##### Requirements
 
+-   Node.js 16.x
 -   Discord Application at [Developer Portal](https://discord.com/developers/applications)
 -   [FFMPEG](https://ffmpeg.org/)
 -   YouTube API key at [Google Cloud Platform](https://console.cloud.google.com/apis/)
