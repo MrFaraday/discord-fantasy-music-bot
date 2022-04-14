@@ -12,16 +12,32 @@ async function handler (
     }
 }
 
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void | Message> {
+    console.log(interaction)
+    await Promise.resolve()
+}
+
 const slashConfig = new SlashCommandBuilder()
     .setName('now')
     .setDescription('Show current track')
 
-const command: ClientCommand = {
-    aliases: ['now'],
+    interface ExecutorParams {
+        changeIt: number
+    }
+    
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand = {
+    commandMessageNames: ['now'],
     sort: 6,
     helpInfo: '`now` display current playing track',
     slashConfig,
-    handler
+    messageHandler: handler
 }
 
 export default command

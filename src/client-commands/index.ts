@@ -13,3 +13,11 @@ export { default as stop } from './stop'
 export { default as summon } from './summon'
 export { default as volume } from './volume'
 export { default as cpad } from './control-panel'
+
+// clear interactions
+// TODO: move some to regular commands
+
+export { default as playbackCpadStop } from './playback-cpad-stop'
+export { default as playbackCpadSkip } from './playback-cpad-skip'
+export { default as playbackCpadPlayBind } from './playback-cpad-play-bind'
+export { default as playbackCpadVolume } from './playback-cpad-volume'

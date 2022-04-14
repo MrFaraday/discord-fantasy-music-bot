@@ -32,16 +32,32 @@ async function handler (
     return await message.channel.send({ embeds: [helpEmbed] })
 }
 
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void | Message> {
+    console.log(interaction)
+    await Promise.resolve()
+}
+
 const slashConfig = new SlashCommandBuilder()
     .setName('help')
     .setDescription('Show list of commands')
 
-const command: ClientCommand = {
-    aliases: ['help'],
+    interface ExecutorParams {
+        changeIt: number
+    }
+    
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand = {
+    commandMessageNames: ['help'],
     sort: 0,
     helpInfo: '`help [v?]` show list of commands, add ***v*** for more info',
     slashConfig,
-    handler
+    messageHandler: handler
 }
 
 export default command

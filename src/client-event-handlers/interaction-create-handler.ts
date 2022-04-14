@@ -1,12 +1,7 @@
 import { Client, Interaction } from 'discord.js'
+import { interactionCommands } from '../commands'
 import { getGuildSession } from '../guild-sessions'
-import * as InteractionCommands from '../interaction-commands'
 import { assert } from '../utils/assertion'
-
-const commands: InteractionCommand[] = []
-Object.values(InteractionCommands).map((cmd) => {
-    commands.push(cmd)
-})
 
 export default async function interactionCreateHandler (
     this: Client,
@@ -18,13 +13,13 @@ export default async function interactionCreateHandler (
     const guild = await getGuildSession(this, interaction.guild)
 
     try {
-        const command = commands.find((c) =>
-            c.interactionIds.includes(interaction.customId)
+        const command = interactionCommands.find((c) =>
+            c.commandInteractionNames.includes(interaction.customId)
         )
 
         assert(command, 'Command not found, id: ' + interaction.customId)
 
-        await command.handler.call(this, { guild, interaction })
+        await command.interactionHandler.call(this, { guild, interaction })
     } catch (error) {
         console.error('>> interactionCreateHandler | Error:', '\n', error)
     }

@@ -50,6 +50,10 @@ export default class GuildSession {
         this.binds = binds
     }
 
+    get guildId () {
+        return this.guild.id
+    }
+
     get voiceConnection (): VoiceConnection | undefined {
         return getVoiceConnection(this.guild.id)
     }

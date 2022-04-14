@@ -32,16 +32,32 @@ async function handler (
     }
 }
 
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void | Message> {
+    console.log(interaction)
+    await Promise.resolve()
+}
+
 const slashConfig = new SlashCommandBuilder()
     .setName('prefix')
     .setDescription('Change prefix')
 
-const command: ClientCommand = {
-    aliases: ['prefix'],
+    interface ExecutorParams {
+        changeIt: number
+    }
+    
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand = {
+    commandMessageNames: ['prefix'],
     sort: 12,
     helpInfo: '`prefix [value]` set prefix for commands, enter ***none*** to remove it',
     slashConfig,
-    handler
+    messageHandler: handler
 }
 
 export default command

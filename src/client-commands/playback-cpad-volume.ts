@@ -1,12 +1,13 @@
 import { ButtonInteraction, Client } from 'discord.js'
 import db from '../db'
 import queries from '../db/queries'
+import GuildSession from '../guild-session'
 import { assert } from '../utils/assertion'
 import { clamp } from '../utils/number'
 
-async function handler (
+async function interactionHandler (
     this: Client,
-    { interaction, guild }: InteractionHandlerParams
+    { interaction, guild }: InterationHandlerParams
 ): Promise<any> {
     if (!(interaction instanceof ButtonInteraction)) return
     if (!interaction.guild) return
@@ -26,12 +27,24 @@ async function handler (
     await interaction.update({ content: `Volume: **${resultVolume}**` })
 }
 
-export default {
-    interactionIds: [
+interface ExecutorParams {
+    changeIt: number
+}
+
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: InteractionCommand<ExecutorParams> = {
+    commandInteractionNames: [
         'playback-cpad-reduce-volume-1',
         'playback-cpad-increase-volume-1',
         'playback-cpad-reduce-volume-5',
         'playback-cpad-increase-volume-5'
     ],
-    handler
+    interactionHandler,
+
+    executor
 }
+
+export default command

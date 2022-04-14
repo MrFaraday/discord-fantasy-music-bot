@@ -9,13 +9,29 @@ async function handler (
     return await message.channel.send('Hello :)')
 }
 
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void | Message> {
+    console.log(interaction)
+    await Promise.resolve()
+}
+
 const slashConfig = new SlashCommandBuilder().setName('hello').setDescription('Hello!')
 
-const command: ClientCommand = {
-    aliases: ['hello'],
+interface ExecutorParams {
+    changeIt: number
+}
+
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand = {
+    commandMessageNames: ['hello'],
     sort: 11,
     slashConfig,
-    handler
+    messageHandler: handler
 }
 
 export default command

@@ -110,16 +110,32 @@ async function handler (
     }
 }
 
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void | Message> {
+    console.log(interaction)
+    await Promise.resolve()
+}
+
 const slashConfig = new SlashCommandBuilder()
     .setName('cpad')
     .setDescription('Show control pad')
 
-const command: ClientCommand = {
-    aliases: ['cpad'],
+    interface ExecutorParams {
+        changeIt: number
+    }
+    
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand = {
+    commandMessageNames: ['cpad'],
     sort: 2,
     helpInfo: '`cpad` display control pad',
     slashConfig,
-    handler
+    messageHandler: handler
 }
 
 export default command

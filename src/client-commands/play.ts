@@ -48,17 +48,33 @@ async function handler (
     }
 }
 
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void | Message> {
+    console.log(interaction)
+    await Promise.resolve()
+}
+
 const slashConfig = new SlashCommandBuilder()
     .setName('play')
     .setDescription('Play track or playlist from link')
 
-const command: ClientCommand = {
-    aliases: ['p', 'fp'],
+interface ExecutorParams {
+    changeIt: number
+}
+
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand = {
+    commandMessageNames: ['p', 'fp'],
     sort: 1,
     helpInfo:
         '`p [link]` play track(playlist) from link or add to queue\n`fp [link]` clear queue and play shuffled playlist or track immediately',
     slashConfig,
-    handler
+    messageHandler: handler
 }
 
 export default command

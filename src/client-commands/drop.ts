@@ -33,16 +33,32 @@ async function handler (
     return Promise.resolve()
 }
 
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void | Message> {
+    console.log(interaction)
+    await Promise.resolve()
+}
+
 const slashConfig = new SlashCommandBuilder()
     .setName('drop')
     .setDescription('Delete binded link')
 
-const command: ClientCommand = {
-    aliases: ['drop'],
+    interface ExecutorParams {
+        changeIt: number
+    }
+    
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand = {
+    commandMessageNames: ['drop'],
     sort: 10,
     helpInfo: '`drop [0..15]` delete binded link',
     slashConfig,
-    handler
+    messageHandler: handler
 }
 
 export default command

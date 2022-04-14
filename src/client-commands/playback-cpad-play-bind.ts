@@ -1,11 +1,12 @@
 import { ButtonInteraction, Client, GuildMember } from 'discord.js'
+import GuildSession from '../guild-session'
 import issueTracks from '../issue-tracks'
 import SourceError from '../source-error'
 import { assert } from '../utils/assertion'
 
-async function handler (
+async function interactionHandler (
     this: Client,
-    { interaction, guild }: InteractionHandlerParams
+    { interaction, guild }: InterationHandlerParams
 ): Promise<any> {
     if (!(interaction instanceof ButtonInteraction)) return
     if (!interaction.member || !(interaction.member instanceof GuildMember)) return
@@ -35,9 +36,21 @@ async function handler (
     }
 }
 
-export default {
-    interactionIds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(
+interface ExecutorParams {
+    changeIt: number
+}
+
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: InteractionCommand<ExecutorParams> = {
+    commandInteractionNames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(
         (key) => 'playback-cpad-bind-' + String(key)
     ),
-    handler
+    interactionHandler,
+
+    executor
 }
+
+export default command

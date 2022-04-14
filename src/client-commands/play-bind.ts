@@ -36,16 +36,32 @@ async function handler (
     }
 }
 
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void | Message> {
+    console.log(interaction)
+    await Promise.resolve()
+}
+
 const slashConfig = new SlashCommandBuilder()
     .setName('play-bind')
     .setDescription('Play binded link')
 
-const command: ClientCommand = {
-    aliases: new Array(16).fill(0).map((_, i) => String(i)),
+    interface ExecutorParams {
+        changeIt: number
+    }
+    
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand = {
+    commandMessageNames: new Array(16).fill(0).map((_, i) => String(i)),
     sort: 2,
     helpInfo: '`[0..15]` play saved tracks immediately, equal to ***fp [saved link]***',
     slashConfig,
-    handler
+    messageHandler: handler
 }
 
 export default command

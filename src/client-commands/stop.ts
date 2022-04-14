@@ -12,16 +12,32 @@ async function handler (
     return Promise.resolve()
 }
 
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void | Message> {
+    console.log(interaction)
+    await Promise.resolve()
+}
+
 const slashConfig = new SlashCommandBuilder()
     .setName('stop')
     .setDescription('Stop playing')
 
-const command: ClientCommand = {
-    aliases: ['s'],
+    interface ExecutorParams {
+        changeIt: number
+    }
+    
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand = {
+    commandMessageNames: ['s'],
     sort: 4,
     helpInfo: '`s` stop playing and clear queue',
     slashConfig,
-    handler
+    messageHandler: handler
 }
 
 export default command

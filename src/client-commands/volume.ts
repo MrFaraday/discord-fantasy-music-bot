@@ -33,16 +33,32 @@ async function handler (
     }
 }
 
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void | Message> {
+    console.log(interaction)
+    await Promise.resolve()
+}
+
 const slashConfig = new SlashCommandBuilder()
     .setName('volume')
     .setDescription('Change volume')
 
-const command: ClientCommand = {
-    aliases: ['v'],
+interface ExecutorParams {
+    changeIt: number
+}
+
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand = {
+    commandMessageNames: ['v'],
     sort: 5,
     helpInfo: '`v [0..200?]` display or set volume',
     slashConfig,
-    handler
+    messageHandler: handler
 }
 
 export default command

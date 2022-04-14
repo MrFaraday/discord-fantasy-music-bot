@@ -18,16 +18,32 @@ async function handler (
     }
 }
 
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void | Message> {
+    console.log(interaction)
+    await Promise.resolve()
+}
+
 const slashConfig = new SlashCommandBuilder()
     .setName('summon')
     .setDescription('Attract bot to your voice channel')
 
-const command: ClientCommand = {
-    aliases: ['summon'],
+interface ExecutorParams {
+    changeIt: number
+}
+
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand = {
+    commandMessageNames: ['summon'],
     sort: 11,
     helpInfo: '`summon` attract bot to your voice channel while playing or idle',
     slashConfig,
-    handler
+    messageHandler: handler
 }
 
 export default command

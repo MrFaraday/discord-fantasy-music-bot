@@ -1,21 +1,41 @@
 import { REST } from '@discordjs/rest'
+import assert from 'assert'
 import { Routes } from 'discord-api-types/v9'
-import { clientMessageCommands } from './client-message-commands'
+import { slashCommands } from './commands'
+import { TEST_SERVER_ID, TOKEN } from './config'
+import { assertType } from './utils/assertion'
 
-const data = clientMessageCommands.map((c) => {
+const data = slashCommands.map((c) => {
     const name = c.slashConfig.name
     console.log(`Validating slash command: ${name}`)
 
     return c.slashConfig.toJSON()
 })
 
-export async function registerSlashCommands (token: string) {
-    const rest = new REST({ version: '9' }).setToken(token)
+export async function registerSlashCommands () {
+    assert(TOKEN, 'Environment variable TOKEN not found')
+    const rest = new REST({ version: '9' }).setToken(TOKEN)
 
+    const applicationId = await rest.get(Routes.user('@me'))
+
+    /**
+     * @todo get applitaion id
+     */
+    console.log(applicationId)
+    assertType<string>(applicationId, typeof applicationId === 'string')
+
+    if (TEST_SERVER_ID) {
+        await registerCommandsLocally(applicationId, rest, TEST_SERVER_ID)
+    } else {
+        await registerCommandsGlobally(applicationId, rest)
+    }
+}
+
+async function registerCommandsGlobally (applicationId: string, rest: REST) {
     try {
         console.log('Started refreshing application (/) commands.')
 
-        await rest.put(Routes.applicationCommands('831294296388927539'), {
+        await rest.put(Routes.applicationCommands(applicationId), {
             body: data
         })
 
@@ -23,5 +43,24 @@ export async function registerSlashCommands (token: string) {
     } catch (error) {
         console.error(error)
         console.log('Reloading application (/) commands failed.')
+    }
+}
+
+async function registerCommandsLocally (
+    applicationId: string,
+    rest: REST,
+    guildId: string
+) {
+    try {
+        console.log('Started refreshing application (/) commands for test enviroment.')
+
+        await rest.put(Routes.applicationGuildCommands(applicationId, guildId), {
+            body: data
+        })
+
+        console.log('Successfully reloaded application (/) commands for test enviroment.')
+    } catch (error) {
+        console.error(error)
+        console.log('Reloading application (/) commands for test enviroment failed.')
     }
 }
