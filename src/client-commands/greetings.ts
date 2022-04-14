@@ -1,6 +1,8 @@
 import { Client, Message } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
-// import ClientCommand from '../client-command'
+import GuildSession from '../guild-session'
+
+const interactionName = 'hello'
 
 async function handler (
     this: Client,
@@ -12,12 +14,12 @@ async function handler (
 async function interactionHandler (
     this: Client,
     { guild, interaction }: InterationHandlerParams
-): Promise<void | Message> {
+): Promise<void> {
     console.log(interaction)
     await Promise.resolve()
 }
 
-const slashConfig = new SlashCommandBuilder().setName('hello').setDescription('Hello!')
+const slashConfig = new SlashCommandBuilder().setName(interactionName).setDescription('Hello!')
 
 interface ExecutorParams {
     changeIt: number
@@ -27,11 +29,16 @@ async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
     // executor
 }
 
-const command: MessageCommand = {
+const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['hello'],
     sort: 11,
+    messageHandler: handler,
+
+    commandInteractionNames: [interactionName],
     slashConfig,
-    messageHandler: handler
+    interactionHandler,
+
+    executor
 }
 
 export default command

@@ -2,6 +2,9 @@ import { Client, Message } from 'discord.js'
 import db from '../db'
 import { isValidInteger } from '../utils/number'
 import { SlashCommandBuilder } from '@discordjs/builders'
+import GuildSession from '../guild-session'
+
+const interactionName = 'drop'
 
 async function handler (
     this: Client,
@@ -36,29 +39,34 @@ async function handler (
 async function interactionHandler (
     this: Client,
     { guild, interaction }: InterationHandlerParams
-): Promise<void | Message> {
+): Promise<void> {
     console.log(interaction)
     await Promise.resolve()
 }
 
 const slashConfig = new SlashCommandBuilder()
-    .setName('drop')
+    .setName(interactionName)
     .setDescription('Delete binded link')
 
-    interface ExecutorParams {
-        changeIt: number
-    }
-    
+interface ExecutorParams {
+    changeIt: number
+}
+
 async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
     // executor
 }
 
-const command: MessageCommand = {
+const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['drop'],
     sort: 10,
     helpInfo: '`drop [0..15]` delete binded link',
+    messageHandler: handler,
+
+    commandInteractionNames: [interactionName],
     slashConfig,
-    messageHandler: handler
+    interactionHandler,
+
+    executor
 }
 
 export default command

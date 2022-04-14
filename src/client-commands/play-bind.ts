@@ -2,6 +2,9 @@ import { Client, Message } from 'discord.js'
 import issueTracks from '../issue-tracks'
 import SourceError from '../source-error'
 import { SlashCommandBuilder } from '@discordjs/builders'
+import GuildSession from '../guild-session'
+
+const interactionName = 'play-bind'
 
 async function handler (
     this: Client,
@@ -39,7 +42,7 @@ async function handler (
 async function interactionHandler (
     this: Client,
     { guild, interaction }: InterationHandlerParams
-): Promise<void | Message> {
+): Promise<void> {
     console.log(interaction)
     await Promise.resolve()
 }
@@ -48,20 +51,25 @@ const slashConfig = new SlashCommandBuilder()
     .setName('play-bind')
     .setDescription('Play binded link')
 
-    interface ExecutorParams {
-        changeIt: number
-    }
-    
+interface ExecutorParams {
+    changeIt: number
+}
+
 async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
     // executor
 }
 
-const command: MessageCommand = {
+const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: new Array(16).fill(0).map((_, i) => String(i)),
     sort: 2,
     helpInfo: '`[0..15]` play saved tracks immediately, equal to ***fp [saved link]***',
+    messageHandler: handler,
+
+    commandInteractionNames: [interactionName],
     slashConfig,
-    messageHandler: handler
+    interactionHandler,
+
+    executor
 }
 
 export default command

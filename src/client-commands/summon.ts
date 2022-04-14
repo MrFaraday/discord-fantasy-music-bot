@@ -1,5 +1,8 @@
 import { Client, Message } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
+import GuildSession from '../guild-session'
+
+const interactionName = 'summon'
 
 async function handler (
     this: Client,
@@ -21,7 +24,7 @@ async function handler (
 async function interactionHandler (
     this: Client,
     { guild, interaction }: InterationHandlerParams
-): Promise<void | Message> {
+): Promise<void> {
     console.log(interaction)
     await Promise.resolve()
 }
@@ -38,12 +41,17 @@ async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
     // executor
 }
 
-const command: MessageCommand = {
+const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['summon'],
     sort: 11,
     helpInfo: '`summon` attract bot to your voice channel while playing or idle',
+    messageHandler: handler,
+
+    commandInteractionNames: [interactionName],
     slashConfig,
-    messageHandler: handler
+    interactionHandler,
+
+    executor
 }
 
 export default command

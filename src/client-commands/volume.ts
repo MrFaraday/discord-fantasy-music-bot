@@ -2,6 +2,9 @@ import { Client, Message } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import db from '../db'
 import queries from '../db/queries'
+import GuildSession from '../guild-session'
+
+const interactionName = 'volume'
 
 async function handler (
     this: Client,
@@ -36,7 +39,7 @@ async function handler (
 async function interactionHandler (
     this: Client,
     { guild, interaction }: InterationHandlerParams
-): Promise<void | Message> {
+): Promise<void> {
     console.log(interaction)
     await Promise.resolve()
 }
@@ -53,12 +56,17 @@ async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
     // executor
 }
 
-const command: MessageCommand = {
+const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['v'],
     sort: 5,
     helpInfo: '`v [0..200?]` display or set volume',
+    messageHandler: handler,
+
+    commandInteractionNames: [interactionName],
     slashConfig,
-    messageHandler: handler
+    interactionHandler,
+
+    executor
 }
 
 export default command

@@ -16,18 +16,16 @@ export async function registerSlashCommands () {
     assert(TOKEN, 'Environment variable TOKEN not found')
     const rest = new REST({ version: '9' }).setToken(TOKEN)
 
-    const applicationId = await rest.get(Routes.user('@me'))
-
-    /**
-     * @todo get applitaion id
-     */
-    console.log(applicationId)
-    assertType<string>(applicationId, typeof applicationId === 'string')
+    const application = await rest.get(Routes.user('@me'))
+    assertType<{ id: string }>(
+        application,
+        typeof application === 'object' && application !== null && 'id' in application
+    )
 
     if (TEST_SERVER_ID) {
-        await registerCommandsLocally(applicationId, rest, TEST_SERVER_ID)
+        await registerCommandsLocally(application.id, rest, TEST_SERVER_ID)
     } else {
-        await registerCommandsGlobally(applicationId, rest)
+        await registerCommandsGlobally(application.id, rest)
     }
 }
 
@@ -53,6 +51,28 @@ async function registerCommandsLocally (
 ) {
     try {
         console.log('Started refreshing application (/) commands for test enviroment.')
+
+        // const globCommands = await rest.get(Routes.applicationCommands(applicationId))
+
+        // assertType<{ id: string }[]>(globCommands, true)
+
+        // await Promise.all(
+        //     globCommands.map((c) =>
+        //         rest.delete(Routes.applicationCommand(applicationId, c.id))
+        //     )
+        // )
+
+        // const localCommands = await rest.get(
+        //     Routes.applicationGuildCommands(applicationId, guildId)
+        // )
+
+        // assertType<{ id: string }[]>(localCommands, true)
+
+        // await Promise.all(
+        //     localCommands.map((c) =>
+        //         rest.delete(Routes.applicationGuildCommand(applicationId, guildId, c.id))
+        //     )
+        // )
 
         await rest.put(Routes.applicationGuildCommands(applicationId, guildId), {
             body: data

@@ -6,7 +6,7 @@ import { isValidInteger } from '../utils/number'
 import { shortString } from '../utils/string'
 import GuildSession from '../guild-session'
 
-const interaionName = 'bind'
+const interactionName = 'bind'
 
 const urlRegEx =
     /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_+.~#?&//=]*)/
@@ -53,13 +53,20 @@ async function messageHandler (
 async function interactionHandler (
     this: Client,
     { guild, interaction }: InterationHandlerParams
-): Promise<void | Message> {
-    console.log(interaction)
+): Promise<void> {
+    if (!interaction.isCommand()) return
+
+    await interaction.deferReply()
+
+    console.log(interaction.options.get('number'))
+    console.log(interaction.options.get('link'))
+
+    await interaction.editReply({ content: 'ok' })
     await Promise.resolve()
 }
 
 const slashConfig = new SlashCommandBuilder()
-    .setName(interaionName)
+    .setName(interactionName)
     .setDescription('Bind play link!')
     .addIntegerOption((option) =>
         option
@@ -128,10 +135,10 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     sort: 9,
     helpInfo:
         '`bind [0..15] [link] [name?]` bind link to number, rest of input will be name but it optional',
-    slashConfig,
     messageHandler,
 
-    commandInteractionNames: [interaionName],
+    commandInteractionNames: [interactionName],
+    slashConfig,
     interactionHandler,
 
     executor

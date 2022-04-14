@@ -8,7 +8,7 @@ interface MessageCommadHandlerParams {
     message: import('discord.js').Message
     guild: import('../guild-session').default
     args: string[]
-    commands: MessageCommand[]
+    commands: Command<any>[]
 }
 
 interface InterationHandlerParams {
@@ -42,7 +42,7 @@ interface Command<T> {
 interface MessageCommand<T> extends Command<T> {
     commandMessageNames: string[]
     sort: number
-    helpInfo: string
+    helpInfo?: string
     messageHandler(
         this: Client,
         { guild, message }: MessageCommadHandlerParams

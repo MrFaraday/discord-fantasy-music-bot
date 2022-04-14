@@ -2,6 +2,9 @@ import { Client, Message, MessageEmbed } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { EMBED_COLOR } from '../config'
 import { shortString } from '../utils/string'
+import GuildSession from '../guild-session'
+
+const interactionName = 'binds'
 
 async function handler (
     this: Client,
@@ -28,13 +31,13 @@ async function handler (
 async function interactionHandler (
     this: Client,
     { guild, interaction }: InterationHandlerParams
-): Promise<void | Message> {
+): Promise<void> {
     console.log(interaction)
     await Promise.resolve()
 }
 
 const slashConfig = new SlashCommandBuilder()
-    .setName('binds')
+    .setName(interactionName)
     .setDescription('Show binds')
 
 interface ExecutorParams {
@@ -45,12 +48,17 @@ async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
     // executor
 }
 
-const command: MessageCommand = {
+const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['binds'],
     sort: 8,
     helpInfo: '`binds` show saved links',
+    messageHandler: handler,
+
+    commandInteractionNames: [interactionName],
     slashConfig,
-    messageHandler: handler
+    interactionHandler,
+
+    executor
 }
 
 export default command
