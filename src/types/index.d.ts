@@ -32,11 +32,11 @@ type SlashConfig =
       >
 
 interface Command<T> {
-    executor(
+    executor?: (
         this: Client,
         guild: import('../guild-session').default,
         params: T
-    ): Promise<any>
+    ) => Promise<any>
 }
 
 interface MessageCommand<T> extends Command<T> {
