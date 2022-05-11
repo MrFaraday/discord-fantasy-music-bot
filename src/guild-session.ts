@@ -13,6 +13,7 @@ import {
 import { Guild, MessageEmbed, TextBasedChannel, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
 import { QUEUE_MAX_LENGTH } from './config'
+import GuildController from './controllers/guild-controller'
 import fadeOut from './easing/fade-out'
 import { CreateResourceError, Track } from './track'
 
@@ -32,6 +33,7 @@ interface SessionConstructorParams {
 
 export default class GuildSession {
     readonly guild: Guild
+    readonly controller: GuildController
     binds: Binds
     prefix: string
     volume: number
@@ -48,6 +50,12 @@ export default class GuildSession {
         this.volume = volume
         this.prefix = prefix
         this.binds = binds
+
+        this.controller = new GuildController(guild)
+    }
+
+    get guildId () {
+        return this.guild.id
     }
 
     get voiceConnection (): VoiceConnection | undefined {

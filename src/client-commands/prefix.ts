@@ -1,6 +1,9 @@
 import { Client, Message } from 'discord.js'
 import db from '../db'
+import { SlashCommandBuilder } from '@discordjs/builders'
+import GuildSession from '../guild-session'
 
+const interactionName = 'prefix'
 const setPrefixQuery = 'UPDATE guild SET command_prefix = $1 WHERE id = $2'
 
 async function handler (
@@ -31,9 +34,37 @@ async function handler (
     }
 }
 
-export default {
-    aliases: ['prefix'],
-    helpSort: 12,
-    helpInfo: '`prefix [value]` set prefix for commands, enter ***none*** to remove it',
-    handler
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void> {
+    console.log(interaction)
+    await Promise.resolve()
 }
+
+const slashConfig = new SlashCommandBuilder()
+    .setName('prefix')
+    .setDescription('Change prefix')
+
+interface ExecutorParams {
+    changeIt: number
+}
+
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
+    commandMessageNames: ['prefix'],
+    sort: 12,
+    helpInfo: '`prefix [value]` set prefix for commands, enter ***none*** to remove it',
+    messageHandler: handler,
+
+    commandInteractionNames: [interactionName],
+    slashConfig,
+    interactionHandler,
+
+    executor
+}
+
+export default command

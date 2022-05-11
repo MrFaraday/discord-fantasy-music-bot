@@ -5,8 +5,12 @@ import {
     MessageButton,
     MessageEmbed
 } from 'discord.js'
+import { SlashCommandBuilder } from '@discordjs/builders'
 import { EMBED_COLOR } from '../config'
 import { shortString } from '../utils/string'
+import GuildSession from '../guild-session'
+
+const interactionName = 'cpad'
 
 const playbackControlButtonRow = new MessageActionRow().addComponents(
     new MessageButton()
@@ -109,9 +113,37 @@ async function handler (
     }
 }
 
-export default {
-    aliases: ['cpad', 'cpanel'],
-    helpSort: 2,
-    helpInfo: '`cpad` display control pad',
-    handler
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void> {
+    console.log(interaction)
+    await Promise.resolve()
 }
+
+const slashConfig = new SlashCommandBuilder()
+    .setName(interactionName)
+    .setDescription('Show control pad')
+
+interface ExecutorParams {
+    changeIt: number
+}
+
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
+    commandMessageNames: ['cpad'],
+    sort: 2,
+    helpInfo: '`cpad` display control pad',
+    messageHandler: handler,
+
+    commandInteractionNames: [interactionName],
+    slashConfig,
+    interactionHandler,
+
+    executor
+}
+
+export default command

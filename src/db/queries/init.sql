@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS guild (
     id varchar(255) NOT NULL,
     command_prefix varchar(10) NOT NULL,
     volume smallint NOT NULL,
+    was_active_at timestamp NOT NULL,
 
     PRIMARY KEY (id)
 );

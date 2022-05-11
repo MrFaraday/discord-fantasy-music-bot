@@ -1,33 +1,41 @@
 import { Client, Interaction } from 'discord.js'
+import { interactionCommands } from '../commands'
 import { getGuildSession } from '../guild-sessions'
-import * as InteractionCommands from '../interaction-commands'
 import { assert } from '../utils/assertion'
-
-const commands: InteractionCommand[] = []
-Object.values(InteractionCommands).map((cmd) => {
-    commands.push(cmd)
-})
 
 export default async function interactionCreateHandler (
     this: Client,
     interaction: Interaction
 ): Promise<void> {
-    if (!interaction.isButton()) return
     if (!interaction.guild) return
+
+    let commandName = ''
+
+    if (interaction.isButton()) {
+        commandName = interaction.customId
+    } else if (interaction.isCommand()) {
+        commandName = interaction.commandName
+    } else {
+        console.error(
+            '>> interactionCreateHandler | unkown interation type: ' + interaction.type
+        )
+    }
 
     const guild = await getGuildSession(this, interaction.guild)
 
     try {
-        const command = commands.find((c) =>
-            c.interactionIds.includes(interaction.customId)
+        const command = interactionCommands.find((c) =>
+            c.commandInteractionNames.includes(commandName)
         )
 
-        assert(command, 'Command not found, id: ' + interaction.customId)
+        assert(command, 'Command not found, id: ' + commandName)
 
-        await command.handler.call(this, { guild, interaction })
+        await Promise.all([
+            guild.controller.updateActivity(),
+
+            await command.interactionHandler.call(this, { guild, interaction })
+        ])
     } catch (error) {
         console.error('>> interactionCreateHandler | Error:', '\n', error)
     }
-
-    // await interaction.deferUpdate()
 }

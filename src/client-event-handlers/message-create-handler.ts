@@ -1,12 +1,6 @@
 import { Client, Constants, DiscordAPIError, Message, MessageMentions } from 'discord.js'
 import { getGuildSession } from '../guild-sessions'
-import * as MessageCommands from '../message-commands'
-
-const commands: MessageCommand[] = []
-Object.values(MessageCommands).map((cmd) => {
-    commands.push(cmd)
-})
-commands.sort((a, b) => a.helpSort - b.helpSort)
+import { messageCommands } from '../commands'
 
 export default async function messageCreateHandler (
     this: Client,
@@ -21,12 +15,21 @@ export default async function messageCreateHandler (
     const args = getCommandArgs(this.user.id, message, guild.prefix)
 
     try {
-        const command = commands.find((c) =>
-            c.aliases.includes(args[0]?.toLocaleLowerCase())
+        const command = messageCommands.find((c) =>
+            c.commandMessageNames.includes(args[0]?.toLocaleLowerCase())
         )
 
         if (command) {
-            await command.handler.call(this, { message, guild, args, commands })
+            await Promise.all([
+                guild.controller.updateActivity(),
+
+                command.messageHandler.call(this, {
+                    message,
+                    guild,
+                    args,
+                    commands: messageCommands
+                })
+            ])
         }
     } catch (error) {
         if (

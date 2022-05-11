@@ -5,10 +5,9 @@ import messageCreateHandler from './client-event-handlers/message-create-handler
 import guildDeleteHandler from './client-event-handlers/guild-delete-handler'
 import guildCreateHandler from './client-event-handlers/guild-create-handler'
 import interactionCreateHandler from './client-event-handlers/interaction-create-handler'
+import { assert } from './utils/assertion'
 
-if (!TOKEN) {
-    throw new Error('Environment variable TOKEN not found')
-}
+assert(TOKEN, 'Environment variable TOKEN not found')
 
 const client = new Discord.Client({
     intents: [

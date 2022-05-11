@@ -2,6 +2,10 @@ import { Client, Message } from 'discord.js'
 import { YoutubeApiError } from '../api/youtube-api'
 import issueTracks from '../issue-tracks'
 import SourceError from '../source-error'
+import { SlashCommandBuilder } from '@discordjs/builders'
+import GuildSession from '../guild-session'
+
+const interactionName = 'play'
 
 async function handler (
     this: Client,
@@ -47,10 +51,38 @@ async function handler (
     }
 }
 
-export default {
-    aliases: ['p', 'fp'],
-    helpSort: 1,
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void> {
+    console.log(interaction)
+    await Promise.resolve()
+}
+
+const slashConfig = new SlashCommandBuilder()
+    .setName('play')
+    .setDescription('Play track or playlist from link')
+
+interface ExecutorParams {
+    changeIt: number
+}
+
+async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
+    // executor
+}
+
+const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
+    commandMessageNames: ['p', 'fp'],
+    sort: 1,
     helpInfo:
         '`p [link]` play track(playlist) from link or add to queue\n`fp [link]` clear queue and play shuffled playlist or track immediately',
-    handler
+    messageHandler: handler,
+
+    commandInteractionNames: [interactionName],
+    slashConfig,
+    interactionHandler,
+
+    executor
 }
+
+export default command
