@@ -20,12 +20,16 @@ export default async function messageCreateHandler (
         )
 
         if (command) {
-            await command.messageHandler.call(this, {
-                message,
-                guild,
-                args,
-                commands: messageCommands
-            })
+            await Promise.all([
+                guild.controller.updateActivity(),
+
+                command.messageHandler.call(this, {
+                    message,
+                    guild,
+                    args,
+                    commands: messageCommands
+                })
+            ])
         }
     } catch (error) {
         if (

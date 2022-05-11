@@ -22,6 +22,13 @@ export async function registerSlashCommands () {
         typeof application === 'object' && application !== null && 'id' in application
     )
 
+    /**
+     * @todo remove on release
+     */
+    if (!TEST_SERVER_ID) {
+        return
+    }
+
     if (TEST_SERVER_ID) {
         await registerCommandsLocally(application.id, rest, TEST_SERVER_ID)
     } else {

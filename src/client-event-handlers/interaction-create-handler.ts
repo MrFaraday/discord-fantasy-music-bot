@@ -30,7 +30,11 @@ export default async function interactionCreateHandler (
 
         assert(command, 'Command not found, id: ' + commandName)
 
-        await command.interactionHandler.call(this, { guild, interaction })
+        await Promise.all([
+            guild.controller.updateActivity(),
+
+            await command.interactionHandler.call(this, { guild, interaction })
+        ])
     } catch (error) {
         console.error('>> interactionCreateHandler | Error:', '\n', error)
     }
