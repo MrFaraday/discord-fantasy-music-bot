@@ -1,9 +1,7 @@
-import dotenv from 'dotenv'
-
 // loading environment variables for development
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
-const { config }: typeof dotenv = require('dotenv')
+const { config }: typeof import('dotenv') = require('dotenv')
 config()
 
 export const NODE_ENV = process.env.NODE_ENV

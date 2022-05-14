@@ -24,7 +24,7 @@ export default async function issueTracks (
         } else if (tracks.length > 1) {
             embed = new MessageEmbed()
                 .setTitle(result.listData.title)
-                .setAuthor('Playlist enqueued')
+                .setAuthor({ name: 'Playlist enqueued' })
                 .setColor(EMBED_COLOR)
                 .setURL(query)
 
@@ -43,7 +43,7 @@ export default async function issueTracks (
 
     if (tracks.length === 1) {
         const [track] = tracks
-        embed = track.getMessageEmbed().setAuthor('Enqueued')
+        embed = track.getMessageEmbed().setAuthor({ name: 'Enqueued' })
     }
 
     return { tracks, embed }

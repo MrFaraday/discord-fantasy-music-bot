@@ -10,7 +10,7 @@ async function handler (
 ): Promise<void | boolean | Message> {
     const embed = guild.trackEmbed
     if (embed) {
-        embed.setAuthor('Playing')
+        embed.setAuthor({ name: 'Playing' })
         return await message.channel.send({ embeds: [embed] })
     }
 }
