@@ -15,6 +15,9 @@ async function handler (
 
     const [mode, ...query] = args
 
+    console.log('>', message.id, message.member.voice.channel?.type)
+    console.log('>', message.id, mode, query)
+
     if (message.member.voice.channel?.type !== 'GUILD_VOICE') {
         return await message.channel.send('You are not connected to a voice channel')
     }
@@ -29,6 +32,8 @@ async function handler (
         if (embed) {
             message.channel.send({ embeds: [embed] }).catch(() => 0)
         }
+
+        console.log('>', message.id, tracks)
 
         if (mode === 'p') {
             return await guild.play(message.member.voice.channel, tracks, message.channel)

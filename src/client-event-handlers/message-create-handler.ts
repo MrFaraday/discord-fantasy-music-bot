@@ -14,10 +14,14 @@ export default async function messageCreateHandler (
     const guild = await getGuildSession(this, message.guild)
     const args = getCommandArgs(this.user.id, message, guild.prefix)
 
+    console.log('>', message.id, 'args: ', args)
+
     try {
         const command = messageCommands.find((c) =>
             c.commandMessageNames.includes(args[0]?.toLocaleLowerCase())
         )
+
+        console.log('>', message.id, 'command: ', command?.commandMessageNames)
 
         if (command) {
             await Promise.all([
@@ -52,9 +56,9 @@ const mentionRegExs = [
 const getCommandArgs = (clientId: string, message: Message, prefix: string) => {
     const messageContent = message.content.trim()
 
-    const isStartsWithPrefix = messageContent.startsWith(prefix)
+    const startsWithPrefix = messageContent.startsWith(prefix)
     const { mentions } = message
-    const isMentioned =
+    const mentioned =
         mentions.users.has(clientId) &&
         mentions.users.size === 1 &&
         !mentions.everyone &&
@@ -62,10 +66,10 @@ const getCommandArgs = (clientId: string, message: Message, prefix: string) => {
         mentions.crosspostedChannels.size === 0 &&
         mentions.roles.size === 0
 
-    if (!isStartsWithPrefix && !isMentioned && !!prefix) return []
+    if (!startsWithPrefix && !mentioned && !!prefix) return []
 
     const parts = messageContent
-        .slice(isStartsWithPrefix ? prefix.length : 0)
+        .slice(startsWithPrefix ? prefix.length : 0)
         .split(' ')
         .map((arg) => arg.trim())
         .filter((arg) => arg)

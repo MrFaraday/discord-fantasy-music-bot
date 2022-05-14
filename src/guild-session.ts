@@ -16,6 +16,7 @@ import { QUEUE_MAX_LENGTH } from './config'
 import GuildController from './controllers/guild-controller'
 import fadeOut from './easing/fade-out'
 import { CreateResourceError, Track } from './track'
+import { assert } from './utils/assertion'
 
 enum PlaybackState {
     IDLE = 0,
@@ -69,9 +70,13 @@ export default class GuildSession {
     ): Promise<void> {
         this.queue = [...this.queue, ...tracks].slice(0, QUEUE_MAX_LENGTH)
 
+        console.log('> GuildSession.play', 'state(1)', this.state)
+
         if (!this.voiceConnection) {
             await this.connect(channel)
         }
+
+        console.log('> GuildSession.play', 'state(2)', this.state)
 
         if (this.state !== PlaybackState.PLAYING) {
             await this.playNext(textChannel)
@@ -85,9 +90,13 @@ export default class GuildSession {
     ): Promise<void> {
         this.queue = shuffle(tracks.slice(0, QUEUE_MAX_LENGTH))
 
+        console.log('> GuildSession.forcePlay', 'state(3)', this.state)
+
         if (!this.voiceConnection) {
             await this.connect(channel)
         }
+
+        console.log('> GuildSession.forcePlay', 'state(4)', this.state)
 
         await this.playNext(textChannel)
     }
@@ -203,6 +212,8 @@ export default class GuildSession {
         if (!this.audioPlayer) return
         if (this.state === PlaybackState.LODAING) return
 
+        console.log('> GuildSession.playNext ', 'state(5)', this.state)
+
         const track = this.queue.shift()
 
         if (!track && this.state === PlaybackState.PLAYING) {
@@ -228,6 +239,8 @@ export default class GuildSession {
                 }),
                 this.stopCurrentTrack()
             ])
+
+            console.log('> GuildSession.playNext ', 'state(6)', this.state)
 
             this.playingResource = resource
             this.audioPlayer.play(resource)

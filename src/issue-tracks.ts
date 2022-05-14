@@ -12,6 +12,9 @@ export default async function issueTracks (
 
     const urlData = youtubeApi.parseUrl(query)
 
+    console.log('> issueTracks', 'query', query)
+    console.log('> issueTracks', 'urlData', urlData)
+
     if (urlData.videoId) {
         const track = await youtubeApi.issueTrack(urlData.videoId)
         tracks = [track]
@@ -40,6 +43,8 @@ export default async function issueTracks (
         const track = await youtubeApi.search(query)
         tracks = [track]
     }
+
+    console.log('> issueTracks', 'tracks', tracks)
 
     if (tracks.length === 1) {
         const [track] = tracks
