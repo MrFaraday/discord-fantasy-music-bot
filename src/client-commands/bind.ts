@@ -58,8 +58,8 @@ async function interactionHandler (
 
     await interaction.deferReply()
 
-    console.log(interaction.options.get('number'))
-    console.log(interaction.options.get('link'))
+    console.debug(interaction.options.get('number'))
+    console.debug(interaction.options.get('link'))
 
     await interaction.editReply({ content: 'ok' })
     await Promise.resolve()
@@ -123,7 +123,7 @@ async function executor (guild: GuildSession, { bindKey, url, bindName }: Execut
 
         guild.binds.set(bindKey, { name: bindName || shortString(url), value: url })
     } catch (error) {
-        console.error(error)
+        guild.journal.error(error)
         throw error
     } finally {
         client.release()

@@ -3,8 +3,10 @@ import youtubeApi from './api/youtube-api'
 import { EMBED_COLOR } from './config'
 import SourceError from './source-error'
 import { Track } from './track'
+import { GuildJournal } from './journal'
 
 export default async function issueTracks (
+    guildId: string,
     query: string
 ): Promise<{ tracks: Track[]; embed?: MessageEmbed }> {
     let tracks: Track[] = []
@@ -12,8 +14,8 @@ export default async function issueTracks (
 
     const urlData = youtubeApi.parseUrl(query)
 
-    console.log('> issueTracks', 'query', query)
-    console.log('> issueTracks', 'urlData', urlData)
+    const journal = new GuildJournal(guildId)
+    journal.log(`Searching for ${query}, URL data: ${JSON.stringify(urlData)}`)
 
     if (urlData.videoId) {
         const track = await youtubeApi.issueTrack(urlData.videoId)
@@ -44,7 +46,7 @@ export default async function issueTracks (
         tracks = [track]
     }
 
-    console.log('> issueTracks', 'tracks', tracks)
+    journal.log(`Tracks: ${JSON.stringify(tracks)}`)
 
     if (tracks.length === 1) {
         const [track] = tracks

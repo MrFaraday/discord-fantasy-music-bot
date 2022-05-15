@@ -6,6 +6,7 @@ import guildDeleteHandler from './client-event-handlers/guild-delete-handler'
 import guildCreateHandler from './client-event-handlers/guild-create-handler'
 import interactionCreateHandler from './client-event-handlers/interaction-create-handler'
 import { assert } from './utils/assertion'
+import { concatMessages, LogLevel } from './journal'
 
 assert(TOKEN, 'Environment variable TOKEN not found')
 
@@ -24,7 +25,10 @@ client.on('guildCreate', guildCreateHandler)
 client.on('guildDelete', guildDeleteHandler)
 
 client.on('shardError', (error) => {
-    console.error('A websocket connection encountered an error:', error)
+    console.log(
+        `${LogLevel.ERROR} A websocket connection encountered an error:`,
+        concatMessages(error)
+    )
 })
 
 client.on('ready', () => {

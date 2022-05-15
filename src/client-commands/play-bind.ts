@@ -6,7 +6,7 @@ import GuildSession from '../guild-session'
 
 const interactionName = 'play-bind'
 
-async function handler (
+async function messageHandler (
     this: Client,
     { message, guild, args }: MessageCommadHandlerParams
 ): Promise<Message | void> {
@@ -23,7 +23,7 @@ async function handler (
     }
 
     try {
-        const { tracks } = await issueTracks(saved.value)
+        const { tracks } = await issueTracks(guild.guildId, saved.value)
         return await guild.forcePlay(
             message.member.voice.channel,
             tracks,
@@ -33,7 +33,7 @@ async function handler (
         if (error instanceof SourceError) {
             return await message.channel.send(error.message)
         } else {
-            console.warn(error)
+            guild.journal.warn(error)
             return await message.channel.send('It\'s hidden or something went wrong')
         }
     }
@@ -43,7 +43,7 @@ async function interactionHandler (
     this: Client,
     { guild, interaction }: InterationHandlerParams
 ): Promise<void> {
-    console.log(interaction)
+    console.debug(interaction)
     await Promise.resolve()
 }
 
@@ -63,7 +63,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: new Array(16).fill(0).map((_, i) => String(i)),
     sort: 2,
     helpInfo: '`[0..15]` play saved tracks immediately, equal to ***fp [saved link]***',
-    messageHandler: handler,
+    messageHandler,
 
     commandInteractionNames: [interactionName],
     slashConfig,

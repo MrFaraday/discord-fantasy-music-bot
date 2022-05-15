@@ -1,5 +1,6 @@
 import { Pool, PoolClient, QueryResult } from 'pg'
 import { DATABASE_URL } from '../config'
+import { LogLevel } from '../journal'
 
 if (!DATABASE_URL) {
     throw new Error('Environment variable DATABASE_URL not found')
@@ -33,9 +34,11 @@ export class DbClient {
         this.poolClient = poolClient
         this.lastQuery = {}
         this.timeout = setTimeout(() => {
-            console.error('A client has been checked out for more than 5 seconds!')
-            console.error('The last executed query on this client was:')
-            console.error(this.lastQuery)
+            console.log(
+                `[${LogLevel.ERROR}] A client has been checked out for more than 5 seconds!\n`,
+                'The last executed query on this client was:',
+                this.lastQuery
+            )
         }, 5000)
     }
 

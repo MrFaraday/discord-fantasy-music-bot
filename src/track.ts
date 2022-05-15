@@ -2,6 +2,7 @@ import { AudioResource, createAudioResource } from '@discordjs/voice'
 import { MessageEmbed } from 'discord.js'
 import { EMBED_COLOR } from './config'
 import { stream as getStream } from 'play-dl'
+import { GuildJournal } from './journal'
 
 const maxAttempts = 3
 
@@ -37,9 +38,11 @@ export class Track implements TrackData {
         return embed
     }
 
-    public async createAudioResource (): Promise<AudioResource<Track>> {
+    public async createAudioResource (guildId: string): Promise<AudioResource<Track>> {
+        const journal = new GuildJournal(guildId)
+
         if (this.attempts >= maxAttempts) {
-            console.log('MAX ATTEMPTS EXCEEDED')
+            journal.error(`MAX ATTEMPTS EXCEEDED: ${this.url}`)
             throw new CreateResourceError(CreateResourceError.MAX_ATTEMPTS_EXCEEDED)
         }
 
@@ -54,19 +57,17 @@ export class Track implements TrackData {
             })
         } catch (error) {
             if (error instanceof Error && error.message === 'Got 429 from the request') {
-                console.log(error)
+                journal.log(`429: ${this.url}\n`, error, '\n', 'retrying...')
 
-                console.log('>> RETRYING |', error.message)
-                return this.createAudioResource()
+                return this.createAudioResource(guildId)
             } else if (
                 error instanceof Error &&
                 error.message.includes('While getting info from url')
             ) {
                 throw new CreateResourceError(CreateResourceError.RESTRICTED)
             } else {
-                console.error('>> UNHANDLED createAudioResource error')
-                console.error(this)
-                console.error(error)
+                journal.error(`UNHANDLED ERROR: ${this.url}\n`, error)
+
                 throw new CreateResourceError(CreateResourceError.UNKNOWN)
             }
         }

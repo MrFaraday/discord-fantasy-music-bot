@@ -15,8 +15,7 @@ async function handler (
 
     const [mode, ...query] = args
 
-    console.log('>', message.id, message.member.voice.channel?.type)
-    console.log('>', message.id, mode, query)
+    guild.journal.log(`Play: ${query.join(' ')}, mode: ${mode}, message: ${message.id}`)
 
     if (message.member.voice.channel?.type !== 'GUILD_VOICE') {
         return await message.channel.send('You are not connected to a voice channel')
@@ -27,13 +26,11 @@ async function handler (
     }
 
     try {
-        const { tracks, embed } = await issueTracks(query.join(' '))
+        const { tracks, embed } = await issueTracks(guild.guildId, query.join(' '))
 
         if (embed) {
             message.channel.send({ embeds: [embed] }).catch(() => 0)
         }
-
-        console.log('>', message.id, tracks)
 
         if (mode === 'p') {
             return await guild.play(message.member.voice.channel, tracks, message.channel)
@@ -50,7 +47,7 @@ async function handler (
         } else if (error instanceof YoutubeApiError && error.code === 404) {
             return await message.channel.send('Video not found')
         } else {
-            console.warn('playHandler', error)
+            guild.journal.warn(error)
             return await message.channel.send('It\'s hidden or something went wrong')
         }
     }

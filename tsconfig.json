@@ -55,6 +55,7 @@
         // "allowUmdGlobalAccess": true,                /* Allow accessing UMD globals from modules. */
 
         /* Source Map Options */
+        "sourceMap": true,                              /* Generates corresponding '.map' file. */
         // "sourceRoot": "",                            /* Specify the location where debugger should locate TypeScript files instead of source locations. */
         // "mapRoot": "",                               /* Specify the location where debugger should locate map files instead of generated locations. */
         // "inlineSourceMap": true,                     /* Emit a single file with source maps instead of having a separate file. */
@@ -67,6 +68,6 @@
         /* Advanced Options */
         "resolveJsonModule": true                       /* Include modules imported with '.json' extension */,
         "skipLibCheck": true                            /* Skip type checking of declaration files. */,
-        "forceConsistentCasingInFileNames": true        /* Disallow inconsistently-cased references to the same file. */
+        "forceConsistentCasingInFileNames": true,       /* Disallow inconsistently-cased references to the same file. */
     }
 }

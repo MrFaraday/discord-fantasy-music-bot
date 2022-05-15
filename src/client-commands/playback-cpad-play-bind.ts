@@ -19,7 +19,7 @@ async function interactionHandler (
     if (!saved) return
 
     try {
-        const { tracks } = await issueTracks(saved.value)
+        const { tracks } = await issueTracks(guild.guildId, saved.value)
 
         void interaction.deferUpdate()
 

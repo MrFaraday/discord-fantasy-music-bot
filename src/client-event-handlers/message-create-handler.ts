@@ -14,16 +14,19 @@ export default async function messageCreateHandler (
     const guild = await getGuildSession(this, message.guild)
     const args = getCommandArgs(this.user.id, message, guild.prefix)
 
-    console.log('>', message.id, 'args: ', args)
-
     try {
         const command = messageCommands.find((c) =>
             c.commandMessageNames.includes(args[0]?.toLocaleLowerCase())
         )
 
-        console.log('>', message.id, 'command: ', command?.commandMessageNames)
-
         if (command) {
+            guild.journal.log(
+                'message',
+                message.id,
+                'emited',
+                command?.commandMessageNames
+            )
+
             await Promise.all([
                 guild.controller.updateActivity(),
 
@@ -42,7 +45,7 @@ export default async function messageCreateHandler (
         ) {
             message.react('🤐').catch(() => 0)
         } else {
-            console.error('Message handler error:', error)
+            guild.journal.error('Message handler error', error)
         }
     }
 }

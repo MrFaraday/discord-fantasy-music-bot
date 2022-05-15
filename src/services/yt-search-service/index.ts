@@ -3,6 +3,7 @@ import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { assert } from '../../utils/assertion'
 import { NODE_ENV } from '../../config'
+import { concatMessages, LogLevel } from '../../journal'
 
 type Uuid = string
 
@@ -51,7 +52,7 @@ function spawnWorker () {
 
     worker.on('online', () => {
         isOnline = true
-        console.log('>> YtSearchService | Worker spawned')
+        console.log(`[${LogLevel.INFO}] YtSearchService | Worker spawned`)
 
         for (const [uuid, { query }] of serviceRequests) {
             worker.postMessage(JSON.stringify([uuid, query]))
@@ -62,16 +63,16 @@ function spawnWorker () {
         const response: unknown = JSON.parse(message)
 
         if (!validateServiceResult(response)) {
-            return console.error(
-                '>> YtSearchService | onMessage: message parse error, payload:',
+            return console.log(
+                `[${LogLevel.ERROR}] YtSearchService | onMessage: message parse error, payload:`,
                 '\n',
                 message
             )
         }
 
         if (typeof response.result.uuid !== 'string') {
-            return console.error(
-                '>> YtSearchService | onMessage: service error',
+            return console.log(
+                `[${LogLevel.ERROR}] YtSearchService | onMessage: service error`,
                 '\n',
                 response.result.message
             )
@@ -81,7 +82,9 @@ function spawnWorker () {
         const request = serviceRequests.get(uuid)
 
         if (!request) {
-            return console.error('>> YtSearchService | onMessage: request not found')
+            return console.log(
+                `[${LogLevel.ERROR}] YtSearchService | onMessage: request not found`
+            )
         }
 
         try {
@@ -93,17 +96,27 @@ function spawnWorker () {
                 request.reject(response.result.message)
             }
         } catch (error) {
-            console.error('>> YtSearchService | onWorkerMessage:', error)
+            console.log(
+                `[${LogLevel.ERROR}] YtSearchService | onWorkerMessage`,
+                '\n',
+                concatMessages(error)
+            )
         } finally {
             serviceRequests.delete(uuid)
         }
     })
 
     worker.on('error', (error) => {
-        console.error('>> YtSearchService | onWorkerError', '\n', error)
+        console.log(
+            `[${LogLevel.ERROR}] YtSearchService | onWorkerError`,
+            '\n',
+            concatMessages(error)
+        )
     })
     worker.on('exit', (code) => {
-        console.error('>> YtSearchService |', `stopped with ${code} exit code`)
+        console.log(
+            `[${LogLevel.INFO}] YtSearchService |' stopped with ${code} exit code`
+        )
 
         isOnline = false
         spawnWorker()

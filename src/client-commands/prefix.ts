@@ -38,7 +38,7 @@ async function interactionHandler (
     this: Client,
     { guild, interaction }: InterationHandlerParams
 ): Promise<void> {
-    console.log(interaction)
+    console.debug(interaction)
     await Promise.resolve()
 }
 

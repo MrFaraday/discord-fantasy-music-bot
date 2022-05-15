@@ -15,8 +15,8 @@ import shuffle from 'lodash.shuffle'
 import { QUEUE_MAX_LENGTH } from './config'
 import GuildController from './controllers/guild-controller'
 import fadeOut from './easing/fade-out'
+import { GuildJournal } from './journal'
 import { CreateResourceError, Track } from './track'
-import { assert } from './utils/assertion'
 
 enum PlaybackState {
     IDLE = 0,
@@ -39,6 +39,7 @@ export default class GuildSession {
     prefix: string
     volume: number
     queue: Track[] = []
+    journal: GuildJournal
 
     private state: PlaybackState = PlaybackState.IDLE
     private audioPlayer: AudioPlayer | null = null
@@ -51,6 +52,7 @@ export default class GuildSession {
         this.volume = volume
         this.prefix = prefix
         this.binds = binds
+        this.journal = new GuildJournal(guild.id)
 
         this.controller = new GuildController(guild)
     }
@@ -68,15 +70,15 @@ export default class GuildSession {
         tracks: Track[],
         textChannel?: TextBasedChannel
     ): Promise<void> {
-        this.queue = [...this.queue, ...tracks].slice(0, QUEUE_MAX_LENGTH)
+        this.journal.debug('GuildSession.play', 'state bp1', this.state)
 
-        console.log('> GuildSession.play', 'state(1)', this.state)
+        this.queue = [...this.queue, ...tracks].slice(0, QUEUE_MAX_LENGTH)
 
         if (!this.voiceConnection) {
             await this.connect(channel)
         }
 
-        console.log('> GuildSession.play', 'state(2)', this.state)
+        this.journal.debug('GuildSession.play', 'state bp2', this.state)
 
         if (this.state !== PlaybackState.PLAYING) {
             await this.playNext(textChannel)
@@ -90,13 +92,13 @@ export default class GuildSession {
     ): Promise<void> {
         this.queue = shuffle(tracks.slice(0, QUEUE_MAX_LENGTH))
 
-        console.log('> GuildSession.forcePlay', 'state(3)', this.state)
+        this.journal.debug('GuildSession.forcePlay', 'state bp4', this.state)
 
         if (!this.voiceConnection) {
             await this.connect(channel)
         }
 
-        console.log('> GuildSession.forcePlay', 'state(4)', this.state)
+        this.journal.debug('GuildSession.forcePlay', 'state bp4', this.state)
 
         await this.playNext(textChannel)
     }
@@ -143,10 +145,10 @@ export default class GuildSession {
                     error.message === 'Status code: 403' &&
                     this.playingResource?.metadata
                 ) {
-                    console.log('>> RETRYING |', error.message)
+                    this.journal.debug('RETRYING |', error)
                     this.queue.unshift(this.playingResource?.metadata)
                 } else {
-                    console.error('>> UNHANLDED audioPlayer error', '\n', error.message)
+                    this.journal.error('UNHANLDED audioPlayer error:', '\n', error)
                 }
 
                 this.playingResource = null
@@ -212,7 +214,7 @@ export default class GuildSession {
         if (!this.audioPlayer) return
         if (this.state === PlaybackState.LODAING) return
 
-        console.log('> GuildSession.playNext ', 'state(5)', this.state)
+        this.journal.debug('GuildSession.playNext', 'state bp5', this.state)
 
         const track = this.queue.shift()
 
@@ -233,14 +235,14 @@ export default class GuildSession {
             this.state = PlaybackState.LODAING
 
             const [resource] = await Promise.all([
-                track.createAudioResource().then((res) => {
+                track.createAudioResource(this.guildId).then((res) => {
                     res.volume?.setVolume(this.playerVolume)
                     return res
                 }),
                 this.stopCurrentTrack()
             ])
 
-            console.log('> GuildSession.playNext ', 'state(6)', this.state)
+            this.journal.debug('GuildSession.playNext', 'bp6', this.state)
 
             this.playingResource = resource
             this.audioPlayer.play(resource)
@@ -265,12 +267,16 @@ export default class GuildSession {
                 error instanceof Error &&
                 error.message.includes('Cannot play a resource that has already ended')
             ) {
-                console.log('>> RETRYING |', error.message)
+                this.journal.debug('RETRYING |', error)
                 this.queue.unshift(track)
             } else {
-                console.error('>> UNHANDLED playNext error')
-                console.error(track)
-                console.error(error)
+                this.journal.error(
+                    'UNHANLDED playNext error:',
+                    error,
+                    '\n',
+                    'track:',
+                    JSON.stringify(track, null, 2)
+                )
             }
 
             this.state = PlaybackState.IDLE

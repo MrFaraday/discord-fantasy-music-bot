@@ -1,6 +1,7 @@
 import { Client, Guild } from 'discord.js'
 import GuildSession from './guild-session'
 import GuildSessionFactory from './guild-session-factory'
+import { GuildJournal } from './journal'
 
 const guildSessions = new Map<string, GuildSession>()
 
@@ -36,6 +37,6 @@ async function createGuildSession (
         const sessionFactory = new GuildSessionFactory(client, guild)
         return await sessionFactory.createSession()
     } catch (error) {
-        console.error('Connecting guild error:', error)
+        new GuildJournal(guild.id).error('Connecting guild error:', '\n', error)
     }
 }

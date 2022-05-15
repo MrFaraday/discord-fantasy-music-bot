@@ -1,4 +1,5 @@
 import db from '..'
+import { concatMessages, LogLevel } from '../../journal'
 
 export default async function deleteGuildCascade (guildId: string): Promise<boolean> {
     const client = await db.getClient()
@@ -12,8 +13,10 @@ export default async function deleteGuildCascade (guildId: string): Promise<bool
 
         return true
     } catch (error) {
-        console.error('Error on guildDelete')
-        console.error(error)
+        console.error(
+            `[${LogLevel.ERROR}] Error on guildDelete ${guildId} \n`,
+            concatMessages(error)
+        )
 
         return false
     } finally {

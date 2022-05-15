@@ -3,11 +3,12 @@ import assert from 'assert'
 import { Routes } from 'discord-api-types/v9'
 import { slashCommands } from './commands'
 import { TEST_SERVER_ID, TOKEN } from './config'
+import { concatMessages, LogLevel } from './journal'
 import { assertType } from './utils/assertion'
 
 const data = slashCommands.map((c) => {
     const name = c.slashConfig.name
-    console.log(`Validating slash command: ${name}`)
+    console.log(`[${LogLevel.INFO}] Validating slash command: ${name}`)
 
     return c.slashConfig.toJSON()
 })
@@ -38,16 +39,19 @@ export async function registerSlashCommands () {
 
 async function registerCommandsGlobally (applicationId: string, rest: REST) {
     try {
-        console.log('Started refreshing application (/) commands.')
+        console.log(`[${LogLevel.INFO}] Started refreshing application (/) commands.`)
 
         await rest.put(Routes.applicationCommands(applicationId), {
             body: data
         })
 
-        console.log('Successfully reloaded application (/) commands.')
+        console.log(`[${LogLevel.INFO}] Successfully reloaded application (/) commands.`)
     } catch (error) {
-        console.error(error)
-        console.log('Reloading application (/) commands failed.')
+        console.log(
+            `[${LogLevel.ERROR}] Reloading application (/) commands failed:`,
+            '\n',
+            concatMessages(error)
+        )
     }
 }
 
@@ -57,7 +61,9 @@ async function registerCommandsLocally (
     guildId: string
 ) {
     try {
-        console.log('Started refreshing application (/) commands for test enviroment.')
+        console.log(
+            `[${LogLevel.INFO}] Started refreshing application (/) commands for test enviroment.`
+        )
 
         // const globCommands = await rest.get(Routes.applicationCommands(applicationId))
 
@@ -85,9 +91,14 @@ async function registerCommandsLocally (
             body: data
         })
 
-        console.log('Successfully reloaded application (/) commands for test enviroment.')
+        console.log(
+            `[${LogLevel.INFO}] Successfully reloaded application (/) commands for test enviroment.`
+        )
     } catch (error) {
-        console.error(error)
-        console.log('Reloading application (/) commands for test enviroment failed.')
+        console.log(
+            `[${LogLevel.ERROR}] Reloading application (/) commands for test enviroment failed:`,
+            '\n',
+            concatMessages(error)
+        )
     }
 }

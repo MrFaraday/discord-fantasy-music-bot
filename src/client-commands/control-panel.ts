@@ -59,7 +59,7 @@ const getBindFromKey =
         ([bindKey]: [number, Bind]) =>
             bindKey === key
 
-async function handler (
+async function messageHandler (
     this: Client,
     { guild, message }: MessageCommadHandlerParams
 ): Promise<void | Message> {
@@ -109,7 +109,7 @@ async function handler (
             components: [playbackControlButtonRow, volumeControlButtonRow]
         })
     } catch (error) {
-        console.warn(error)
+        guild.journal.error(error)
     }
 }
 
@@ -117,7 +117,7 @@ async function interactionHandler (
     this: Client,
     { guild, interaction }: InterationHandlerParams
 ): Promise<void> {
-    console.log(interaction)
+    console.debug(interaction)
     await Promise.resolve()
 }
 
@@ -137,7 +137,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['cpad'],
     sort: 2,
     helpInfo: '`cpad` display control pad',
-    messageHandler: handler,
+    messageHandler,
 
     commandInteractionNames: [interactionName],
     slashConfig,

@@ -6,7 +6,7 @@ import GuildSession from '../guild-session'
 
 const interactionName = 'drop'
 
-async function handler (
+async function messageHandler (
     this: Client,
     { message, guild, args }: MessageCommadHandlerParams
 ): Promise<void | Message> {
@@ -29,7 +29,7 @@ async function handler (
         guild.binds.delete(bindKey)
         await message.channel.send('Deleted')
     } catch (error) {
-        console.error(error)
+        guild.journal.error(error)
         return await message.channel.send('Something went wrong, try later')
     }
 
@@ -40,7 +40,7 @@ async function interactionHandler (
     this: Client,
     { guild, interaction }: InterationHandlerParams
 ): Promise<void> {
-    console.log(interaction)
+    console.debug(interaction)
     await Promise.resolve()
 }
 
@@ -60,7 +60,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['drop'],
     sort: 10,
     helpInfo: '`drop [0..15]` delete binded link',
-    messageHandler: handler,
+    messageHandler,
 
     commandInteractionNames: [interactionName],
     slashConfig,

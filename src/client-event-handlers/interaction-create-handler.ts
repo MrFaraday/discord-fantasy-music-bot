@@ -1,6 +1,7 @@
 import { Client, Interaction } from 'discord.js'
 import { interactionCommands } from '../commands'
 import { getGuildSession } from '../guild-sessions'
+import { LogLevel } from '../journal'
 import { assert } from '../utils/assertion'
 
 export default async function interactionCreateHandler (
@@ -16,8 +17,9 @@ export default async function interactionCreateHandler (
     } else if (interaction.isCommand()) {
         commandName = interaction.commandName
     } else {
-        console.error(
-            '>> interactionCreateHandler | unkown interation type: ' + interaction.type
+        console.log(
+            `[${LogLevel.ERROR}] interactionCreateHandler | unkown interation type: ` +
+                interaction.type
         )
     }
 
@@ -36,6 +38,6 @@ export default async function interactionCreateHandler (
             await command.interactionHandler.call(this, { guild, interaction })
         ])
     } catch (error) {
-        console.error('>> interactionCreateHandler | Error:', '\n', error)
+        guild.journal.error('interactionCreateHandler', error)
     }
 }

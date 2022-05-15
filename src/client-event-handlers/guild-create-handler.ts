@@ -1,12 +1,13 @@
 import { Client, Guild, MessageEmbed } from 'discord.js'
 import { EMBED_COLOR } from '../config'
 import { getGuildSession } from '../guild-sessions'
+import { LogLevel } from '../journal'
 import { isGuildText } from '../utils/channel'
 import { concat } from '../utils/string'
 
-export default async function onGuildCreate (this: Client, guild: Guild): Promise<void> {
+export default async function onGuildCreate(this: Client, guild: Guild): Promise<void> {
     console.log(
-        `New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`
+        `[${LogLevel.INFO}] New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`
     )
 
     await getGuildSession(this, guild)

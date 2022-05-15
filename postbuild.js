@@ -6,8 +6,9 @@ const options = {
     filter: /.*(?<!.ts|.json)$/
 }
 
-ncp('./src', './build', options, function (err) {
+ncp('./src', './build', options, (err) => {
     if (err) {
-        return console.error(err)
+        console.error(err)
+        throw err
     }
 })

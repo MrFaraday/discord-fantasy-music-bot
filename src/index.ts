@@ -2,25 +2,21 @@ import { fireClient } from './client'
 import { TOKEN } from './config'
 import db from './db'
 import queries from './db/queries'
+import { concatMessages, LogLevel } from './journal'
 import { registerSlashCommands } from './slash-command-register'
 import { assert } from './utils/assertion'
 
 process.on('unhandledRejection', (error) => {
-    console.error('Unhandled promise rejection:', error)
+    console.log(`${LogLevel.ERROR} Unhandled promise rejection:\n`, concatMessages(error))
 })
 
 async function startup () {
-    try {
-        assert(TOKEN, 'Environment variable TOKEN not found')
+    assert(TOKEN, 'Environment variable TOKEN not found')
 
-        await db.query(queries.init)
-        await registerSlashCommands()
+    await db.query(queries.init)
+    await registerSlashCommands()
 
-        await fireClient()
-    } catch (error) {
-        console.error('Stratup error')
-        console.error(error)
-    }
+    await fireClient()
 }
 
 void startup()

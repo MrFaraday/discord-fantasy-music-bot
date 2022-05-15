@@ -10,3 +10,5 @@ ecosystem.config.js
 
 # build
 build
+
+logs
