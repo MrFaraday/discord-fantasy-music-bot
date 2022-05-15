@@ -9,6 +9,11 @@ export default async function deleteGuildCascade (guildId: string): Promise<bool
             'DELETE FROM bind WHERE guild_id IN (SELECT id FROM guild) AND guild_id = $1',
             [guildId]
         )
+        await client.query(
+            'DELETE FROM guild_log WHERE guild_id IN (SELECT id FROM guild) AND guild_id = $1',
+            [guildId]
+        )
+
         await client.query('DELETE FROM guild WHERE id = $1', [guildId])
 
         return true
