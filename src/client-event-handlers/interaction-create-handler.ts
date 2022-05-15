@@ -32,6 +32,13 @@ export default async function interactionCreateHandler (
 
         assert(command, 'Command not found, id: ' + commandName)
 
+        guild.journal.log(
+            'interaction',
+            interaction.id,
+            'emited interaction command',
+            command.commandInteractionNames
+        )
+
         await Promise.all([
             guild.controller.updateActivity(),
 

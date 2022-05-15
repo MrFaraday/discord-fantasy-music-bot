@@ -23,7 +23,7 @@ export default async function messageCreateHandler (
             guild.journal.log(
                 'message',
                 message.id,
-                'emited',
+                'emited message command',
                 command?.commandMessageNames
             )
 
