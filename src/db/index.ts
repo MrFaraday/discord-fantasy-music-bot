@@ -35,7 +35,7 @@ export class DbClient {
         this.lastQuery = {}
         this.timeout = setTimeout(() => {
             console.log(
-                `[${LogLevel.ERROR}] A client has been checked out for more than 5 seconds!\n`,
+                `[${LogLevel.WARN}] A client has been checked out for more than 5 seconds!\n`,
                 'The last executed query on this client was:',
                 this.lastQuery
             )

@@ -7,7 +7,7 @@ import { registerSlashCommands } from './slash-command-register'
 import { assert } from './utils/assertion'
 
 process.on('unhandledRejection', (error) => {
-    console.log(`${LogLevel.ERROR} Unhandled promise rejection:\n`, concatMessages(error))
+    console.log(concatMessages(`${LogLevel.ERROR} Unhandled promise rejection:\n`, error))
 })
 
 async function startup () {

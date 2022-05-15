@@ -34,7 +34,7 @@ export class GuildJournal {
                 'INSERT INTO guild_log (guild_id, message, level) VALUES ($1, $2, $3)',
                 [this.guildId, message, LogLevel.INFO]
             )
-            .catch((err) => console.error(err))
+            .catch((err) => console.log(concatMessages('Logger error\n', err)))
     }
 
     warn (...messages: unknown[]) {
@@ -49,7 +49,7 @@ export class GuildJournal {
                 'INSERT INTO guild_log (guild_id, message, level) VALUES ($1, $2, $3)',
                 [this.guildId, message, LogLevel.WARN]
             )
-            .catch((err) => console.error(err))
+            .catch((err) => console.log(concatMessages('Logger error\n', err)))
     }
 
     error (...messages: unknown[]) {
@@ -67,7 +67,7 @@ export class GuildJournal {
                 'INSERT INTO guild_log (guild_id, message, level) VALUES ($1, $2, $3)',
                 [this.guildId, message, LogLevel.ERROR]
             )
-            .catch((err) => console.error(err))
+            .catch((err) => console.log(concatMessages('Logger error\n', err)))
     }
 
     debug (...messages: unknown[]) {
@@ -82,6 +82,6 @@ export class GuildJournal {
                 'INSERT INTO guild_log (guild_id, message, level) VALUES ($1, $2, $3)',
                 [this.guildId, message, LogLevel.DEBUG]
             )
-            .catch((err) => console.error(err))
+            .catch((err) => console.log(concatMessages('Logger error\n', err)))
     }
 }

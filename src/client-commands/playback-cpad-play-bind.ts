@@ -30,7 +30,7 @@ async function interactionHandler (
         if (error instanceof SourceError) {
             // await message.channel.send(error.message)
         } else {
-            console.warn(error)
+            guild.journal.error(error)
             // await message.channel.send("It's hidden or something went wrong")
         }
     }

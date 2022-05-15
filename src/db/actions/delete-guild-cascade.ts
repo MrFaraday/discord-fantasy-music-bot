@@ -18,9 +18,11 @@ export default async function deleteGuildCascade (guildId: string): Promise<bool
 
         return true
     } catch (error) {
-        console.error(
-            `[${LogLevel.ERROR}] Error on guildDelete ${guildId} \n`,
-            concatMessages(error)
+        console.log(
+            concatMessages(
+                `[${LogLevel.ERROR}] Error on guildDelete ${guildId} \n`,
+                error
+            )
         )
 
         return false

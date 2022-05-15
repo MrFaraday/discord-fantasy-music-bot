@@ -26,8 +26,10 @@ client.on('guildDelete', guildDeleteHandler)
 
 client.on('shardError', (error) => {
     console.log(
-        `${LogLevel.ERROR} A websocket connection encountered an error:`,
-        concatMessages(error)
+        concatMessages(
+            `${LogLevel.ERROR} The bot will now attempt to reconnect to the gateway\n`,
+            error
+        )
     )
 })
 
