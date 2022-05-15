@@ -6,7 +6,7 @@ import GuildSession from '../guild-session'
 
 const interactionName = 'volume'
 
-async function handler (
+async function messageHandler (
     this: Client,
     { message, guild, args }: MessageCommadHandlerParams
 ): Promise<void | Message> {
@@ -60,7 +60,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['v'],
     sort: 5,
     helpInfo: '`v [0..200?]` display or set volume',
-    messageHandler: handler,
+    messageHandler,
 
     commandInteractionNames: [interactionName],
     slashConfig,

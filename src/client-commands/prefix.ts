@@ -6,7 +6,7 @@ import GuildSession from '../guild-session'
 const interactionName = 'prefix'
 const setPrefixQuery = 'UPDATE guild SET command_prefix = $1 WHERE id = $2'
 
-async function handler (
+async function messageHandler (
     this: Client,
     { guild, args, message }: MessageCommadHandlerParams
 ): Promise<void | Message> {
@@ -58,7 +58,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['prefix'],
     sort: 12,
     helpInfo: '`prefix [value]` set prefix for commands, enter ***none*** to remove it',
-    messageHandler: handler,
+    messageHandler,
 
     commandInteractionNames: [interactionName],
     slashConfig,

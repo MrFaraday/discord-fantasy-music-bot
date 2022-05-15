@@ -7,7 +7,7 @@ import GuildSession from '../guild-session'
 
 const interactionName = 'play'
 
-async function handler (
+async function messageHandler (
     this: Client,
     { message, guild, args }: MessageCommadHandlerParams
 ): Promise<void | Message> {
@@ -78,7 +78,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     sort: 1,
     helpInfo:
         '`p [link]` play track(playlist) from link or add to queue\n`fp [link]` clear queue and play shuffled playlist or track immediately',
-    messageHandler: handler,
+    messageHandler,
 
     commandInteractionNames: [interactionName],
     slashConfig,

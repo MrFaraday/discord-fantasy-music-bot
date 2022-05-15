@@ -4,7 +4,7 @@ import GuildSession from '../guild-session'
 
 const interactionName = 'next'
 
-async function handler (
+async function messageHandler (
     this: Client,
     { guild }: MessageCommadHandlerParams
 ): Promise<void | Message> {
@@ -39,7 +39,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['n'],
     sort: 3,
     helpInfo: '`n` skip current track',
-    messageHandler: handler,
+    messageHandler,
 
     commandInteractionNames: [interactionName],
     slashConfig,

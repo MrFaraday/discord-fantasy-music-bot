@@ -4,7 +4,7 @@ import GuildSession from '../guild-session'
 
 const interactionName = 'disconnect'
 
-async function handler (
+async function messageHandler (
     this: Client,
     { guild }: MessageCommadHandlerParams
 ): Promise<void> {
@@ -37,7 +37,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['d'],
     sort: 7,
     helpInfo: '`d` disconnect from a voice channel',
-    messageHandler: handler,
+    messageHandler,
 
     commandInteractionNames: [interactionName],
     slashConfig,

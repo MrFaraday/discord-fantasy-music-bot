@@ -6,7 +6,7 @@ import GuildSession from '../guild-session'
 
 const interactionName = 'binds'
 
-async function handler (
+async function messageHandler (
     this: Client,
     { message, guild }: MessageCommadHandlerParams
 ): Promise<Message> {
@@ -52,7 +52,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['binds'],
     sort: 8,
     helpInfo: '`binds` show saved links',
-    messageHandler: handler,
+    messageHandler,
 
     commandInteractionNames: [interactionName],
     slashConfig,

@@ -4,7 +4,7 @@ import GuildSession from '../guild-session'
 
 const interactionName = 'summon'
 
-async function handler (
+async function messageHandler (
     this: Client,
     { guild, message }: MessageCommadHandlerParams
 ): Promise<void | boolean | Message> {
@@ -45,7 +45,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['summon'],
     sort: 11,
     helpInfo: '`summon` attract bot to your voice channel while playing or idle',
-    messageHandler: handler,
+    messageHandler,
 
     commandInteractionNames: [interactionName],
     slashConfig,

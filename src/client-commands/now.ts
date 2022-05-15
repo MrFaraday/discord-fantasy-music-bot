@@ -4,7 +4,7 @@ import GuildSession from '../guild-session'
 
 const interactionName = 'now'
 
-async function handler (
+async function messageHandler (
     this: Client,
     { guild, message }: MessageCommadHandlerParams
 ): Promise<void | boolean | Message> {
@@ -39,7 +39,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['now'],
     sort: 6,
     helpInfo: '`now` display current playing track',
-    messageHandler: handler,
+    messageHandler,
 
     commandInteractionNames: [interactionName],
     slashConfig,

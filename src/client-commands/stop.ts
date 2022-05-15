@@ -4,7 +4,7 @@ import GuildSession from '../guild-session'
 
 const interactionName = 'stop'
 
-async function handler (
+async function messageHandler (
     this: Client,
     { guild }: MessageCommadHandlerParams
 ): Promise<void | Message> {
@@ -39,7 +39,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['s'],
     sort: 4,
     helpInfo: '`s` stop playing and clear queue',
-    messageHandler: handler,
+    messageHandler,
 
     commandInteractionNames: [interactionName],
     slashConfig,

@@ -6,7 +6,7 @@ import GuildSession from '../guild-session'
 
 const interactionName = 'help'
 
-async function handler (
+async function messageHandler (
     this: Client,
     { message, args, commands }: MessageCommadHandlerParams
 ): Promise<void | Message> {
@@ -63,7 +63,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['help'],
     sort: 0,
     helpInfo: '`help [v?]` show list of commands, add ***v*** for more info',
-    messageHandler: handler,
+    messageHandler,
 
     commandInteractionNames: [interactionName],
     slashConfig,
