@@ -11,8 +11,8 @@ export enum LogLevel {
 export const concatMessages = (...messages: unknown[]): string =>
     messages.reduce((acc, message) => {
         if (message instanceof Error)
-            return `${String(acc)} ${message.stack ?? message.message}`.trim()
-        else return `${String(acc)} ${String(message)}`.trim()
+            return `${String(acc)} ${message.stack ?? message.message}`
+        else return `${String(acc)} ${String(message)}`
     }, '') as string
 
 export class GuildJournal {
@@ -75,7 +75,7 @@ export class GuildJournal {
 
         if (NODE_ENV !== 'development') return
 
-        console.log(`[${LogLevel.DEBUG}]` + message)
+        console.log(`[${LogLevel.DEBUG}] ` + message)
 
         void db
             .query(

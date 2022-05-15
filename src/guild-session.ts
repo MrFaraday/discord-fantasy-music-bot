@@ -70,7 +70,7 @@ export default class GuildSession {
         tracks: Track[],
         textChannel?: TextBasedChannel
     ): Promise<void> {
-        this.journal.debug('GuildSession.play', 'state bp1', this.state)
+        this.journal.debug('GuildSession.play'.padEnd(30, ' '), 'state bp1', this.state)
 
         this.queue = [...this.queue, ...tracks].slice(0, QUEUE_MAX_LENGTH)
 
@@ -78,7 +78,7 @@ export default class GuildSession {
             await this.connect(channel)
         }
 
-        this.journal.debug('GuildSession.play', 'state bp2', this.state)
+        this.journal.debug('GuildSession.play'.padEnd(30, ' '), 'state bp2', this.state)
 
         if (this.state !== PlaybackState.PLAYING) {
             await this.playNext(textChannel)
@@ -92,13 +92,21 @@ export default class GuildSession {
     ): Promise<void> {
         this.queue = shuffle(tracks.slice(0, QUEUE_MAX_LENGTH))
 
-        this.journal.debug('GuildSession.forcePlay', 'state bp4', this.state)
+        this.journal.debug(
+            'GuildSession.forcePlay'.padEnd(30, ' '),
+            'state bp4',
+            this.state
+        )
 
         if (!this.voiceConnection) {
             await this.connect(channel)
         }
 
-        this.journal.debug('GuildSession.forcePlay', 'state bp4', this.state)
+        this.journal.debug(
+            'GuildSession.forcePlay'.padEnd(30, ' '),
+            'state bp4',
+            this.state
+        )
 
         await this.playNext(textChannel)
     }
@@ -214,7 +222,11 @@ export default class GuildSession {
         if (!this.audioPlayer) return
         if (this.state === PlaybackState.LODAING) return
 
-        this.journal.debug('GuildSession.playNext', 'state bp5', this.state)
+        this.journal.debug(
+            'GuildSession.playNext'.padEnd(30, ' '),
+            'state bp5',
+            this.state
+        )
 
         const track = this.queue.shift()
 
@@ -242,7 +254,7 @@ export default class GuildSession {
                 this.stopCurrentTrack()
             ])
 
-            this.journal.debug('GuildSession.playNext', 'bp6', this.state)
+            this.journal.debug('GuildSession.playNext'.padEnd(30, ' '), 'state bp6', this.state)
 
             this.playingResource = resource
             this.audioPlayer.play(resource)
