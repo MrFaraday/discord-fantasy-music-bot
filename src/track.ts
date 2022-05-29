@@ -1,7 +1,6 @@
 import { AudioResource, createAudioResource } from '@discordjs/voice'
 import { MessageEmbed } from 'discord.js'
 import { EMBED_COLOR } from './config'
-import { stream as getStream } from 'play-dl'
 import { GuildJournal } from './journal'
 import ytdl from 'ytdl-core'
 

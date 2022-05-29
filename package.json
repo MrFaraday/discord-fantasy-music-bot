@@ -33,7 +33,6 @@
         "lodash.shuffle": "^4.2.0",
         "pg": "^8.7.3",
         "pg-format": "^1.0.4",
-        "play-dl": "^1.9.4",
         "sodium": "^3.0.2",
         "uuid": "^8.3.2",
         "yt-search": "^2.10.3",
