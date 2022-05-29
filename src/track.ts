@@ -3,6 +3,7 @@ import { MessageEmbed } from 'discord.js'
 import { EMBED_COLOR } from './config'
 import { stream as getStream } from 'play-dl'
 import { GuildJournal } from './journal'
+import ytdl from 'ytdl-core'
 
 const maxAttempts = 3
 
@@ -49,11 +50,15 @@ export class Track implements TrackData {
         try {
             this.attempts++
 
-            const stream = await getStream(this.url)
-            return createAudioResource(stream.stream, {
+            // const stream = await getStream(this.url)
+            const stream = ytdl(this.url, {
+                filter: 'audioonly'
+            })
+
+            return createAudioResource(stream, {
                 inlineVolume: true,
-                metadata: this,
-                inputType: stream.type
+                metadata: this
+                // inputType:
             })
         } catch (error) {
             if (error instanceof Error && error.message === 'Got 429 from the request') {

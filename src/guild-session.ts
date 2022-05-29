@@ -174,7 +174,7 @@ export default class GuildSession {
                 void this.playNext()
             })
             this.audioPlayer.on(AudioPlayerStatus.Playing, () => {
-                this.unscheduleSDisconnect()
+                this.unscheduleDisconnect()
                 this.state = PlaybackState.PLAYING
             })
 
@@ -305,7 +305,7 @@ export default class GuildSession {
         }
     }
 
-    private unscheduleSDisconnect () {
+    private unscheduleDisconnect () {
         if (this.disconnectTimeout) {
             clearTimeout(this.disconnectTimeout)
             this.disconnectTimeout = null

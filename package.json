@@ -27,7 +27,7 @@
         "@discordjs/rest": "^0.4.1",
         "@discordjs/voice": "^0.9.0",
         "axios": "^0.27.2",
-        "discord-api-types": "^0.32.1",
+        "discord-api-types": "^0.33.1",
         "discord.js": "^13.7.0",
         "js-video-url-parser": "^0.5.1",
         "lodash.shuffle": "^4.2.0",
@@ -36,7 +36,8 @@
         "play-dl": "^1.9.4",
         "sodium": "^3.0.2",
         "uuid": "^8.3.2",
-        "yt-search": "^2.10.3"
+        "yt-search": "^2.10.3",
+        "ytdl-core": "^4.11.0"
     },
     "devDependencies": {
         "@types/dotenv": "^8.2.0",
