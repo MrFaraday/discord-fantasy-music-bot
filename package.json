@@ -36,8 +36,7 @@
         "play-dl": "^1.9.5",
         "sodium": "^3.0.2",
         "uuid": "^8.3.2",
-        "yt-search": "^2.10.3",
-        "ytdl-core": "^4.11.1"
+        "yt-search": "^2.10.3"
     },
     "devDependencies": {
         "@types/dotenv": "^8.2.0",
