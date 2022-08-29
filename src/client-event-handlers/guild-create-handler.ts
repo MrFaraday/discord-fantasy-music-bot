@@ -1,11 +1,11 @@
-import { Client, Guild, MessageEmbed } from 'discord.js'
+import { Client, EmbedBuilder, Guild } from 'discord.js'
 import { EMBED_COLOR } from '../config'
 import { getGuildSession } from '../guild-sessions'
 import { LogLevel } from '../journal'
 import { isGuildText } from '../utils/channel'
 import { concat } from '../utils/string'
 
-export default async function onGuildCreate(this: Client, guild: Guild): Promise<void> {
+export default async function onGuildCreate (this: Client, guild: Guild): Promise<void> {
     console.log(
         `[${LogLevel.INFO}] New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`
     )
@@ -47,7 +47,7 @@ const tryToSaluteOnRandomChannel = async (guild: Guild) => {
     return false
 }
 
-const saluteEmbed = new MessageEmbed()
+const saluteEmbed = new EmbedBuilder()
     .setColor(EMBED_COLOR)
     .setTitle('Hello and thanks for adding me!')
     .setDescription(

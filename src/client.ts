@@ -1,4 +1,4 @@
-import Discord, { Intents, Permissions } from 'discord.js'
+import Discord, { GatewayIntentBits, OAuth2Scopes, PermissionFlagsBits } from 'discord.js'
 import { TOKEN } from './config'
 
 import messageCreateHandler from './client-event-handlers/message-create-handler'
@@ -12,10 +12,11 @@ assert(TOKEN, 'Environment variable TOKEN not found')
 
 const client = new Discord.Client({
     intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-        Intents.FLAGS.GUILD_VOICE_STATES
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildVoiceStates
     ]
 })
 
@@ -36,13 +37,13 @@ client.on('shardError', (error) => {
 client.on('ready', () => {
     console.log(`\nBot ${client.user?.username ?? 'Unknown'} has lauched!`)
     const link = client.generateInvite({
-        scopes: ['bot', 'applications.commands'],
+        scopes: [OAuth2Scopes.Bot, OAuth2Scopes.ApplicationsCommands],
         permissions: [
-            Permissions.FLAGS.ADD_REACTIONS,
-            Permissions.FLAGS.SEND_MESSAGES,
-            Permissions.FLAGS.SPEAK,
-            Permissions.FLAGS.EMBED_LINKS,
-            Permissions.FLAGS.CONNECT
+            PermissionFlagsBits.AddReactions,
+            PermissionFlagsBits.SendMessages,
+            PermissionFlagsBits.Speak,
+            PermissionFlagsBits.EmbedLinks,
+            PermissionFlagsBits.Connect
         ]
     })
     console.log('Link to invite bot to your guild:')

@@ -1,4 +1,4 @@
-import { Client, Message, MessageEmbed } from 'discord.js'
+import { Client, EmbedBuilder, Message } from 'discord.js'
 import { EMBED_COLOR } from '../config'
 import { concat } from '../utils/string'
 import { SlashCommandBuilder } from '@discordjs/builders'
@@ -31,7 +31,7 @@ async function messageHandler (
         .map((c) => c.helpInfo)
     const description = concat(commandList)
 
-    const helpEmbed = new MessageEmbed()
+    const helpEmbed = new EmbedBuilder()
         .setColor(EMBED_COLOR)
         .setTitle('Commands')
         .setDescription(concat([description, isVerbose && verbosePart]))

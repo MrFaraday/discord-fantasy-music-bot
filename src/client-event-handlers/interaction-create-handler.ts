@@ -18,8 +18,7 @@ export default async function interactionCreateHandler (
         commandName = interaction.commandName
     } else {
         console.log(
-            `[${LogLevel.ERROR}] interactionCreateHandler | unkown interation type: ` +
-                interaction.type
+            `[${LogLevel.ERROR}] interactionCreateHandler | unkown interation type: ${interaction.type}`
         )
     }
 

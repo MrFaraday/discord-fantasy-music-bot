@@ -1,4 +1,10 @@
-import { Client, Constants, DiscordAPIError, Message, MessageMentions } from 'discord.js'
+import {
+    ChannelType,
+    Client,
+    DiscordAPIError,
+    Message,
+    MessageMentions
+} from 'discord.js'
 import { getGuildSession } from '../guild-sessions'
 import { messageCommands } from '../commands'
 
@@ -8,7 +14,10 @@ export default async function messageCreateHandler (
 ): Promise<void> {
     if (!message.guild) return
     if (!this.user) return
-    if (message.channel.type !== 'GUILD_TEXT' || message.author.id === this.user.id)
+    if (
+        message.channel.type !== ChannelType.GuildText ||
+        message.author.id === this.user.id
+    )
         return
 
     const guild = await getGuildSession(this, message.guild)
@@ -40,8 +49,8 @@ export default async function messageCreateHandler (
         }
     } catch (error) {
         if (
-            error instanceof DiscordAPIError &&
-            error.code === Constants.APIErrors.MISSING_PERMISSIONS
+            error instanceof DiscordAPIError
+            // error.code === Constants.APIErrors.MISSING_PERMISSIONS // TODO: permissions check
         ) {
             message.react('🤐').catch(() => 0)
         } else {
@@ -51,10 +60,10 @@ export default async function messageCreateHandler (
 }
 
 const mentionRegExs = [
-    new RegExp(MessageMentions.USERS_PATTERN.source),
-    new RegExp(MessageMentions.CHANNELS_PATTERN.source),
-    new RegExp(MessageMentions.EVERYONE_PATTERN.source),
-    new RegExp(MessageMentions.ROLES_PATTERN.source)
+    new RegExp(MessageMentions.UsersPattern.source),
+    new RegExp(MessageMentions.ChannelsPattern.source),
+    new RegExp(MessageMentions.EveryonePattern.source),
+    new RegExp(MessageMentions.RolesPattern.source)
 ]
 const getCommandArgs = (clientId: string, message: Message, prefix: string) => {
     const messageContent = message.content.trim()

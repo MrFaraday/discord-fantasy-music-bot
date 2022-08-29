@@ -1,5 +1,5 @@
 import { AudioResource, createAudioResource } from '@discordjs/voice'
-import { MessageEmbed } from 'discord.js'
+import { EmbedBuilder } from 'discord.js'
 import { EMBED_COLOR } from './config'
 import { GuildJournal } from './journal'
 import { stream as getStream } from 'play-dl'
@@ -25,8 +25,8 @@ export class Track implements TrackData {
         this.thumbnail = trackData.thumbnail
     }
 
-    getMessageEmbed (): MessageEmbed {
-        const embed = new MessageEmbed({
+    getMessageEmbed (): EmbedBuilder {
+        const embed = new EmbedBuilder({
             title: this.title,
             color: EMBED_COLOR
         }).setURL(this.url)

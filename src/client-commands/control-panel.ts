@@ -1,9 +1,10 @@
 import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
     Client,
-    Message,
-    MessageActionRow,
-    MessageButton,
-    MessageEmbed
+    EmbedBuilder,
+    Message
 } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { EMBED_COLOR } from '../config'
@@ -12,10 +13,10 @@ import GuildSession from '../guild-session'
 
 const interactionName = 'cpad'
 
-const playbackControlButtonRow = new MessageActionRow().addComponents(
-    new MessageButton()
+const playbackControlButtonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder()
         .setCustomId('playback-cpad-stop')
-        .setStyle('DANGER')
+        .setStyle(ButtonStyle.Danger)
         // .setLabel('\u23F9'),
         .setLabel('Stop'),
     /* new MessageButton()
@@ -23,31 +24,31 @@ const playbackControlButtonRow = new MessageActionRow().addComponents(
         .setStyle('SUCCESS')
         .setLabel('\u25B6\u23F8')
         .setDisabled(true), */
-    new MessageButton()
+    new ButtonBuilder()
         .setCustomId('playback-cpad-skip')
-        .setStyle('PRIMARY')
+        .setStyle(ButtonStyle.Primary)
         // .setLabel('\u23ED')
         .setLabel('Skip')
 )
-const volumeControlButtonRow = new MessageActionRow().addComponents(
-    new MessageButton()
+const volumeControlButtonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder()
         .setCustomId('playback-cpad-reduce-volume-5')
-        .setStyle('SECONDARY')
+        .setStyle(ButtonStyle.Secondary)
         // .setLabel('--🔊'),
         .setLabel('--Vol'),
-    new MessageButton()
+    new ButtonBuilder()
         .setCustomId('playback-cpad-reduce-volume-1')
-        .setStyle('SECONDARY')
+        .setStyle(ButtonStyle.Secondary)
         // .setLabel('-🔊'),
         .setLabel('-Vol'),
-    new MessageButton()
+    new ButtonBuilder()
         .setCustomId('playback-cpad-increase-volume-1')
-        .setStyle('SECONDARY')
+        .setStyle(ButtonStyle.Secondary)
         // .setLabel('+🔊'),
         .setLabel('+Vol'),
-    new MessageButton()
+    new ButtonBuilder()
         .setCustomId('playback-cpad-increase-volume-5')
-        .setStyle('SECONDARY')
+        .setStyle(ButtonStyle.Secondary)
         // .setLabel('++🔊')
         .setLabel('++Vol')
 )
@@ -72,7 +73,7 @@ async function messageHandler (
         )
         .join('\n')
 
-    const bindsEmbed = new MessageEmbed()
+    const bindsEmbed = new EmbedBuilder()
         .setColor(EMBED_COLOR)
         .setDescription(`${bindRecords || '***No binds***'}`)
 
@@ -82,10 +83,10 @@ async function messageHandler (
             return row.map((key) => {
                 const bind = binds.find(getBindFromKey(key))
 
-                const button = new MessageButton()
+                const button = new ButtonBuilder()
                     .setCustomId('playback-cpad-bind-' + String(key))
                     .setLabel(String(key))
-                    .setStyle('SECONDARY')
+                    .setStyle(ButtonStyle.Secondary)
 
                 if (!bind) {
                     button.setDisabled(true)
@@ -94,7 +95,7 @@ async function messageHandler (
                 return button
             })
         })
-        .map((buttons) => new MessageActionRow().addComponents(...buttons))
+        .map((buttons) => new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons))
 
     try {
         if (binds.length > 0) {

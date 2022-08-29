@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js'
+import { EmbedBuilder } from 'discord.js'
 import youtubeApi from './api/youtube-api'
 import { EMBED_COLOR } from './config'
 import SourceError from './source-error'
@@ -8,9 +8,9 @@ import { GuildJournal } from './journal'
 export default async function issueTracks (
     guildId: string,
     query: string
-): Promise<{ tracks: Track[]; embed?: MessageEmbed }> {
+): Promise<{ tracks: Track[]; embed?: EmbedBuilder }> {
     let tracks: Track[] = []
-    let embed: MessageEmbed | undefined
+    let embed: EmbedBuilder | undefined
 
     const urlData = youtubeApi.parseUrl(query)
 
@@ -27,7 +27,7 @@ export default async function issueTracks (
         if (tracks.length === 0) {
             throw new SourceError('It\'s empty')
         } else if (tracks.length > 1) {
-            embed = new MessageEmbed()
+            embed = new EmbedBuilder()
                 .setTitle(result.listData.title)
                 .setAuthor({ name: 'Playlist enqueued' })
                 .setColor(EMBED_COLOR)
