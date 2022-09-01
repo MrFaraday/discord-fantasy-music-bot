@@ -10,7 +10,7 @@ import {
     DiscordGatewayAdapterCreator,
     AudioResource
 } from '@discordjs/voice'
-import { Guild, MessageEmbed, TextBasedChannel, VoiceChannel } from 'discord.js'
+import { EmbedBuilder, Guild, TextBasedChannel, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
 import { QUEUE_MAX_LENGTH } from './config'
 import GuildController from './controllers/guild-controller'
@@ -207,7 +207,7 @@ export default class GuildSession {
         return this.state !== PlaybackState.IDLE
     }
 
-    get trackEmbed (): MessageEmbed | undefined {
+    get trackEmbed (): EmbedBuilder | undefined {
         if (this.playingResource) {
             return this.playingResource.metadata.getMessageEmbed()
         }

@@ -1,4 +1,4 @@
-import { Client, Message } from 'discord.js'
+import { ChannelType, Client, Message } from 'discord.js'
 import { YoutubeApiError } from '../api/youtube-api'
 import issueTracks from '../issue-tracks'
 import SourceError from '../source-error'
@@ -17,7 +17,7 @@ async function messageHandler (
 
     guild.journal.log(`Play: ${query.join(' ')}, mode: ${mode}, message: ${message.id}`)
 
-    if (message.member.voice.channel?.type !== 'GUILD_VOICE') {
+    if (message.member.voice.channel?.type !== ChannelType.GuildVoice) {
         return await message.channel.send('You are not connected to a voice channel')
     }
 

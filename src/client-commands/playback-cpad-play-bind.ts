@@ -1,4 +1,4 @@
-import { ButtonInteraction, Client, GuildMember } from 'discord.js'
+import { ButtonInteraction, ChannelType, Client, GuildMember } from 'discord.js'
 import GuildSession from '../guild-session'
 import issueTracks from '../issue-tracks'
 import SourceError from '../source-error'
@@ -10,7 +10,7 @@ async function interactionHandler (
 ): Promise<any> {
     if (!(interaction instanceof ButtonInteraction)) return
     if (!interaction.member || !(interaction.member instanceof GuildMember)) return
-    if (interaction.member.voice.channel?.type !== 'GUILD_VOICE') return
+    if (interaction.member.voice.channel?.type !== ChannelType.GuildVoice) return
 
     const [key] = /\d/.exec(interaction.customId) ?? []
     assert(key)

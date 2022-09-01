@@ -1,4 +1,4 @@
-import { Client, Message } from 'discord.js'
+import { ChannelType, Client, Message } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import GuildSession from '../guild-session'
 
@@ -10,11 +10,11 @@ async function messageHandler (
 ): Promise<void | boolean | Message> {
     const channel = message.member?.voice?.channel
 
-    if (channel?.type !== 'GUILD_VOICE') {
+    if (channel?.type !== ChannelType.GuildVoice) {
         return await message.channel.send('You are not connected to a voice channel')
     }
 
-    if (channel.id !== message.guild?.me?.voice.channel?.id) {
+    if (channel.id !== message.guild?.members.me?.voice.channel?.id) {
         return await guild.connect(channel)
     } else {
         return await message.channel.send('I\'m here')

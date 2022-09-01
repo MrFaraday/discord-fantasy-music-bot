@@ -1,4 +1,4 @@
-import { Client, Message, MessageEmbed } from 'discord.js'
+import { Client, EmbedBuilder, Message } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { EMBED_COLOR } from '../config'
 import { shortString } from '../utils/string'
@@ -20,7 +20,7 @@ async function messageHandler (
         )
         .join('\n')
 
-    const bindsEmbed = new MessageEmbed()
+    const bindsEmbed = new EmbedBuilder()
         .setColor(EMBED_COLOR)
         .setTitle('Binds')
         .setDescription(`${bindRecords || '***Empty***'}`)

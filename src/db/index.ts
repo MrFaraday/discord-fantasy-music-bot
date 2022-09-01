@@ -1,4 +1,4 @@
-import { Pool, PoolClient, QueryResult } from 'pg'
+import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg'
 import { DATABASE_URL } from '../config'
 import { LogLevel } from '../journal'
 
@@ -15,7 +15,10 @@ const pool = new Pool({
 
 type Value = string | number | null
 
-async function query<T> (text: string, params?: Value[]): Promise<QueryResult<T>> {
+async function query<T extends QueryResultRow = any> (
+    text: string,
+    params?: Value[]
+): Promise<QueryResult<T>> {
     // const start = Date.now()
     const res = await pool.query(text, params)
 
@@ -42,7 +45,10 @@ export class DbClient {
         }, 5000)
     }
 
-    query<T> (text: string, params?: Value[]): Promise<QueryResult<T>> {
+    query<T extends QueryResultRow = any> (
+        text: string,
+        params?: Value[]
+    ): Promise<QueryResult<T>> {
         this.lastQuery = { text, params }
         return this.poolClient.query<T>(text, params)
     }

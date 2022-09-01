@@ -1,4 +1,4 @@
-import { Client, Message } from 'discord.js'
+import { ChannelType, Client, Message } from 'discord.js'
 import issueTracks from '../issue-tracks'
 import SourceError from '../source-error'
 import { SlashCommandBuilder } from '@discordjs/builders'
@@ -18,7 +18,7 @@ async function messageHandler (
     const saved = guild.binds.get(bind)
     if (!saved) return
 
-    if (message.member.voice.channel?.type !== 'GUILD_VOICE') {
+    if (message.member.voice.channel?.type !== ChannelType.GuildVoice) {
         return await message.channel.send('You are not connected to a voice channel')
     }
 
