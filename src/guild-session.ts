@@ -135,6 +135,7 @@ export default class GuildSession {
         })
         connection.on(VoiceConnectionStatus.Destroyed, () => {
             this.queue = []
+            this.audioPlayer?.stop()
             this.audioPlayer = null
             this.playingResource = null
             this.state = PlaybackState.IDLE
