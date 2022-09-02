@@ -4,17 +4,16 @@
  * @todo add methods
  */
 
-import { Guild } from 'discord.js'
 import db from '../db'
 
 export default class GuildController {
-    guild: Guild
+    guildId: string
 
-    constructor (guild: Guild) {
-        this.guild = guild
+    constructor (guildId: string) {
+        this.guildId = guildId
     }
 
     async updateActivity () {
-        await db.query('UPDATE guild SET was_active_at = now() WHERE id = $1', [this.guild.id])
+        await db.query('UPDATE guild SET was_active_at = now() WHERE id = $1', [this.guildId])
     }
 }
