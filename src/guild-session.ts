@@ -7,10 +7,9 @@ import {
     VoiceConnectionStatus,
     AudioPlayer,
     AudioPlayerStatus,
-    DiscordGatewayAdapterCreator,
     AudioResource
 } from '@discordjs/voice'
-import { EmbedBuilder, Guild, TextBasedChannel, VoiceChannel } from 'discord.js'
+import { EmbedBuilder, TextBasedChannel, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
 import { QUEUE_MAX_LENGTH } from './config'
 import GuildController from './controllers/guild-controller'
@@ -26,14 +25,14 @@ enum PlaybackState {
 }
 
 interface SessionConstructorParams {
-    guild: Guild
+    guildId: string
     binds: Binds
     prefix: string
     volume: number
 }
 
 export default class GuildSession {
-    readonly guild: Guild
+    readonly guildId: string
     readonly controller: GuildController
     binds: Binds
     prefix: string
@@ -47,22 +46,18 @@ export default class GuildSession {
 
     private disconnectTimeout: NodeJS.Timeout | null = null
 
-    constructor ({ guild, binds, prefix, volume }: SessionConstructorParams) {
-        this.guild = guild
+    constructor ({ guildId, binds, prefix, volume }: SessionConstructorParams) {
+        this.guildId = guildId
         this.volume = volume
         this.prefix = prefix
         this.binds = binds
-        this.journal = new GuildJournal(guild.id)
+        this.journal = new GuildJournal(guildId)
 
-        this.controller = new GuildController(guild)
-    }
-
-    get guildId () {
-        return this.guild.id
+        this.controller = new GuildController(guildId)
     }
 
     get voiceConnection (): VoiceConnection | undefined {
-        return getVoiceConnection(this.guild.id)
+        return getVoiceConnection(this.guildId)
     }
 
     async play (
@@ -118,8 +113,7 @@ export default class GuildSession {
         const connection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guild.id,
-            adapterCreator: channel.guild
-                .voiceAdapterCreator as DiscordGatewayAdapterCreator
+            adapterCreator: channel.guild.voiceAdapterCreator
         })
 
         connection.removeAllListeners()
@@ -255,7 +249,11 @@ export default class GuildSession {
                 this.stopCurrentTrack()
             ])
 
-            this.journal.debug('GuildSession.playNext'.padEnd(30, ' '), 'state bp6', this.state)
+            this.journal.debug(
+                'GuildSession.playNext'.padEnd(30, ' '),
+                'state bp6',
+                this.state
+            )
 
             this.playingResource = resource
             this.audioPlayer.play(resource)
