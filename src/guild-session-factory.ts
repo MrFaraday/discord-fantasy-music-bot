@@ -72,7 +72,7 @@ export default class GuildSessionFactory {
         const { command_prefix, volume } = this.guildData
 
         return new GuildSession({
-            guild: this.guild,
+            guildId: this.guild.id,
             binds,
             prefix: command_prefix,
             volume
@@ -103,7 +103,7 @@ export default class GuildSessionFactory {
         )
         await this.dbClient.query(insertDefaultBindsQuery)
 
-        return new GuildSession({ guild: this.guild, binds: binds, prefix, volume })
+        return new GuildSession({ guildId: this.guild.id, binds: binds, prefix, volume })
     }
 
     getDefaultBindsInsertData (): [string, number, string, string][] {
