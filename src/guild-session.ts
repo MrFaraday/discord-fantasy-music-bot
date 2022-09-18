@@ -121,16 +121,18 @@ export default class GuildSession {
         connection.on(VoiceConnectionStatus.Disconnected, async () => {
             try {
                 await Promise.race([
-                    entersState(connection, VoiceConnectionStatus.Signalling, 2_000),
-                    entersState(connection, VoiceConnectionStatus.Connecting, 2_000)
+                    entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
+                    entersState(connection, VoiceConnectionStatus.Connecting, 5_000)
                 ])
+                // Seems to be reconnecting to a new channel - ignore disconnect
             } catch (error) {
-                this.disconnect()
+                // Seems to be a real disconnect which SHOULDN'T be recovered from
+                connection.destroy()
             }
         })
         connection.on(VoiceConnectionStatus.Destroyed, () => {
             this.queue = []
-            this.audioPlayer?.stop()
+            this.audioPlayer?.stop(true)
             this.audioPlayer = null
             this.playingResource = null
             this.state = PlaybackState.IDLE
@@ -197,6 +199,7 @@ export default class GuildSession {
     async stop (): Promise<void> {
         this.queue = []
         await this.skip()
+        this.audioPlayer?.stop(true)
     }
 
     get isPlaying (): boolean {
