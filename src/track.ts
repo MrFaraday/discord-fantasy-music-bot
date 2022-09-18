@@ -56,11 +56,7 @@ export class Track implements TrackData {
                 inputType: stream.type
             })
         } catch (error) {
-            if (error instanceof Error && error.message === 'Got 429 from the request') {
-                journal.log(`429: ${this.url}\n`, error, '\n', 'retrying...')
-
-                return this.createAudioResource(guildId)
-            } else if (
+            if (
                 error instanceof Error &&
                 error.message.includes('While getting info from url')
             ) {

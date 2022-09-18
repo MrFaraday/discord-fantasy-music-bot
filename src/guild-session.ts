@@ -115,6 +115,7 @@ export default class GuildSession {
             guildId: channel.guild.id,
             adapterCreator: channel.guild.voiceAdapterCreator
         })
+        this.scheduleDisconnect()
 
         connection.removeAllListeners()
         connection.on(VoiceConnectionStatus.Disconnected, async () => {
@@ -151,7 +152,7 @@ export default class GuildSession {
                     this.journal.debug('RETRYING |', error)
                     this.queue.unshift(this.playingResource?.metadata)
                 } else {
-                    this.journal.error('UNHANLDED audioPlayer error:', '\n', error)
+                    this.journal.error('UNHANDLED audioPlayer error:', '\n', error)
                 }
 
                 this.playingResource = null
@@ -282,7 +283,7 @@ export default class GuildSession {
                 this.queue.unshift(track)
             } else {
                 this.journal.error(
-                    'UNHANLDED playNext error:',
+                    'UNHANDLED playNext error:',
                     error,
                     '\n',
                     'track:',
