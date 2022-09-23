@@ -53,7 +53,12 @@ const volumeControlButtonRow = new ActionRowBuilder<ButtonBuilder>().addComponen
         .setLabel('++Vol')
 )
 
-const groups = [[7, 8, 9], [4, 5, 6], [1, 2, 3], [0]]
+const groups = [
+    [0, 1, 2, 3, 4],
+    [5, 6, 7, 8, 9],
+    [10, 11, 12, 13, 14],
+    [15, 16, 17, 18, 19]
+].reverse()
 
 const getBindFromKey =
     (key: number) =>

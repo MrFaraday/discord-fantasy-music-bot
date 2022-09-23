@@ -3,6 +3,7 @@ import db from '../db'
 import { isValidInteger } from '../utils/number'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import GuildSession from '../guild-session'
+import { BINDS_MAX_INDEX } from '../config'
 
 const interactionName = 'drop'
 
@@ -16,8 +17,8 @@ async function messageHandler (
     const bindKey = Number(bindParam)
     if (!bindParam) {
         return await message.channel.send('No params provided')
-    } else if (!isValidInteger(bindKey, 0, 15)) {
-        return await message.channel.send('Bind key must be an integer from 0 to 15')
+    } else if (!isValidInteger(bindKey, 0, BINDS_MAX_INDEX)) {
+        return await message.channel.send(`Bind key must be an integer from 0 to ${BINDS_MAX_INDEX}`)
     }
 
     try {
@@ -59,7 +60,7 @@ async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
 const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['drop'],
     sort: 10,
-    helpInfo: '`drop [0..15]` delete binded link',
+    helpInfo: `\`drop [0..${BINDS_MAX_INDEX}]\` delete binded link`,
     messageHandler,
 
     commandInteractionNames: [interactionName],

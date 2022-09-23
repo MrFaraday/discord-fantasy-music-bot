@@ -12,6 +12,7 @@ export const TEST_SERVER_ID = process.env.TEST_SERVER_ID
 
 export const EMBED_COLOR = 0xf26d53
 export const QUEUE_MAX_LENGTH = 50
+export const BINDS_MAX_INDEX = 19
 
 export const DEFAULT_PREFIX = '-'
 export const DEFAULT_VOLUME = 100

@@ -1,4 +1,5 @@
 import { ButtonInteraction, ChannelType, Client, GuildMember } from 'discord.js'
+import { BINDS_MAX_INDEX } from '../config'
 import GuildSession from '../guild-session'
 import issueTracks from '../issue-tracks'
 import SourceError from '../source-error'
@@ -12,7 +13,7 @@ async function interactionHandler (
     if (!interaction.member || !(interaction.member instanceof GuildMember)) return
     if (interaction.member.voice.channel?.type !== ChannelType.GuildVoice) return
 
-    const [key] = /\d/.exec(interaction.customId) ?? []
+    const [key] = /\d+/.exec(interaction.customId) ?? []
     assert(key)
 
     const saved = guild.binds.get(Number(key))
@@ -45,9 +46,10 @@ async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
 }
 
 const command: InteractionCommand<ExecutorParams> = {
-    commandInteractionNames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(
-        (key) => 'playback-cpad-bind-' + String(key)
-    ),
+    commandInteractionNames: new Array(BINDS_MAX_INDEX + 1)
+        .fill(null)
+        .map((_, i) => i)
+        .map((key) => 'playback-cpad-bind-' + String(key)),
     interactionHandler,
 
     executor

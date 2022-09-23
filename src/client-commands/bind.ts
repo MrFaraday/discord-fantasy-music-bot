@@ -5,6 +5,7 @@ import db from '../db'
 import { isValidInteger } from '../utils/number'
 import { shortString } from '../utils/string'
 import GuildSession from '../guild-session'
+import { BINDS_MAX_INDEX } from '../config'
 
 const interactionName = 'bind'
 
@@ -24,8 +25,8 @@ async function messageHandler (
 
     if (!bindParam) {
         return await message.channel.send('No params provided')
-    } else if (!isValidInteger(bindKey, 0, 15)) {
-        return await message.channel.send('Bind key must be an integer from 0 to 15')
+    } else if (!isValidInteger(bindKey, 0, BINDS_MAX_INDEX)) {
+        return await message.channel.send(`Bind key must be an integer from 0 to ${BINDS_MAX_INDEX}`)
     } else if (!url) {
         return await message.channel.send('No link provided')
     } else if (url.length > 500) {
@@ -74,7 +75,7 @@ const slashConfig = new SlashCommandBuilder()
             .setDescription('Lala')
             .setRequired(true)
             .setMinValue(0)
-            .setMaxValue(15)
+            .setMaxValue(BINDS_MAX_INDEX)
     )
     .addStringOption((option) =>
         option.setName('link').setDescription('Link url').setRequired(true)
@@ -134,7 +135,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['bind'],
     sort: 9,
     helpInfo:
-        '`bind [0..15] [link] [name?]` bind link to number, rest of input will be name but it optional',
+        `\`bind [0..${BINDS_MAX_INDEX}] [link] [name?]\` bind link to number, rest of input will be name but it optional`,
     messageHandler,
 
     commandInteractionNames: [interactionName],

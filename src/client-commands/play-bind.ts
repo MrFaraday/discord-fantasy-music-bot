@@ -3,6 +3,7 @@ import issueTracks from '../issue-tracks'
 import SourceError from '../source-error'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import GuildSession from '../guild-session'
+import { BINDS_MAX_INDEX } from '../config'
 
 const interactionName = 'play-bind'
 
@@ -62,7 +63,7 @@ async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
 const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: new Array(16).fill(0).map((_, i) => String(i)),
     sort: 2,
-    helpInfo: '`[0..15]` play saved tracks immediately, equal to ***fp [saved link]***',
+    helpInfo: `\`[0..${BINDS_MAX_INDEX}]\` play saved tracks immediately, equal to ***fp [saved link]***`,
     messageHandler,
 
     commandInteractionNames: [interactionName],
