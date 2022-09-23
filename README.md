@@ -22,7 +22,7 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 -   `help [v?]` show list of commands, add **_v_** for more info
 -   `p [link]` play track(playlist) from link or add to queue
 -   `fp [link]` clear queue and play shuffled playlist or track immediately
--   `[0..19]` play saved tracks immediately, equal to **_fp [saved link]_**
+-   `[0..24]` play saved tracks immediately, equal to **_fp [saved link]_**
 -   `cpad` display control pad
 -   `n` skip current track
 -   `s` stop playing and clear queue
@@ -30,8 +30,8 @@ Invite bot to a guild. When bot get command to play it automatically join to you
 -   `now` display current playing track
 -   `d` disconnect from a voice channel
 -   `binds` show saved links
--   `bind [0..19] [link] [name?]` bind link to number, rest of input will be name but it optional
--   `drop [0..19]` delete binded link
+-   `bind [0..24] [link] [name?]` bind link to number, rest of input will be name but it optional
+-   `drop [0..24]` delete binded link
 -   `summon` attract bot to your voice channel while playing or idle
 -   `prefix [value]` set prefix for commands, enter **_none_** to remove it
 
