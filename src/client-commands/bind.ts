@@ -6,6 +6,8 @@ import { isValidInteger } from '../utils/number'
 import { shortString } from '../utils/string'
 import GuildSession from '../guild-session'
 import { BINDS_MAX_INDEX } from '../config'
+import assert from 'assert'
+import { assertType } from '../utils/assertion'
 
 const interactionName = 'bind'
 
@@ -26,7 +28,9 @@ async function messageHandler (
     if (!bindParam) {
         return await message.channel.send('No params provided')
     } else if (!isValidInteger(bindKey, 0, BINDS_MAX_INDEX)) {
-        return await message.channel.send(`Bind key must be an integer from 0 to ${BINDS_MAX_INDEX}`)
+        return await message.channel.send(
+            `Bind key must be an integer from 0 to ${BINDS_MAX_INDEX}`
+        )
     } else if (!url) {
         return await message.channel.send('No link provided')
     } else if (url.length > 500) {
@@ -59,11 +63,18 @@ async function interactionHandler (
 
     await interaction.deferReply()
 
-    console.debug(interaction.options.get('number'))
-    console.debug(interaction.options.get('link'))
+    const bindKey = interaction.options.get('key')?.value
+    const url = interaction.options.get('link')?.value
+    const bindName = interaction.options.get('name')?.value
 
-    await interaction.editReply({ content: 'ok' })
-    await Promise.resolve()
+    assertType<number>(bindKey, typeof bindKey === 'number')
+    assertType<string>(url, typeof url === 'string')
+    assertType<string | undefined>(bindName, !bindName || typeof bindName === 'string')
+
+    await executor(guild, { bindKey, url, bindName })
+
+    const messageText = bindName ? 'Saved!' : 'Saved! You can also add a name to it.'
+    await interaction.editReply({ content: messageText })
 }
 
 const slashConfig = new SlashCommandBuilder()
@@ -71,8 +82,8 @@ const slashConfig = new SlashCommandBuilder()
     .setDescription('Bind play link!')
     .addIntegerOption((option) =>
         option
-            .setName('number')
-            .setDescription('Lala')
+            .setName('key')
+            .setDescription('Bind key')
             .setRequired(true)
             .setMinValue(0)
             .setMaxValue(BINDS_MAX_INDEX)
@@ -134,8 +145,7 @@ async function executor (guild: GuildSession, { bindKey, url, bindName }: Execut
 const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['bind'],
     sort: 9,
-    helpInfo:
-        `\`bind [0..${BINDS_MAX_INDEX}] [link] [name?]\` bind link to number, rest of input will be name but it optional`,
+    helpInfo: `\`bind [0..${BINDS_MAX_INDEX}] [link] [name?]\` bind link to number, rest of input will be name but it optional`,
     messageHandler,
 
     commandInteractionNames: [interactionName],

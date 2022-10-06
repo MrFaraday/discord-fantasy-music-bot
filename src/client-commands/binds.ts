@@ -1,15 +1,43 @@
-import { Client, EmbedBuilder, Message } from 'discord.js'
+import { Client, EmbedBuilder, Message, TextChannel } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { EMBED_COLOR } from '../config'
 import { shortString } from '../utils/string'
 import GuildSession from '../guild-session'
+import assert from 'assert'
 
 const interactionName = 'binds'
 
 async function messageHandler (
     this: Client,
     { message, guild }: MessageCommadHandlerParams
-): Promise<Message> {
+): Promise<any> {
+    const reply = executor(guild, { channel: message.channel })
+    return await message.channel.send(reply)
+}
+
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<any> {
+    if (!interaction.isCommand()) return
+    assert(interaction.channel)
+
+    // await interaction.deferReply()
+    // await interaction.editReply('Pong!');
+
+    const reply = executor(guild, { channel: interaction.channel })
+    await interaction.reply(reply)
+}
+
+const slashConfig = new SlashCommandBuilder()
+    .setName(interactionName)
+    .setDescription('Show binds')
+
+interface ExecutorParams {
+    channel: DiscordChannel
+}
+
+function executor (guild: GuildSession, { channel }: ExecutorParams) {
     const binds = Array.from(guild.binds)
 
     const bindRecords = binds
@@ -25,27 +53,7 @@ async function messageHandler (
         .setTitle('Binds')
         .setDescription(`${bindRecords || '***Empty***'}`)
 
-    return await message.channel.send({ embeds: [bindsEmbed] })
-}
-
-async function interactionHandler (
-    this: Client,
-    { guild, interaction }: InterationHandlerParams
-): Promise<void> {
-    console.debug(interaction)
-    await Promise.resolve()
-}
-
-const slashConfig = new SlashCommandBuilder()
-    .setName(interactionName)
-    .setDescription('Show binds')
-
-interface ExecutorParams {
-    changeIt: number
-}
-
-async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
-    // executor
+    return { embeds: [bindsEmbed] }
 }
 
 const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {

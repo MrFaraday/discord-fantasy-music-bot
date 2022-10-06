@@ -36,7 +36,7 @@ interface Command<T> {
         this: Client,
         guild: import('../guild-session').default,
         params: T
-    ) => Promise<any>
+    ) => Promise<any> | any
 }
 
 interface MessageCommand<T> extends Command<T> {
@@ -60,3 +60,12 @@ interface InteractionCommand<T> extends Command<T> {
 interface SlashCommand<T> extends InteractionCommand<T> {
     slashConfig: SlashConfig
 }
+
+type DiscordChannel =
+    | import('discord.js').DMChannel
+    | import('discord.js').PartialDMChannel
+    | import('discord.js').NewsChannel
+    | import('discord.js').TextChannel
+    | import('discord.js').PublicThreadChannel
+    | import('discord.js').PrivateThreadChannel
+    | import('discord.js').VoiceChannel
