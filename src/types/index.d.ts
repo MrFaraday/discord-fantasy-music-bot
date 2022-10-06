@@ -46,7 +46,7 @@ interface MessageCommand<T = unknown> extends Command<T> {
     messageHandler(
         this: Client,
         { guild, message }: MessageCommadHandlerParams
-    ): Promise<any>
+    ): Promise<any> | any
 }
 
 interface InteractionCommand<T = unknown> extends Command<T> {
@@ -54,7 +54,7 @@ interface InteractionCommand<T = unknown> extends Command<T> {
     interactionHandler(
         this: import('discord.js').Client,
         params: InterationHandlerParams
-    ): any
+    ): Promise<any> | any
 }
 
 interface SlashCommand<T = unknown> extends InteractionCommand<T> {
