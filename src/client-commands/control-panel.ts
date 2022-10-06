@@ -70,6 +70,40 @@ async function messageHandler (
     this: Client,
     { guild, message }: MessageCommadHandlerParams
 ): Promise<void | Message> {
+    try {
+        const replyMessages = executor(guild)
+
+        for (const reply of replyMessages) {
+            await message.channel.send(reply)
+        }
+    } catch (error) {
+        guild.journal.error(error)
+    }
+}
+
+async function interactionHandler (
+    this: Client,
+    { guild, interaction }: InterationHandlerParams
+): Promise<void> {
+    if (!interaction.isCommand()) return
+
+    try {
+        const replyMessages = executor(guild)
+        await interaction.reply(replyMessages.shift())
+
+        for (const reply of replyMessages) {
+            await interaction.channel?.send(reply)
+        }
+    } catch (error) {
+        guild.journal.error(error)
+    }
+}
+
+const slashConfig = new SlashCommandBuilder()
+    .setName(interactionName)
+    .setDescription('Show control pad')
+
+function executor (guild: GuildSession) {
     const binds = Array.from(guild.binds)
     const bindRecords = binds
         .sort(([a], [b]) => a - b)
@@ -103,44 +137,24 @@ async function messageHandler (
         })
         .map((buttons) => new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons))
 
-    try {
-        if (binds.length > 0) {
-            await message.channel.send({
-                embeds: [bindsEmbed],
-                components: bindsButtonRows
-            })
-        }
+    const messages = []
 
-        return await message.channel.send({
-            content: `Volume: **${guild.volume}**`,
-            components: [playbackControlButtonRow, volumeControlButtonRow]
+    if (binds.length > 0) {
+        messages.push({
+            embeds: [bindsEmbed],
+            components: bindsButtonRows
         })
-    } catch (error) {
-        guild.journal.error(error)
     }
+
+    messages.push({
+        content: `Volume: **${guild.volume}**`,
+        components: [playbackControlButtonRow, volumeControlButtonRow]
+    })
+
+    return messages
 }
 
-async function interactionHandler (
-    this: Client,
-    { guild, interaction }: InterationHandlerParams
-): Promise<void> {
-    console.debug(interaction)
-    await Promise.resolve()
-}
-
-const slashConfig = new SlashCommandBuilder()
-    .setName(interactionName)
-    .setDescription('Show control pad')
-
-interface ExecutorParams {
-    changeIt: number
-}
-
-async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
-    // executor
-}
-
-const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
+const command: MessageCommand & SlashCommand = {
     commandMessageNames: ['cpad'],
     sort: 2,
     helpInfo: '`cpad` display control pad',

@@ -39,7 +39,7 @@ interface Command<T> {
     ) => Promise<any> | any
 }
 
-interface MessageCommand<T> extends Command<T> {
+interface MessageCommand<T = unknown> extends Command<T> {
     commandMessageNames: string[]
     sort: number
     helpInfo?: string
@@ -49,7 +49,7 @@ interface MessageCommand<T> extends Command<T> {
     ): Promise<any>
 }
 
-interface InteractionCommand<T> extends Command<T> {
+interface InteractionCommand<T = unknown> extends Command<T> {
     commandInteractionNames: string[]
     interactionHandler(
         this: import('discord.js').Client,
@@ -57,7 +57,7 @@ interface InteractionCommand<T> extends Command<T> {
     ): any
 }
 
-interface SlashCommand<T> extends InteractionCommand<T> {
+interface SlashCommand<T = unknown> extends InteractionCommand<T> {
     slashConfig: SlashConfig
 }
 
