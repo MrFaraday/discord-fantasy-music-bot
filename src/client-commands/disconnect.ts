@@ -4,13 +4,11 @@ import GuildSession from '../guild-session'
 
 const interactionName = 'disconnect'
 
-async function messageHandler (
+function messageHandler (
     this: Client,
     { guild }: MessageCommadHandlerParams
-): Promise<void> {
-    guild.disconnect()
-
-    return Promise.resolve()
+): any {
+    executor(guild)
 }
 
 async function interactionHandler (
@@ -25,15 +23,12 @@ const slashConfig = new SlashCommandBuilder()
     .setName(interactionName)
     .setDescription('Disconect from current voice channel')
 
-interface ExecutorParams {
-    changeIt: number
+
+function executor (guild: GuildSession) {
+    guild.disconnect()
 }
 
-async function executor (guild: GuildSession, { changeIt }: ExecutorParams) {
-    // executor
-}
-
-const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
+const command: MessageCommand & SlashCommand = {
     commandMessageNames: ['d'],
     sort: 7,
     helpInfo: '`d` disconnect from a voice channel',
