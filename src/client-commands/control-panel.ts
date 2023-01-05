@@ -89,7 +89,7 @@ async function interactionHandler (
 
     try {
         const replyMessages = executor(guild)
-        await interaction.reply(replyMessages.shift())
+        await interaction.reply({ ...replyMessages.shift() })
 
         for (const reply of replyMessages) {
             await interaction.channel?.send(reply)

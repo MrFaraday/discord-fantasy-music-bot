@@ -14,7 +14,7 @@ async function startup () {
     assert(TOKEN, 'Environment variable TOKEN not found')
 
     await db.query(queries.init)
-    await registerSlashCommands()
+    // await registerSlashCommands()
 
     await fireClient()
 }
