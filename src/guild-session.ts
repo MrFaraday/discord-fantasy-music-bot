@@ -212,6 +212,12 @@ export default class GuildSession {
         }
     }
 
+    get currentTrack (): Track | undefined {
+        if (this.playingResource) {
+            return this.playingResource.metadata
+        }
+    }
+
     private get playerVolume () {
         return 0.005 * this.volume
     }

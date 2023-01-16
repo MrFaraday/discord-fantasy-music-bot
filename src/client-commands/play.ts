@@ -26,7 +26,16 @@ async function messageHandler (
     }
 
     try {
-        const { tracks, embed } = await issueTracks(guild.guildId, query.join(' '))
+        let input: string
+
+        const saved = guild.binds.get(Number(query))
+        if (saved) {
+            input = saved.value
+        } else {
+            input = query.join(' ')
+        }
+
+        const { tracks, embed } = await issueTracks(guild.guildId, input)
 
         if (embed) {
             message.channel.send({ embeds: [embed] }).catch(() => 0)
@@ -77,7 +86,7 @@ const command: MessageCommand<ExecutorParams> & SlashCommand<ExecutorParams> = {
     commandMessageNames: ['p', 'fp'],
     sort: 1,
     helpInfo:
-        '`p [link]` play track(playlist) from link or add to queue\n`fp [link]` clear queue and play shuffled playlist or track immediately',
+        '`p [link | bind]` play track(playlist) from link or add to queue\n`fp [link]` clear queue and play shuffled playlist or track immediately',
     messageHandler,
 
     commandInteractionNames: [interactionName],
