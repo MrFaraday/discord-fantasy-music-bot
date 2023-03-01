@@ -5,24 +5,23 @@ import {
     joinVoiceChannel,
     VoiceConnection,
     VoiceConnectionStatus,
-    AudioPlayer,
     AudioPlayerStatus,
     AudioResource
 } from '@discordjs/voice'
 import { EmbedBuilder, TextBasedChannel, VoiceChannel } from 'discord.js'
 import shuffle from 'lodash.shuffle'
-import { QUEUE_MAX_LENGTH } from './config'
+import { NODE_ENV, QUEUE_MAX_LENGTH } from './config'
 import GuildController from './controllers/guild-controller'
 import fadeOut from './easing/fade-out'
 import { GuildJournal } from './journal'
 import { CreateResourceError, Track } from './track'
 
-enum PlaybackState {
-    IDLE = 0,
-    PLAYING = 1,
-    STOPPING = 2,
-    LODAING = 3
-}
+// enum PlaybackState {
+//     IDLE = 0,
+//     PLAYING = 1,
+//     STOPPING = 2,
+//     LODAING = 3
+// }
 
 interface SessionConstructorParams {
     guildId: string
@@ -40,8 +39,11 @@ export default class GuildSession {
     queue: Track[] = []
     journal: GuildJournal
 
-    private state: PlaybackState = PlaybackState.IDLE
-    private audioPlayer: AudioPlayer | null = null
+    // private state: PlaybackState = PlaybackState.IDLE
+    private audioPlayer = createAudioPlayer({
+        debug: NODE_ENV === 'development',
+        behaviors: { maxMissedFrames: 1000 }
+    })
     private playingResource: AudioResource<Track> | null = null
 
     private disconnectTimeout: NodeJS.Timeout | null = null
@@ -54,6 +56,40 @@ export default class GuildSession {
         this.journal = new GuildJournal(guildId)
 
         this.controller = new GuildController(guildId)
+
+        this.audioPlayer.on('error', (error) => {
+            // this.state = PlaybackState.IDLE
+
+            if (error.message === 'Status code: 403' && this.playingResource?.metadata) {
+                this.journal.debug('RETRYING |', error)
+                this.queue.unshift(this.playingResource?.metadata)
+            } else {
+                this.journal.error('UNHANDLED audioPlayer error:', '\n', error)
+            }
+
+            this.playingResource = null
+            void this.playNext()
+        })
+
+        this.audioPlayer.on('debug', (message) => {
+            this.journal.debug('Audio Player >', message)
+        })
+
+        this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
+            this.scheduleDisconnect()
+            this.playingResource = null
+
+            // if (this.state !== PlaybackState.LODAING) {
+            //     this.state = PlaybackState.IDLE
+            // }
+
+            void this.playNext()
+        })
+
+        this.audioPlayer.on(AudioPlayerStatus.Playing, () => {
+            this.unscheduleDisconnect()
+            // this.state = PlaybackState.PLAYING
+        })
     }
 
     get voiceConnection (): VoiceConnection | undefined {
@@ -65,7 +101,7 @@ export default class GuildSession {
         tracks: Track[],
         textChannel?: TextBasedChannel
     ): Promise<void> {
-        this.journal.debug('GuildSession.play'.padEnd(30, ' '), 'state bp1', this.state)
+        // this.journal.debug('GuildSession.play'.padEnd(30, ' '), 'state bp1', this.state)
 
         this.queue = [...this.queue, ...tracks].slice(0, QUEUE_MAX_LENGTH)
 
@@ -73,11 +109,11 @@ export default class GuildSession {
             await this.connect(channel)
         }
 
-        this.journal.debug('GuildSession.play'.padEnd(30, ' '), 'state bp2', this.state)
+        // this.journal.debug('GuildSession.play'.padEnd(30, ' '), 'state bp2', this.state)
 
-        if (this.state !== PlaybackState.PLAYING) {
-            await this.playNext(textChannel)
-        }
+        // if (this.state !== PlaybackState.PLAYING) {
+        await this.playNext(textChannel)
+        // }
     }
 
     async forcePlay (
@@ -87,38 +123,42 @@ export default class GuildSession {
     ): Promise<void> {
         this.queue = shuffle(tracks.slice(0, QUEUE_MAX_LENGTH))
 
-        this.journal.debug(
-            'GuildSession.forcePlay'.padEnd(30, ' '),
-            'state bp4',
-            this.state
-        )
+        // this.journal.debug(
+        //     'GuildSession.forcePlay'.padEnd(30, ' '),
+        //     'state bp4',
+        //     this.state
+        // )
 
         if (!this.voiceConnection) {
             await this.connect(channel)
         }
 
-        this.journal.debug(
-            'GuildSession.forcePlay'.padEnd(30, ' '),
-            'state bp4',
-            this.state
-        )
+        // this.journal.debug(
+        //     'GuildSession.forcePlay'.padEnd(30, ' '),
+        //     'state bp4',
+        //     this.state
+        // )
 
         await this.playNext(textChannel)
     }
 
     async connect (channel: VoiceChannel): Promise<void> {
-        if (!channel.guild) return
-        if (!channel.guild.voiceAdapterCreator) return
+        // if (!channel.guild) return
+        // if (!channel.guild.voiceAdapterCreator) return
 
         const connection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guild.id,
-            adapterCreator: channel.guild.voiceAdapterCreator
+            adapterCreator: channel.guild.voiceAdapterCreator,
+            selfDeaf: false
         })
+
+        connection.subscribe(this.audioPlayer)
         this.scheduleDisconnect()
 
-        connection.removeAllListeners()
         connection.on(VoiceConnectionStatus.Disconnected, async () => {
+            this.journal.debug('Voice Connection > Disconnected')
+
             try {
                 await Promise.race([
                     entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
@@ -131,54 +171,24 @@ export default class GuildSession {
             }
         })
         connection.on(VoiceConnectionStatus.Destroyed, () => {
+            this.journal.debug('Voice Connection > Destroyed')
+
             this.queue = []
-            this.audioPlayer?.stop(true)
-            this.audioPlayer = null
+            this.audioPlayer.stop(true)
             this.playingResource = null
-            this.state = PlaybackState.IDLE
+            // this.state = PlaybackState.IDLE
+        })
+        connection.on(VoiceConnectionStatus.Connecting, () => {
+            this.journal.debug('Voice Connection > Connecting')
+        })
+        connection.on(VoiceConnectionStatus.Ready, () => {
+            this.journal.debug('Voice Connection > Ready')
+        })
+        connection.on(VoiceConnectionStatus.Signalling, () => {
+            this.journal.debug('Voice Connection > Signalling')
         })
 
-        if (!this.audioPlayer) {
-            this.audioPlayer = createAudioPlayer()
-
-            /**
-             * @todo catch `abort` error
-             */
-            this.audioPlayer.on('error', (error) => {
-                this.state = PlaybackState.IDLE
-
-                if (
-                    error.message === 'Status code: 403' &&
-                    this.playingResource?.metadata
-                ) {
-                    this.journal.debug('RETRYING |', error)
-                    this.queue.unshift(this.playingResource?.metadata)
-                } else {
-                    this.journal.error('UNHANDLED audioPlayer error:', '\n', error)
-                }
-
-                this.playingResource = null
-                void this.playNext()
-            })
-
-            this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
-                this.scheduleDisconnect()
-                this.playingResource = null
-
-                if (this.state !== PlaybackState.LODAING) {
-                    this.state = PlaybackState.IDLE
-                }
-
-                void this.playNext()
-            })
-            this.audioPlayer.on(AudioPlayerStatus.Playing, () => {
-                this.unscheduleDisconnect()
-                this.state = PlaybackState.PLAYING
-            })
-
-            await entersState(connection, VoiceConnectionStatus.Ready, 20e3)
-            connection.subscribe(this.audioPlayer)
-        }
+        await entersState(connection, VoiceConnectionStatus.Ready, 20e3)
     }
 
     disconnect (): void {
@@ -191,19 +201,18 @@ export default class GuildSession {
     }
 
     async skip (): Promise<void> {
-        if (this.audioPlayer) {
-            await this.playNext()
-        }
+        await this.playNext()
     }
 
     async stop (): Promise<void> {
         this.queue = []
         await this.skip()
-        this.audioPlayer?.stop(true)
+        this.audioPlayer.stop(true)
     }
 
     get isPlaying (): boolean {
-        return this.state !== PlaybackState.IDLE
+        // return this.state !== PlaybackState.IDLE
+        return this.audioPlayer.state.status === AudioPlayerStatus.Playing
     }
 
     get trackEmbed (): EmbedBuilder | undefined {
@@ -223,25 +232,31 @@ export default class GuildSession {
     }
 
     private async playNext (textChannel?: TextBasedChannel) {
-        if (!this.voiceConnection) return
-        if (!this.audioPlayer) return
-        if (this.state === PlaybackState.LODAING) return
+        console.log('CALL playNext')
 
-        this.journal.debug(
-            'GuildSession.playNext'.padEnd(30, ' '),
-            'state bp5',
-            this.state
-        )
+        // if (!this.voiceConnection) return
+
+        // if (this.state === PlaybackState.LODAING) return
+
+        // this.journal.debug(
+        //     'GuildSession.playNext'.padEnd(30, ' '),
+        //     'state bp5',
+        //     this.state
+        // )
 
         const track = this.queue.shift()
 
-        if (!track && this.state === PlaybackState.PLAYING) {
-            this.state = PlaybackState.STOPPING
-            const stopped = await this.stopCurrentTrack()
+        console.log(track)
+        console.log(this.isPlaying)
+        console.log()
 
-            if (!stopped) {
-                this.state = PlaybackState.IDLE
-            }
+        if (!track && this.isPlaying) {
+            // this.state = PlaybackState.STOPPING
+            /* const stopped = */ await this.stopCurrentTrack()
+
+            // if (!stopped) {
+            //     this.state = PlaybackState.IDLE
+            // }
 
             return
         } else if (!track) {
@@ -249,21 +264,26 @@ export default class GuildSession {
         }
 
         try {
-            this.state = PlaybackState.LODAING
+            // this.state = PlaybackState.LODAING
+
+            console.log('loading resource')
 
             const [resource] = await Promise.all([
                 track.createAudioResource(this.guildId).then((res) => {
                     res.volume?.setVolume(this.playerVolume)
+                    console.log('resource loaded ')
                     return res
                 }),
                 this.stopCurrentTrack()
             ])
 
-            this.journal.debug(
-                'GuildSession.playNext'.padEnd(30, ' '),
-                'state bp6',
-                this.state
-            )
+            console.log('ready')
+
+            // this.journal.debug(
+            //     'GuildSession.playNext'.padEnd(30, ' '),
+            //     'state bp6',
+            //     this.state
+            // )
 
             this.playingResource = resource
             this.audioPlayer.play(resource)
@@ -300,13 +320,13 @@ export default class GuildSession {
                 )
             }
 
-            this.state = PlaybackState.IDLE
+            // this.state = PlaybackState.IDLE
             await this.playNext()
         }
     }
 
     private async stopCurrentTrack () {
-        if (this.audioPlayer && this.playingResource) {
+        if (this.playingResource) {
             await fadeOut(this.audioPlayer, this.playingResource)
             return true
         } else {

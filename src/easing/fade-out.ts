@@ -10,7 +10,7 @@ export default async function fadeOut (
 ): Promise<void> {
     return new Promise((resolve) => {
         if (!resource.volume) {
-            audioPlayer.stop()
+            audioPlayer.stop(true)
             return resolve()
         }
 
@@ -18,7 +18,7 @@ export default async function fadeOut (
 
         const reduce = (rest: number) => {
             if (rest < 0) {
-                audioPlayer.stop()
+                audioPlayer.stop(true)
                 return resolve()
             }
 
