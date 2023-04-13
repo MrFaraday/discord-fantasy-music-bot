@@ -6,7 +6,7 @@ async function interactionHandler (
     { interaction, guild }: InterationHandlerParams
 ): Promise<any> {
     if (guild.isPlaying) {
-        await guild.skip()
+        await guild.skip().catch((err) => console.log('skip', err))
     }
 
     if (interaction instanceof ButtonInteraction) {

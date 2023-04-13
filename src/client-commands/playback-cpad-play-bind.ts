@@ -10,16 +10,17 @@ async function interactionHandler (
     { interaction, guild }: InterationHandlerParams
 ): Promise<any> {
     if (!(interaction instanceof ButtonInteraction)) return
-    if (!interaction.member || !(interaction.member instanceof GuildMember)) return
-    if (interaction.member.voice.channel?.type !== ChannelType.GuildVoice) return
-
-    const [key] = /\d+/.exec(interaction.customId) ?? []
-    assert(key)
-
-    const saved = guild.binds.get(Number(key))
-    if (!saved) return
 
     try {
+        if (!interaction.member || !(interaction.member instanceof GuildMember)) return
+        if (interaction.member.voice.channel?.type !== ChannelType.GuildVoice) return
+
+        const [key] = /\d+/.exec(interaction.customId) ?? []
+        assert(key)
+
+        const saved = guild.binds.get(Number(key))
+        if (!saved) return
+
         const { tracks } = await issueTracks(guild.guildId, saved.value)
 
         void interaction.deferUpdate()
@@ -29,6 +30,8 @@ async function interactionHandler (
         void interaction.deferUpdate().catch(() => 0)
 
         if (error instanceof SourceError) {
+            console.log(error)
+
             // await message.channel.send(error.message)
         } else {
             guild.journal.error(error)

@@ -56,6 +56,8 @@ export class Track implements TrackData {
                 inputType: stream.type
             })
         } catch (error) {
+            console.log(error)
+
             if (
                 error instanceof Error &&
                 error.message.includes('While getting info from url')

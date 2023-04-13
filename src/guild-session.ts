@@ -38,6 +38,7 @@ export default class GuildSession {
     volume: number
     queue: Track[] = []
     journal: GuildJournal
+    bussy = false
 
     // private state: PlaybackState = PlaybackState.IDLE
     private audioPlayer = createAudioPlayer({
@@ -111,9 +112,9 @@ export default class GuildSession {
 
         // this.journal.debug('GuildSession.play'.padEnd(30, ' '), 'state bp2', this.state)
 
-        // if (this.state !== PlaybackState.PLAYING) {
-        await this.playNext(textChannel)
-        // }
+        if (this.playerStatus === AudioPlayerStatus.Idle) {
+            await this.playNext(textChannel)
+        }
     }
 
     async forcePlay (
@@ -214,6 +215,9 @@ export default class GuildSession {
         // return this.state !== PlaybackState.IDLE
         return this.audioPlayer.state.status === AudioPlayerStatus.Playing
     }
+    get playerStatus () {
+        return this.audioPlayer.state.status
+    }
 
     get trackEmbed (): EmbedBuilder | undefined {
         if (this.playingResource) {
@@ -232,6 +236,10 @@ export default class GuildSession {
     }
 
     private async playNext (textChannel?: TextBasedChannel) {
+        if (this.bussy) {
+            return
+        }
+        this.bussy = true
         console.log('CALL playNext')
 
         // if (!this.voiceConnection) return
@@ -257,9 +265,10 @@ export default class GuildSession {
             // if (!stopped) {
             //     this.state = PlaybackState.IDLE
             // }
-
+            this.bussy = false
             return
         } else if (!track) {
+            this.bussy = false
             return
         }
 
@@ -288,6 +297,8 @@ export default class GuildSession {
             this.playingResource = resource
             this.audioPlayer.play(resource)
         } catch (error) {
+            console.log('playNext', error)
+
             if (
                 error instanceof CreateResourceError &&
                 error.code === CreateResourceError.RESTRICTED &&
@@ -321,13 +332,18 @@ export default class GuildSession {
             }
 
             // this.state = PlaybackState.IDLE
+            this.bussy = false
             await this.playNext()
+        } finally {
+            this.bussy = false
         }
     }
 
     private async stopCurrentTrack () {
         if (this.playingResource) {
-            await fadeOut(this.audioPlayer, this.playingResource)
+            await fadeOut(this.audioPlayer, this.playingResource).catch((e) =>
+                console.log('stopCurrentTrack', e)
+            )
             return true
         } else {
             return false
