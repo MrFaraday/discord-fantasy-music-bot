@@ -1,4 +1,11 @@
-import { Client, EmbedBuilder, Message, TextChannel } from 'discord.js'
+import {
+    Client,
+    EmbedBuilder,
+    GuildTextBasedChannel,
+    Message,
+    TextBasedChannel,
+    TextChannel
+} from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { EMBED_COLOR } from '../config'
 import { shortString } from '../utils/string'
@@ -34,7 +41,7 @@ const slashConfig = new SlashCommandBuilder()
     .setDescription('Show binds')
 
 interface ExecutorParams {
-    channel: DiscordChannel
+    channel: TextBasedChannel
 }
 
 function executor (guild: GuildSession, { channel }: ExecutorParams) {

@@ -2,7 +2,7 @@ import { AudioResource, createAudioResource } from '@discordjs/voice'
 import { EmbedBuilder } from 'discord.js'
 import { EMBED_COLOR } from './config'
 import { GuildJournal } from './journal'
-import { stream as getStream } from 'play-dl'
+import { SoundCloudStream, YouTubeStream, stream as getStream } from 'play-dl'
 
 const maxAttempts = 3
 
@@ -49,16 +49,18 @@ export class Track implements TrackData {
         try {
             this.attempts++
 
-            const stream = await new Promise((resolve, reject) => {
-                const timeout = setTimeout(() => {
-                    reject(new Error('getStream timeout'))
-                }, 5000)
+            const stream = await new Promise<YouTubeStream | SoundCloudStream>(
+                (resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        reject(new Error('getStream timeout'))
+                    }, 5000)
 
-                getStream(this.url)
-                    .then((res) => resolve(res))
-                    .catch(reject)
-                    .finally(() => clearTimeout(timeout))
-            })
+                    getStream(this.url)
+                        .then((res) => resolve(res))
+                        .catch(reject)
+                        .finally(() => clearTimeout(timeout))
+                }
+            )
             return createAudioResource(stream.stream, {
                 inlineVolume: true,
                 metadata: this,
