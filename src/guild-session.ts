@@ -240,7 +240,6 @@ export default class GuildSession {
             return
         }
         this.bussy = true
-        console.log('CALL playNext')
 
         // if (!this.voiceConnection) return
 
@@ -253,10 +252,6 @@ export default class GuildSession {
         // )
 
         const track = this.queue.shift()
-
-        console.log(track)
-        console.log(this.isPlaying)
-        console.log()
 
         if (!track && this.isPlaying) {
             // this.state = PlaybackState.STOPPING
@@ -275,18 +270,13 @@ export default class GuildSession {
         try {
             // this.state = PlaybackState.LODAING
 
-            console.log('loading resource')
-
             const [resource] = await Promise.all([
                 track.createAudioResource(this.guildId).then((res) => {
                     res.volume?.setVolume(this.playerVolume)
-                    console.log('resource loaded ')
                     return res
                 }),
                 this.stopCurrentTrack()
             ])
-
-            console.log('ready')
 
             // this.journal.debug(
             //     'GuildSession.playNext'.padEnd(30, ' '),
@@ -297,8 +287,6 @@ export default class GuildSession {
             this.playingResource = resource
             this.audioPlayer.play(resource)
         } catch (error) {
-            console.log('playNext', error)
-
             if (
                 error instanceof CreateResourceError &&
                 error.code === CreateResourceError.RESTRICTED &&

@@ -49,7 +49,16 @@ export class Track implements TrackData {
         try {
             this.attempts++
 
-            const stream = await getStream(this.url)
+            const stream = await new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => {
+                    reject(new Error('getStream timeout'))
+                }, 5000)
+
+                getStream(this.url)
+                    .then((res) => resolve(res))
+                    .catch(reject)
+                    .finally(() => clearTimeout(timeout))
+            })
             return createAudioResource(stream.stream, {
                 inlineVolume: true,
                 metadata: this,
