@@ -346,6 +346,10 @@ export default class GuildSession {
     }
 
     private scheduleDisconnect () {
-        this.disconnectTimeout = setTimeout(() => this.disconnect(), 5 * 60 * 1000)
+        this.disconnectTimeout = setTimeout(() => {
+            if (!this.isPlaying) {
+                this.disconnect()
+            }
+        }, 5 * 60 * 1000)
     }
 }
