@@ -9,12 +9,12 @@ import {
     AudioResource
 } from '@discordjs/voice'
 import { EmbedBuilder, TextBasedChannel, VoiceChannel } from 'discord.js'
-import shuffle from 'lodash.shuffle'
 import { NODE_ENV, QUEUE_MAX_LENGTH } from './config'
 import GuildController from './controllers/guild-controller'
 import fadeOut from './easing/fade-out'
 import { GuildJournal } from './journal'
 import { CreateResourceError, Track } from './track'
+import { shuffle } from 'lodash'
 
 // enum PlaybackState {
 //     IDLE = 0,
