@@ -9,7 +9,7 @@ if (!YOUTUBE_API_KEY) {
 }
 
 const videoIdRegEx = /[?&]v=([^&?#/]+)/
-const shortVideoIdRegEx = /^https?:\/\/youtu\.be\/([^&?#/]+)$/
+const shortVideoIdRegEx = /^https?:\/\/youtu\.be\/([^&?#/]+)[?#]?/
 const listIdRegEx = /[?&]list=([^&?#/]+)/
 
 class YoutubeApi {
